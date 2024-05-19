@@ -91,7 +91,7 @@ export const admins = [
     phone: "+1234567890",
     age: 30,
     location: "New York",
-    category: "Admin",
+    category: "Orders and Discount Management",
     status: "Active",
   },
   {
@@ -101,7 +101,7 @@ export const admins = [
     phone: "+1987654321",
     age: 35,
     location: "Los Angeles",
-    category: "Super Admin",
+    category: "Orders and Discount Management",
     status: "Active",
   },
   {
@@ -121,7 +121,7 @@ export const admins = [
     phone: "+1555666777",
     age: 40,
     location: "Houston",
-    category: "Admin",
+    category: "Account Management",
     status: "Active",
   },
   {
@@ -131,7 +131,7 @@ export const admins = [
     phone: "+1444333222",
     age: 28,
     location: "Seattle",
-    category: "Admin",
+    category: "Account Management",
     status: "Active",
   },
   {
@@ -141,7 +141,7 @@ export const admins = [
     phone: "+1777888999",
     age: 45,
     location: "Miami",
-    category: "Admin",
+    category: "Salons Management",
     status: "Inactive",
   },
   {
@@ -151,7 +151,7 @@ export const admins = [
     phone: "+1666777888",
     age: 32,
     location: "San Francisco",
-    category: "Admin",
+    category: "Jewellery Management",
     status: "Active",
   },
   {
@@ -171,7 +171,7 @@ export const admins = [
     phone: "+1999888777",
     age: 27,
     location: "Boston",
-    category: "Super Admin",
+    category: "Super Products Management",
     status: "Inactive",
   },
   {
@@ -181,7 +181,7 @@ export const admins = [
     phone: "+1888999000",
     age: 33,
     location: "Philadelphia",
-    category: "Admin",
+    category: "Products Management",
     status: "Active",
   },
 ];
