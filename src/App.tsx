@@ -32,7 +32,7 @@ const {activeMenu} =useStateContext();
                 : " w-full min-h-screen flex-2 "
             }
           >
-            <div className="fixed md:static w-full ">
+            <div className="static w-full ">
               <Navbar />
             </div>
             <div className="m-4">

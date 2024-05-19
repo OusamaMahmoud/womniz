@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { useStateContext } from "../contexts/ContextProvider";
 import { AiOutlineMenu } from "react-icons/ai";
-import { FiShoppingCart } from "react-icons/fi";
-import { BsChatLeft } from "react-icons/bs";
 import { RiNotification3Line } from "react-icons/ri";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import avatar from "../assets/navbar/avatar.svg";
@@ -41,7 +39,6 @@ const Navbar = () => {
     activeMenu,
     setActiveMenu,
     handleClick,
-    isClicked,
     setScreenSize,
     screenSize,
   } = useStateContext();

@@ -10,7 +10,6 @@ import {
   coupons,
   logout,
   permissions,
-  products,
   reports,
   settings,
   termsConditions,
@@ -160,7 +159,7 @@ const Sidebar = () => {
               <img src={settings} alt="home" />
               <span className="capitalize ">Settings</span>
             </NavLink>
-            <div className="flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-md m-2  hover:bg-[#BED3C4] hover:text-[#577656]">
+            <div className="flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-md m-2 cursor-pointer hover:bg-[#BED3C4] hover:text-[#577656]">
               <img src={logout} alt="home" />
               <span>Logout</span>
             </div>

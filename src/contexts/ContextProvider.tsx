@@ -27,9 +27,6 @@ const initialState: StateContextProps = {
   notification: false,
 };
 
-interface ContextProviderProps {
-  children: ReactNode;
-}
 
 export const ContextProvider = ({ children }:{children:ReactNode}) => {
   const [screenSize, setScreenSize] = useState<number | undefined>(undefined);

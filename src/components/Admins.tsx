@@ -1,9 +1,6 @@
 import React from "react";
-import moment from "moment";
-import CardTitle from "./CardTitle";
 import { admins } from "../data/dummy";
-import { BiPlug } from "react-icons/bi";
-import { PiPlusCircle } from "react-icons/pi";
+import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 
 interface Admin {
   id: number;
@@ -18,11 +15,28 @@ interface Admin {
 
 const Admins: React.FC = () => {
   return (
-    <CardTitle title="Admins" topMargin="mt-2" TopSideButtons={'Add admin account'} icon={<PiPlusCircle />}>
-      <div className="overflow-x-auto w-full">
-        <table className="table w-full">
+    <>
+      <div className="overflow-x-scroll">
+        <div className="flex justify-between items-center">
+          <h1 className="font-medium text-4xl capitalize">Admins Details</h1>
+          <div className="flex items-center gap-2">
+            <button className="capitalize  flex items-center gap-2 text-[white] bg-mainColor text-sm px-4 py-3  rounded-lg ">
+              <BiPlusCircle className="text-xl" /> add admin account
+            </button>
+            <button className="capitalize flex gap-2 px-3 py-2 items-center"><BiTrash className="text-lg"/> delete</button>
+            <button className="capitalize flex gap-2 items-center border-[1px] border-[#D0D5DD] p-2 rounded-lg"><BiExport /> export</button>
+          </div>
+        </div>
+        <div></div>
+        <table className="table">
+          {/* head */}
           <thead>
             <tr>
+              <th>
+                <label>
+                  <input type="checkbox" className="checkbox" disabled />
+                </label>
+              </th>
               <th>ID</th>
               <th>Name</th>
               <th>Email</th>
@@ -36,6 +50,11 @@ const Admins: React.FC = () => {
           <tbody>
             {admins.map((admin: Admin) => (
               <tr key={admin.id}>
+                <th>
+                  <label>
+                    <input type="checkbox" className="checkbox" />
+                  </label>
+                </th>
                 <td>{admin.id}</td>
                 <td>{admin.name}</td>
                 <td>{admin.email}</td>
@@ -49,7 +68,7 @@ const Admins: React.FC = () => {
           </tbody>
         </table>
       </div>
-    </CardTitle>
+    </>
   );
 };
 
