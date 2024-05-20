@@ -40,7 +40,7 @@ const {activeMenu} =useStateContext();
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/accounts/Admins" element={<Admins />} />
-                <Route path="/accounts/Admins/:id" element={<AdminProfile />} />
+                {/* <Route path="/accounts/Admins/:id" element={<AdminProfile />} /> */}
                 <Route path="/accounts/Customers" element={<Customers />} />
                 <Route path="/accounts/Vendors" element={<Vendors />} />
               </Routes>

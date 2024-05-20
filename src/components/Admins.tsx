@@ -94,7 +94,8 @@ const Admins: React.FC = () => {
     setNewAdmin((prev) => ({ ...prev, [name]: value }));
   };
   const notify = () => toast.success("Wow so easy!");
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent the default form submission
     const newId = Math.max(...admins.map((a) => a.id)) + 1;
     const newAdminData = { ...newAdmin, id: newId } as Admin;
     setFilteredAdmins((prev) => [...prev, newAdminData]);
@@ -222,7 +223,7 @@ const Admins: React.FC = () => {
               <td>
                 <div
                   className={`badge flex gap-1 ${
-                    admin.status.toLowerCase() === "Active".toLowerCase()
+                    admin.status === "Active"
                       ? "bg-[#ECFDF3] text-[#037847]"
                       : "bg-[#F2F4F7] text-[#E20000] "
                   } `}
@@ -234,7 +235,6 @@ const Admins: React.FC = () => {
           ))}
         </tbody>
       </table>
-
       {isModalOpen && (
         <div className="modal modal-open tracking-wide">
           <div className="modal-box max-w-3xl px-10">
@@ -250,133 +250,139 @@ const Admins: React.FC = () => {
                 <img src={avatar} alt="" />
               )}
             </div>
+            <form onSubmit={handleSubmit}>
+              <div className="py-4 grid grid-cols-2 gap-8">
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Full Name</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    className="input input-bordered"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Date Of Birth</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="name"
+                    className="input input-bordered"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Phone Number</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="phone"
+                    className="input input-bordered"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Email</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="input input-bordered"
+                    onChange={handleInputChange}
+                  />
+                </div>
 
-            <div className="py-4 grid grid-cols-2 gap-8">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Full Name</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Country</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="country"
+                    className="input input-bordered"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Address</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    className="input input-bordered"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Category</span>
+                  </label>
+                  <select
+                    name="category"
+                    className="select select-bordered"
+                    onChange={handleInputChange}
+                  >
+                    <option disabled selected>
+                      Select Category
+                    </option>
+                    <option value="Account Management">
+                      Account Management
+                    </option>
+                    <option value="Products Management">
+                      Products Management
+                    </option>
+                    <option value="Jewellery Management">
+                      Jewellery Management
+                    </option>
+                    <option value="Salons Management">Salons Management</option>
+                    <option value="Orders and Discount Management">
+                      Orders and Discount Management
+                    </option>
+                  </select>
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Password</span>
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    className="input input-bordered"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Photo</span>
+                  </label>
+                  <input
+                    type="file"
+                    className="file-input file-input-bordered"
+                    onChange={handleFileChange}
+                  />
+                </div>
               </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Date Of Birth</span>
-                </label>
-                <input
-                  type="date"
-                  name="name"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Phone Number</span>
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Country</span>
-                </label>
-                <input
-                  type="text"
-                  name="country"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Address</span>
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Category</span>
-                </label>
-                <select
-                  name="category"
-                  className="select select-bordered"
-                  onChange={handleInputChange}
+              <div className="modal-action flex justify-around items-center">
+                <button
+                  type="submit"
+                  className="btn px-20 bg-mainColor text-[white]"
                 >
-                  <option disabled selected>
-                    Select Category
-                  </option>
-                  <option value="Account Management">Account Management</option>
-                  <option value="Products Management">
-                    Products Management
-                  </option>
-                  <option value="Jewellery Management">
-                    Jewellery Management
-                  </option>
-                  <option value="Salons Management">Salons Management</option>
-                  <option value="Orders and Discount Management">
-                    Orders and Discount Management
-                  </option>
-                </select>
+                  Save
+                </button>
+                <button
+                  className="btn bg-transparent px-20"
+                  onClick={closeModal}
+                >
+                  Cancel
+                </button>
               </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Password</span>
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Photo</span>
-                </label>
-                <input
-                  type="file"
-                  className="file-input file-input-bordered"
-                  onChange={handleFileChange}
-                />
-              </div>
-            </div>
-            <div className="modal-action flex justify-around items-center">
-              <button
-                className="btn px-20 bg-mainColor text-[white]"
-                onClick={handleSubmit}
-              >
-                Save
-              </button>
-              <button className="btn bg-transparent px-20" onClick={closeModal}>
-                Cancel
-              </button>
-            </div>
+            </form>
           </div>
         </div>
       )}

@@ -35,6 +35,10 @@ const AdminProfile = () => {
             <option value="Inactive">Inactive</option>
           </select>
         </div>
+        <div>
+            <button className=""></button>
+            <button></button>
+        </div>
       </div>
     </div>
   );
