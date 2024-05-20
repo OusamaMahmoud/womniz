@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { admins } from "../data/dummy";
 import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
-import "tailwindcss/tailwind.css"; // Ensure Tailwind CSS is imported
+import avatar from "../assets/admin/avatar.svg";
 
 interface Admin {
   id: number;
@@ -216,16 +216,50 @@ const Admins: React.FC = () => {
 
       {isModalOpen && (
         <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Add Admin Account</h3>
-            <div className="py-4">
+          <div className="modal-box max-w-3xl px-10">
+            <h3 className="font-bold text-lg text-left">Add Regular Admin</h3>
+            <div className="flex justify-center items-center my-8">
+              {photoPreview ? (
+                <img
+                  src={photoPreview}
+                  alt="Preview"
+                  className="w-36 h-36 object-cover rounded-full"
+                />
+              ) : (
+                <img src={avatar} alt="" />
+              )}
+            </div>
+
+            <div className="py-4 grid grid-cols-2 gap-8">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Name</span>
+                  <span className="label-text">Full Name</span>
                 </label>
                 <input
                   type="text"
                   name="name"
+                  className="input input-bordered"
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Date Of Birth</span>
+                </label>
+                <input
+                  type="date"
+                  name="name"
+                  className="input input-bordered"
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Phone Number</span>
+                </label>
+                <input
+                  type="text"
+                  name="phone"
                   className="input input-bordered"
                   onChange={handleInputChange}
                 />
@@ -241,35 +275,25 @@ const Admins: React.FC = () => {
                   onChange={handleInputChange}
                 />
               </div>
+
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Phone</span>
+                  <span className="label-text">Country</span>
                 </label>
                 <input
                   type="text"
-                  name="phone"
+                  name="country"
                   className="input input-bordered"
                   onChange={handleInputChange}
                 />
               </div>
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Age</span>
-                </label>
-                <input
-                  type="number"
-                  name="age"
-                  className="input input-bordered"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Location</span>
+                  <span className="label-text">Address</span>
                 </label>
                 <input
                   type="text"
-                  name="location"
+                  name="address"
                   className="input input-bordered"
                   onChange={handleInputChange}
                 />
@@ -301,19 +325,14 @@ const Admins: React.FC = () => {
               </div>
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Status</span>
+                  <span className="label-text">Password</span>
                 </label>
-                <select
-                  name="status"
-                  className="select select-bordered"
+                <input
+                  type="password"
+                  name="password"
+                  className="input input-bordered"
                   onChange={handleInputChange}
-                >
-                  <option disabled selected>
-                    Select Status
-                  </option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
+                />
               </div>
               <div className="form-control">
                 <label className="label">
@@ -324,15 +343,6 @@ const Admins: React.FC = () => {
                   className="file-input file-input-bordered"
                   onChange={handleFileChange}
                 />
-                {photoPreview && (
-                  <div className="mt-2">
-                    <img
-                      src={photoPreview}
-                      alt="Preview"
-                      className="w-24 h-24 object-cover rounded-full"
-                    />
-                  </div>
-                )}
               </div>
             </div>
             <div className="modal-action">
