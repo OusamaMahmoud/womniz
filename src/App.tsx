@@ -10,6 +10,7 @@ import {
   Vendors,
 } from "./components";
 import { useStateContext } from "./contexts/ContextProvider";
+import AdminProfile from "./components/AdminProfile";
 function App() {
 const {activeMenu} =useStateContext();
   return (
@@ -32,13 +33,14 @@ const {activeMenu} =useStateContext();
                 : " w-full min-h-screen flex-2 "
             }
           >
-            <div className="static w-full ">
+            <div className="static w-full mt-8">
               <Navbar />
             </div>
             <div className="m-4">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/accounts/Admins" element={<Admins />} />
+                <Route path="/accounts/Admins/:id" element={<AdminProfile />} />
                 <Route path="/accounts/Customers" element={<Customers />} />
                 <Route path="/accounts/Vendors" element={<Vendors />} />
               </Routes>

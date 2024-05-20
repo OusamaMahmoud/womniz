@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { admins } from "../data/dummy";
-import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
+import {
+  BiDotsHorizontalRounded,
+  BiExport,
+  BiPlusCircle,
+  BiTrash,
+} from "react-icons/bi";
 import avatar from "../assets/admin/avatar.svg";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 interface Admin {
   id: number;
   name: string;
@@ -86,20 +93,22 @@ const Admins: React.FC = () => {
     const { name, value } = e.target;
     setNewAdmin((prev) => ({ ...prev, [name]: value }));
   };
-
+  const notify = () => toast.success("Wow so easy!");
   const handleSubmit = () => {
     const newId = Math.max(...admins.map((a) => a.id)) + 1;
     const newAdminData = { ...newAdmin, id: newId } as Admin;
     setFilteredAdmins((prev) => [...prev, newAdminData]);
+    notify();
     closeModal();
   };
 
   return (
     <div className="overflow-x-scroll p-5">
+      <ToastContainer />
       <div className="flex justify-between items-center mb-5">
         <h1 className="font-medium text-4xl capitalize">Admins Details</h1>
         <div className="flex items-center gap-2">
-          <button className="btn btn-primary" onClick={openModal}>
+          <button className="btn bg-mainColor text-[white]" onClick={openModal}>
             <BiPlusCircle className="text-xl" /> Add Admin Account
           </button>
           <button
@@ -202,20 +211,32 @@ const Admins: React.FC = () => {
                 </label>
               </th>
               <td>{admin.id}</td>
-              <td>{admin.name}</td>
+              <td className="hover:bg-[#ECFDF3] hover:rounded-md">
+                <Link to={"/accounts/Admins/3"}>{admin.name}</Link>{" "}
+              </td>
               <td>{admin.email}</td>
               <td>{admin.phone}</td>
               <td>{admin.age}</td>
               <td>{admin.location}</td>
               <td>{admin.category}</td>
-              <td>{admin.status}</td>
+              <td>
+                <div
+                  className={`badge flex gap-1 ${
+                    admin.status.toLowerCase() === "Active".toLowerCase()
+                      ? "bg-[#ECFDF3] text-[#037847]"
+                      : "bg-[#F2F4F7] text-[#E20000] "
+                  } `}
+                >
+                  <BiDotsHorizontalRounded /> {admin.status}
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {isModalOpen && (
-        <div className="modal modal-open">
+        <div className="modal modal-open tracking-wide">
           <div className="modal-box max-w-3xl px-10">
             <h3 className="font-bold text-lg text-left">Add Regular Admin</h3>
             <div className="flex justify-center items-center my-8">
@@ -345,12 +366,15 @@ const Admins: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="modal-action">
-              <button className="btn" onClick={handleSubmit}>
-                Add Admin
+            <div className="modal-action flex justify-around items-center">
+              <button
+                className="btn px-20 bg-mainColor text-[white]"
+                onClick={handleSubmit}
+              >
+                Save
               </button>
-              <button className="btn btn-outline" onClick={closeModal}>
-                Close
+              <button className="btn bg-transparent px-20" onClick={closeModal}>
+                Cancel
               </button>
             </div>
           </div>
