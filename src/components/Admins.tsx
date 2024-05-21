@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { admins } from "../data/dummy";
+import { admins, catagories } from "../data/dummy";
 import {
   BiDotsHorizontalRounded,
   BiExport,
@@ -10,15 +10,65 @@ import avatar from "../assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
-interface Admin {
+import { CgClose } from "react-icons/cg";
+import { FieldValues, useForm } from "react-hook-form";
+import z, { string } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RiErrorWarningLine } from "react-icons/ri";
+
+// ZOD SCHEMA
+const schema = z.object({
+  name: z
+    .string()
+    .min(3)
+    .max(255)
+    .regex(/^[a-zA-Z\s]*$/),
+  password: z.string().min(8).max(50),
+  phone: z
+    .string()
+    .min(8)
+    .max(20)
+    .regex(/^\+?\d+$/),
+  location: z.string().min(3).max(255),
+  country: z.string().min(3).max(100),
+  email: z.string().email(),
+  dateOfBirth: z
+    .string()
+    .refine((value) => {
+      // Validate date format (YYYY-MM-DD)
+      const regex = /^\d{4}-\d{2}-\d{2}$/;
+      return regex.test(value);
+    }, "Invalid date format (YYYY-MM-DD)")
+    .refine((value) => {
+      // Validate age (must be 18 years or older)
+      const birthDate = new Date(value);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        return age - 1;
+      }
+      return age;
+    }, "Must be 18 years or older"),
+  category: z.array(z.string()).min(1),
+});
+
+type FormData = z.infer<typeof schema>;
+
+export interface Admin {
   id: number;
   name: string;
   email: string;
   phone: string;
-  age: number;
+  dateOfBirth: string;
   location: string;
-  category: string;
+  country: string;
+  category: string | string[];
   status: string;
+  password: string;
   photo?: string; // Add photo to the Admin interface
 }
 
@@ -31,7 +81,19 @@ const Admins: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [newAdmin, setNewAdmin] = useState<Partial<Admin>>({});
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [categoryGroup, setCategoryGroup] = useState<string[]>([]);
 
+  // Handle React Hook Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
+  // Handle Filters
   useEffect(() => {
     const filtered = admins.filter((admin) => {
       const matchesSearch = admin.name
@@ -55,6 +117,7 @@ const Admins: React.FC = () => {
     );
     setFilteredAdmins(newAdmins);
     setSelectedAdmins(new Set());
+    setSelectAll(false);
   };
 
   const handleCheckboxChange = (id: number) => {
@@ -65,8 +128,21 @@ const Admins: React.FC = () => {
       } else {
         newSelected.add(id);
       }
+      if (newSelected.size !== filteredAdmins.length) {
+        setSelectAll(false);
+      }
       return newSelected;
     });
+  };
+
+  // Checkboxes
+  const handleCheckAll = () => {
+    if (selectAll) {
+      setSelectedAdmins(new Set());
+    } else {
+      setSelectedAdmins(new Set(filteredAdmins.map((admin) => admin.id)));
+    }
+    setSelectAll(!selectAll);
   };
 
   const openModal = () => {
@@ -79,6 +155,7 @@ const Admins: React.FC = () => {
     setPhotoPreview(null);
   };
 
+  // Handle Photo Create
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -87,22 +164,73 @@ const Admins: React.FC = () => {
     }
   };
 
+  // Handle Format Category
+  const formatCategories = (categories: string[]) => {
+    if (categories.length === 0) return "";
+    if (categories.length === 1) return categories[0];
+    return (
+      categories.slice(0, -1).join(", ") +
+      " and " +
+      categories[categories.length - 1]
+    );
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setNewAdmin((prev) => ({ ...prev, [name]: value }));
+    setNewAdmin((prev) => ({
+      ...prev,
+      [name]: value,
+      category: formatCategories(categoryGroup),
+      status: "Active",
+    }));
   };
+
+  // Handle Category Group in Form
+  const handleCategoryGroup = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const newCategoryItem = e.target.value;
+
+    setCategoryGroup((prev) => {
+      if (prev.includes("")) {
+        return prev.filter((cat) => cat !== "");
+      }
+      if (prev.includes(newCategoryItem)) return [...prev];
+
+      return [
+        ...prev.map((item) => item.replace("Management", "")),
+        newCategoryItem,
+      ];
+    });
+  };
+
+  // Toastify
   const notify = () => toast.success("Wow so easy!");
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent the default form submission
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const newId = Math.max(...admins.map((a) => a.id)) + 1;
     const newAdminData = { ...newAdmin, id: newId } as Admin;
+
     setFilteredAdmins((prev) => [...prev, newAdminData]);
     notify();
     closeModal();
   };
 
+  // Handle Submit
+  const onSubmit = (data: FieldValues) => {
+    console.log(data);
+    setNewAdmin({ ...data });
+    const newId = Math.max(...admins.map((a) => a.id)) + 1;
+    const newAdminData = { ...newAdmin, id: newId } as Admin;
+    console.log(newAdminData);
+
+    setFilteredAdmins((prev) => [...prev, newAdminData]);
+    notify();
+    closeModal();
+  };
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -124,9 +252,11 @@ const Admins: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Handle Filters */}
       <div className="my-6 flex items-center gap-3">
         <div className="form-control">
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered grow flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -154,9 +284,7 @@ const Admins: React.FC = () => {
             onChange={(e) => setSelectedCategory(e.target.value)}
             value={selectedCategory}
           >
-            <option disabled selected>
-              Select Category
-            </option>
+            <option value="">ALL</option>
             <option value="Account Management">Account Management</option>
             <option value="Products Management">Products Management</option>
             <option value="Jewellery Management">Jewellery Management</option>
@@ -172,20 +300,25 @@ const Admins: React.FC = () => {
             onChange={(e) => setSelectedStatus(e.target.value)}
             value={selectedStatus}
           >
-            <option disabled selected>
-              Select Status
-            </option>
+            <option value="">ALL</option>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
         </div>
       </div>
+
+      {/* Table */}
       <table className="table w-full">
         <thead>
           <tr>
             <th>
               <label>
-                <input type="checkbox" className="checkbox" disabled />
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={selectAll}
+                  onChange={handleCheckAll}
+                />
               </label>
             </th>
             <th>ID</th>
@@ -217,7 +350,7 @@ const Admins: React.FC = () => {
               </td>
               <td>{admin.email}</td>
               <td>{admin.phone}</td>
-              <td>{admin.age}</td>
+              <td>{admin.dateOfBirth}</td>
               <td>{admin.location}</td>
               <td>{admin.category}</td>
               <td>
@@ -235,6 +368,8 @@ const Admins: React.FC = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Modal */}
       {isModalOpen && (
         <div className="modal modal-open tracking-wide">
           <div className="modal-box max-w-3xl px-10">
@@ -250,86 +385,186 @@ const Admins: React.FC = () => {
                 <img src={avatar} alt="" />
               )}
             </div>
-            <form onSubmit={handleSubmit}>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="py-4 grid grid-cols-2 gap-8">
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Full Name</span>
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    className="input input-bordered"
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex  items-center gap-2">
+                    <input
+                      type="text"
+                      id="name"
+                      className="input input-bordered grow grow"
+                      {...register("name")}
+                    />
+                    {errors.name && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.name && (
+                    <p className="text-[red] text-xs mt-3  ">
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Date Of Birth</span>
                   </label>
-                  <input
-                    type="date"
-                    name="name"
-                    className="input input-bordered"
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      id="dateOfBirth"
+                      className="input input-bordered grow grow"
+                      {...register("dateOfBirth")}
+                    />
+                    {errors.dateOfBirth && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.dateOfBirth && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.dateOfBirth.message}
+                    </p>
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Phone Number</span>
                   </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    className="input input-bordered"
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      id="phone"
+                      className="input input-bordered grow"
+                      {...register("phone")}
+                    />
+                    {errors.phone && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.phone && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.phone.message}
+                    </p>
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Email</span>
                   </label>
-                  <input
-                    type="email"
-                    name="email"
-                    className="input input-bordered"
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      id="email"
+                      className="input input-bordered grow"
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.email && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
-
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Country</span>
                   </label>
-                  <input
-                    type="text"
-                    name="country"
-                    className="input input-bordered"
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      id="country"
+                      className="input input-bordered grow"
+                      {...register("country")}
+                    />
+                    {errors.email && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.country && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.country.message}
+                    </p>
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Address</span>
                   </label>
-                  <input
-                    type="text"
-                    name="address"
-                    className="input input-bordered"
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      id="location"
+                      className="input input-bordered grow"
+                      {...register("location")}
+                    />
+                    {errors.email && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.location && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.location.message}
+                    </p>
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Category</span>
                   </label>
-                  <select
-                    name="category"
+                  <div>
+                    {catagories.map((category) => (
+                      <div key={category}>
+                        <input
+                          type="checkbox"
+                          id={category}
+                          {...register(`category`)}
+                          value={category}
+                        />
+                        <label htmlFor={category}>{category}</label>
+                      </div>
+                    ))}
+                    {errors.category && (
+                      <p className="text-[red] text-xs mt-3 ">
+                        {errors.category.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* testing */}
+                  {/* <select
+                    id="category"
+                    {...register("category")}
                     className="select select-bordered"
-                    onChange={handleInputChange}
+                    onChange={handleCategoryGroup}
                   >
                     <option disabled selected>
-                      Select Category
+                      Select Catagory
                     </option>
                     <option value="Account Management">
                       Account Management
@@ -345,17 +580,42 @@ const Admins: React.FC = () => {
                       Orders and Discount Management
                     </option>
                   </select>
+                  {categoryGroup && (
+                    <div className="mt-4 flex gap-2 flex-wrap">
+                      {categoryGroup.map((item) => (
+                        <p
+                          key={item}
+                          className="bg-[#B6C9B5] text-xs flex justify-center items-center p-2 rounded-md  gap-2"
+                        >
+                          {item} <CgClose color="#577656" />
+                        </p>
+                      ))}
+                    </div>
+                  )}  */}
                 </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Password</span>
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    className="input input-bordered"
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="password"
+                      id="password"
+                      className="input input-bordered grow"
+                      {...register("password")}
+                    />
+                    {errors.email && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.password && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">

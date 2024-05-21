@@ -11,6 +11,7 @@ import {
 } from "./components";
 import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
+import Test from "./components/Test";
 function App() {
 const {activeMenu} =useStateContext();
   return (
@@ -46,7 +47,7 @@ const {activeMenu} =useStateContext();
               </Routes>
             </div>
             <div>
-              <Footer />
+             {/* <Test /> */}
             </div>
           </div>
         </div>
