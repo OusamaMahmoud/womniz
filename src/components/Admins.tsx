@@ -10,11 +10,13 @@ import avatar from "../assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
-import { CgClose } from "react-icons/cg";
-import { FieldValues, useForm } from "react-hook-form";
-import z, { string } from "zod";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
+import FileInput from "./FileInput";
+import { CgClose, CgEditMask } from "react-icons/cg";
+import { FaEdit } from "react-icons/fa";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -54,6 +56,10 @@ const schema = z.object({
       return age;
     }, "Must be 18 years or older"),
   category: z.array(z.string()).min(1),
+  photo: z
+    .any()
+    .refine((file) => file && file.length > 0, "Profile picture is required"),
+  status: z.enum(["active", "inactive"]).default("active"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -88,6 +94,7 @@ const Admins: React.FC = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -388,7 +395,7 @@ const Admins: React.FC = () => {
 
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="py-4 grid grid-cols-2 gap-8">
+              <div className="py-4 grid grid-cols-2 gap-8 ">
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Full Name</span>
@@ -397,7 +404,7 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="name"
-                      className="input input-bordered grow grow"
+                      className={`input input-bordered  grow ${errors.name && 'border-[red]'}`}
                       {...register("name")}
                     />
                     {errors.name && (
@@ -421,9 +428,10 @@ const Admins: React.FC = () => {
                     <input
                       type="date"
                       id="dateOfBirth"
-                      className="input input-bordered grow grow"
+                      className={`input input-bordered grow ${errors.dateOfBirth && 'border-[red]'}`}
                       {...register("dateOfBirth")}
                     />
+                    
                     {errors.dateOfBirth && (
                       <RiErrorWarningLine
                         color="red"
@@ -445,7 +453,7 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="phone"
-                      className="input input-bordered grow"
+                      className={`input input-bordered grow ${errors.phone && "border-[red]"} `}
                       {...register("phone")}
                     />
                     {errors.phone && (
@@ -469,7 +477,7 @@ const Admins: React.FC = () => {
                     <input
                       type="email"
                       id="email"
-                      className="input input-bordered grow"
+                      className={`input input-bordered ${errors.email && "border-[red]"}  grow`}
                       {...register("email")}
                     />
                     {errors.email && (
@@ -493,7 +501,7 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="country"
-                      className="input input-bordered grow"
+                      className={`input input-bordered grow ${errors.country && "border-[red]"}`}
                       {...register("country")}
                     />
                     {errors.email && (
@@ -517,7 +525,7 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="location"
-                      className="input input-bordered grow"
+                      className={`input input-bordered grow ${errors.email && "border-[red]"}`}
                       {...register("location")}
                     />
                     {errors.email && (
@@ -533,11 +541,21 @@ const Admins: React.FC = () => {
                     </p>
                   )}
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Category</span>
+                <div className="form-control ">
+                  {/* testing 1*/}
+
+                  {/* <label className="label">
+                    <span className="flex grow mr-1 py-3 px-4 rounded-lg label-text text-lg border border-[#c3bebe] -ml-2">
+                      Category
+                    </span>
+                    {errors.category && (
+                          <RiErrorWarningLine
+                            color="red"
+                            className="w-6 h-6 ml-1"
+                          />
+                        )}
                   </label>
-                  <div>
+                  <div className="flex flex-col items-start justify-center">
                     {catagories.map((category) => (
                       <div key={category}>
                         <input
@@ -546,7 +564,10 @@ const Admins: React.FC = () => {
                           {...register(`category`)}
                           value={category}
                         />
-                        <label htmlFor={category}>{category}</label>
+                        <label htmlFor={category} className="pl-3 text-lg">
+                          {category}
+                        </label>
+               
                       </div>
                     ))}
                     {errors.category && (
@@ -554,10 +575,10 @@ const Admins: React.FC = () => {
                         {errors.category.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
 
-                  {/* testing */}
-                  {/* <select
+                  {/* testing 2 */}
+                  <select
                     id="category"
                     {...register("category")}
                     className="select select-bordered"
@@ -591,7 +612,7 @@ const Admins: React.FC = () => {
                         </p>
                       ))}
                     </div>
-                  )}  */}
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">
@@ -601,7 +622,7 @@ const Admins: React.FC = () => {
                     <input
                       type="password"
                       id="password"
-                      className="input input-bordered grow"
+                      className={`input input-bordered grow ${errors.email && "border-[red]"}`}
                       {...register("password")}
                     />
                     {errors.email && (
@@ -617,18 +638,26 @@ const Admins: React.FC = () => {
                     </p>
                   )}
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Photo</span>
-                  </label>
-                  <input
-                    type="file"
-                    className="file-input file-input-bordered"
-                    onChange={handleFileChange}
-                  />
-                </div>
+                <Controller
+                  name="photo"
+                  control={control}
+                  render={({ field: { onChange, ref } }) => (
+                    <FileInput
+                      labelClass="absolute top-40 z-100 right-[330px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer"
+                      name="photo"
+                      label="Upload a Profile Picture"
+                      multiple={false}
+                      onChange={(e) => {
+                        handleFileChange(e);
+                        onChange(e.target.value);
+                      }}
+                      ref={ref}
+                      icon={<FaEdit />}
+                    />
+                  )}
+                />
               </div>
-              <div className="modal-action flex justify-around items-center">
+              <div className="modal-action flex justify-around items-center right-80 ">
                 <button
                   type="submit"
                   className="btn px-20 bg-mainColor text-[white]"
