@@ -12,6 +12,7 @@ import {
 import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
 import Test from "./components/Test";
+import Login from "./components/Login";
 function App() {
 const {activeMenu} =useStateContext();
   return (
@@ -39,6 +40,7 @@ const {activeMenu} =useStateContext();
             </div>
             <div className="m-4">
               <Routes>
+                <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/accounts/Admins" element={<Admins />} />
                 <Route path="/accounts/Admins/:id" element={<AdminProfile />} />

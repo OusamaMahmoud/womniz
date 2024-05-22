@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { admins, catagories } from "../data/dummy";
+import { admins } from "../data/dummy";
 import {
   BiDotsHorizontalRounded,
   BiExport,
@@ -17,6 +17,8 @@ import { RiErrorWarningLine } from "react-icons/ri";
 import FileInput from "./FileInput";
 import { CgClose, CgEditMask } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
+import useCategories from "../hooks/useCategories";
+import { useAuth } from "../contexts/AuthProvider";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -90,6 +92,9 @@ const Admins: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [categoryGroup, setCategoryGroup] = useState<string[]>([]);
 
+  const { categories ,error ,isLoading } = useCategories();
+
+  
   // Handle React Hook Form
   const {
     register,
@@ -404,7 +409,9 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="name"
-                      className={`input input-bordered  grow ${errors.name && 'border-[red]'}`}
+                      className={`input input-bordered  grow ${
+                        errors.name && "border-[red]"
+                      }`}
                       {...register("name")}
                     />
                     {errors.name && (
@@ -428,10 +435,12 @@ const Admins: React.FC = () => {
                     <input
                       type="date"
                       id="dateOfBirth"
-                      className={`input input-bordered grow ${errors.dateOfBirth && 'border-[red]'}`}
+                      className={`input input-bordered grow ${
+                        errors.dateOfBirth && "border-[red]"
+                      }`}
                       {...register("dateOfBirth")}
                     />
-                    
+
                     {errors.dateOfBirth && (
                       <RiErrorWarningLine
                         color="red"
@@ -453,7 +462,9 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="phone"
-                      className={`input input-bordered grow ${errors.phone && "border-[red]"} `}
+                      className={`input input-bordered grow ${
+                        errors.phone && "border-[red]"
+                      } `}
                       {...register("phone")}
                     />
                     {errors.phone && (
@@ -477,7 +488,9 @@ const Admins: React.FC = () => {
                     <input
                       type="email"
                       id="email"
-                      className={`input input-bordered ${errors.email && "border-[red]"}  grow`}
+                      className={`input input-bordered ${
+                        errors.email && "border-[red]"
+                      }  grow`}
                       {...register("email")}
                     />
                     {errors.email && (
@@ -501,7 +514,9 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="country"
-                      className={`input input-bordered grow ${errors.country && "border-[red]"}`}
+                      className={`input input-bordered grow ${
+                        errors.country && "border-[red]"
+                      }`}
                       {...register("country")}
                     />
                     {errors.email && (
@@ -525,7 +540,9 @@ const Admins: React.FC = () => {
                     <input
                       type="text"
                       id="location"
-                      className={`input input-bordered grow ${errors.email && "border-[red]"}`}
+                      className={`input input-bordered grow ${
+                        errors.email && "border-[red]"
+                      }`}
                       {...register("location")}
                     />
                     {errors.email && (
@@ -578,29 +595,24 @@ const Admins: React.FC = () => {
                   </div> */}
 
                   {/* testing 2 */}
-                  <select
-                    id="category"
-                    {...register("category")}
-                    className="select select-bordered"
-                    onChange={handleCategoryGroup}
-                  >
-                    <option disabled selected>
-                      Select Catagory
-                    </option>
-                    <option value="Account Management">
-                      Account Management
-                    </option>
-                    <option value="Products Management">
-                      Products Management
-                    </option>
-                    <option value="Jewellery Management">
-                      Jewellery Management
-                    </option>
-                    <option value="Salons Management">Salons Management</option>
-                    <option value="Orders and Discount Management">
-                      Orders and Discount Management
-                    </option>
-                  </select>
+                  {isLoading && <p className="loading loading-spinner"></p>}
+                  {categories &&
+                    categories.map((category) => (
+                      <div key={category.id}>{category.name}</div>
+                      // <select
+                      //   id="category"
+                      //   {...register("category")}
+                      //   className="select select-bordered"
+                      //   onChange={handleCategoryGroup}
+                      // >
+                      //   <option selected disabled>
+                      //     Select Category
+                      //   </option>
+                      //   <option key={category.id} value={category.name}>
+                      //     {category.name}
+                      //   </option>
+                      // </select>
+                    ))} 
                   {categoryGroup && (
                     <div className="mt-4 flex gap-2 flex-wrap">
                       {categoryGroup.map((item) => (
@@ -622,7 +634,9 @@ const Admins: React.FC = () => {
                     <input
                       type="password"
                       id="password"
-                      className={`input input-bordered grow ${errors.email && "border-[red]"}`}
+                      className={`input input-bordered grow ${
+                        errors.email && "border-[red]"
+                      }`}
                       {...register("password")}
                     />
                     {errors.email && (
@@ -660,12 +674,16 @@ const Admins: React.FC = () => {
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
                   type="submit"
-                  className="btn px-20 bg-mainColor text-[white]"
+                  className={`btn px-20 bg-mainColor text-[white] ${
+                    !isValid && "opacity-50 cursor-not-allowed"
+                  }}`}
                 >
                   Save
                 </button>
                 <button
-                  className="btn bg-transparent px-20"
+                  className={`btn bg-transparent px-20 ${
+                    !isValid && "opacity-50 cursor-not-allowed"
+                  }}`}
                   onClick={closeModal}
                 >
                   Cancel

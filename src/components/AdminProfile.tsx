@@ -21,6 +21,7 @@ const AdminProfile = () => {
       return "bg-white"; // Default background
     }
   };
+  
   return (
     <div className="container mx-auto px-5">
       <div className="flex justify-between items-center shadow-xl p-8">

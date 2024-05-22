@@ -1,10 +1,13 @@
-import { Link, NavLink } from "react-router-dom";
-import { links } from "../data/dummy";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { MdOutlineCancel } from "react-icons/md";
+import { useStateContext } from "../contexts/ContextProvider";
+import { useAuth } from "../contexts/AuthProvider";
+import apiClient from "../services/api-client";
+import { links } from "../data/dummy";
 import dashboard from "../assets/sidebar/dashboard.svg";
 import home from "../assets/sidebar/home.svg";
 import logo from "../assets/logo.svg";
-import { useStateContext } from "../contexts/ContextProvider";
 import {
   country,
   coupons,
@@ -14,10 +17,15 @@ import {
   settings,
   termsConditions,
 } from "../assets/sidebar";
-import { MdOutlineCancel } from "react-icons/md";
+
 const Sidebar = () => {
+  const { setAuth } = useAuth();
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState<number | null>(null); // State to track active div
   const { activeMenu, screenSize, setActiveMenu } = useStateContext();
+
   const handleAccordionClick = (index: number) => {
     setActiveIndex(index); // Set the clicked div as active
   };
@@ -30,6 +38,28 @@ const Sidebar = () => {
     ) {
       setActiveMenu(false);
     }
+  };
+
+  const handleLogOutButton = async () => {
+    try {
+      setLoading(true);
+      const res = await apiClient.post("/logout");
+      console.log(res.status);
+      setLoading(false);
+      (document.getElementById('logout_modal') as HTMLDialogElement).close()
+    } catch (err: any) {
+      console.log(err);
+      setError(err.message);
+      setLoading(false);
+      (document.getElementById('logout_modal') as HTMLDialogElement).close()
+    }
+    localStorage.removeItem("authToken"); // Adjust based on your storage method
+    setAuth(null);
+    navigate("/login");
+  };
+
+  const handleLogoutClick = () => {
+    (document.getElementById('logout_modal') as HTMLDialogElement).showModal();
   };
 
   const activeLink =
@@ -46,7 +76,7 @@ const Sidebar = () => {
         <>
           <div className="flex justify-between md:justify-center items-center">
             <Link to="/" onClick={handleCloseSideBar} className="mt-6">
-              <img src={logo} alt="logo" className="object-cover md:w-36"/>
+              <img src={logo} alt="logo" className="object-cover md:w-36" />
             </Link>
             <div className="tooltip tooltip-bottom" data-tip={"Close"}>
               <button
@@ -58,7 +88,8 @@ const Sidebar = () => {
               </button>
             </div>
           </div>
-          <div className="mt-10  mx-2">
+          {error && <p className="bg-error">{error}</p>}
+          <div className="mt-10 mx-2">
             <NavLink
               onClick={handleCloseSideBar}
               to={`/dashboard`}
@@ -159,13 +190,35 @@ const Sidebar = () => {
               <img src={settings} alt="home" />
               <span className="capitalize ">Settings</span>
             </NavLink>
-            <div className="flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-md m-2 cursor-pointer hover:bg-[#BED3C4] hover:text-[#577656]">
-              <img src={logout} alt="home" />
-              <span>Logout</span>
+            <div
+              onClick={handleLogoutClick}
+              className={`flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl
+               text-md m-2 cursor-pointer hover:bg-[#BED3C4]
+                hover:text-[#577656]
+                `}
+            >
+              {!isLoading && <img src={logout} alt="home" />}
+              {isLoading ? (
+                <span className="loading loading-spinner"></span>
+              ) : (
+                <span>Logout</span>
+              )}
             </div>
           </div>
         </>
       )}
+
+      {/* Logout Confirmation Modal */}
+      <dialog id="logout_modal" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Are you sure?</h3>
+          <p className="py-4">Do you really want to log out?</p>
+          <div className="modal-action">
+            <button className="btn" onClick={() => (document.getElementById('logout_modal') as HTMLDialogElement).close()}>Cancel</button>
+            <button className="btn btn-error" onClick={handleLogOutButton}>Confirm</button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };
