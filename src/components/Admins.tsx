@@ -15,10 +15,9 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 import FileInput from "./FileInput";
-import { CgClose, CgEditMask } from "react-icons/cg";
+// import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
 import useCategories from "../hooks/useCategories";
-import { useAuth } from "../contexts/AuthProvider";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -90,9 +89,9 @@ const Admins: React.FC = () => {
   const [newAdmin, setNewAdmin] = useState<Partial<Admin>>({});
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [selectAll, setSelectAll] = useState<boolean>(false);
-  const [categoryGroup, setCategoryGroup] = useState<string[]>([]);
+  // const [categoryGroup, setCategoryGroup] = useState<string[]>([]);
 
-  const { categories ,error ,isLoading } = useCategories();
+  const { categories ,isLoading } = useCategories();
 
   
   // Handle React Hook Form
@@ -177,59 +176,59 @@ const Admins: React.FC = () => {
   };
 
   // Handle Format Category
-  const formatCategories = (categories: string[]) => {
-    if (categories.length === 0) return "";
-    if (categories.length === 1) return categories[0];
-    return (
-      categories.slice(0, -1).join(", ") +
-      " and " +
-      categories[categories.length - 1]
-    );
-  };
+  // const formatCategories = (categories: string[]) => {
+  //   if (categories.length === 0) return "";
+  //   if (categories.length === 1) return categories[0];
+  //   return (
+  //     categories.slice(0, -1).join(", ") +
+  //     " and " +
+  //     categories[categories.length - 1]
+  //   );
+  // };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setNewAdmin((prev) => ({
-      ...prev,
-      [name]: value,
-      category: formatCategories(categoryGroup),
-      status: "Active",
-    }));
-  };
+  // const handleInputChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  // ) => {
+  //   const { name, value } = e.target;
+  //   setNewAdmin((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //     category: formatCategories(categoryGroup),
+  //     status: "Active",
+  //   }));
+  // };
 
   // Handle Category Group in Form
-  const handleCategoryGroup = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const newCategoryItem = e.target.value;
+  // const handleCategoryGroup = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  // ) => {
+  //   const newCategoryItem = e.target.value;
 
-    setCategoryGroup((prev) => {
-      if (prev.includes("")) {
-        return prev.filter((cat) => cat !== "");
-      }
-      if (prev.includes(newCategoryItem)) return [...prev];
+  //   setCategoryGroup((prev) => {
+  //     if (prev.includes("")) {
+  //       return prev.filter((cat) => cat !== "");
+  //     }
+  //     if (prev.includes(newCategoryItem)) return [...prev];
 
-      return [
-        ...prev.map((item) => item.replace("Management", "")),
-        newCategoryItem,
-      ];
-    });
-  };
+  //     return [
+  //       ...prev.map((item) => item.replace("Management", "")),
+  //       newCategoryItem,
+  //     ];
+  //   });
+  // };
 
   // Toastify
   const notify = () => toast.success("Wow so easy!");
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const newId = Math.max(...admins.map((a) => a.id)) + 1;
-    const newAdminData = { ...newAdmin, id: newId } as Admin;
+  // const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   const newId = Math.max(...admins.map((a) => a.id)) + 1;
+  //   const newAdminData = { ...newAdmin, id: newId } as Admin;
 
-    setFilteredAdmins((prev) => [...prev, newAdminData]);
-    notify();
-    closeModal();
-  };
+  //   setFilteredAdmins((prev) => [...prev, newAdminData]);
+  //   notify();
+  //   closeModal();
+  // };
 
   // Handle Submit
   const onSubmit = (data: FieldValues) => {
@@ -613,7 +612,7 @@ const Admins: React.FC = () => {
                       //   </option>
                       // </select>
                     ))} 
-                  {categoryGroup && (
+                  {/* {categoryGroup && (
                     <div className="mt-4 flex gap-2 flex-wrap">
                       {categoryGroup.map((item) => (
                         <p
@@ -624,7 +623,7 @@ const Admins: React.FC = () => {
                         </p>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </div>
                 <div className="form-control">
                   <label className="label">

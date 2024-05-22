@@ -4,14 +4,12 @@ import {
   Admins,
   Customers,
   Dashboard,
-  Footer,
   Navbar,
   Sidebar,
   Vendors,
 } from "./components";
 import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
-import Test from "./components/Test";
 import Login from "./components/Login";
 function App() {
 const {activeMenu} =useStateContext();

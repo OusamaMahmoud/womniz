@@ -1,5 +1,4 @@
 import axios, { CanceledError } from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
 
 const apiClient = axios.create({
   baseURL: "https://admin.womniz.com/api/v1/dashboard",

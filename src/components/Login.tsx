@@ -18,7 +18,7 @@ const schema = z.object({
 type LoginForm = z.infer<typeof schema>;
 
 const Login = () => {
-  const { auth, setAuth } = useAuth();
+  const {  setAuth } = useAuth();
   const [apiError, setApiError] = useState("");
   const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
