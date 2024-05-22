@@ -11,8 +11,12 @@ import {
 import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
 import Login from "./components/Login";
+import DataGrid from './components/DataGrid'
+import { admins } from "./data/dummy";
+
 function App() {
-const {activeMenu} =useStateContext();
+  const { activeMenu } = useStateContext();
+
   return (
     <div>
       <BrowserRouter>
@@ -36,6 +40,9 @@ const {activeMenu} =useStateContext();
             <div className="static w-full mt-8">
               <Navbar />
             </div>
+            <div className="mt-8">
+              {/* <DataGrid  tableData={admins}/> */}
+            </div>
             <div className="m-4">
               <Routes>
                 <Route path="/login" element={<Login />} />
@@ -46,9 +53,7 @@ const {activeMenu} =useStateContext();
                 <Route path="/accounts/Vendors" element={<Vendors />} />
               </Routes>
             </div>
-            <div>
-             {/* <Test /> */}
-            </div>
+            <div>{/* <Test /> */}</div>
           </div>
         </div>
       </BrowserRouter>

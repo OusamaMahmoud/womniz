@@ -18,6 +18,7 @@ import FileInput from "./FileInput";
 // import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
 import useCategories from "../hooks/useCategories";
+import DataGrid from "./DataGrid";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -91,9 +92,8 @@ const Admins: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   // const [categoryGroup, setCategoryGroup] = useState<string[]>([]);
 
-  const { categories ,isLoading } = useCategories();
+  const { categories, isLoading } = useCategories();
 
-  
   // Handle React Hook Form
   const {
     register,
@@ -319,7 +319,7 @@ const Admins: React.FC = () => {
       </div>
 
       {/* Table */}
-      <table className="table w-full">
+      {/* <table className="table w-full">
         <thead>
           <tr>
             <th>
@@ -378,7 +378,15 @@ const Admins: React.FC = () => {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table> */}
+
+      <DataGrid
+        tableData={filteredAdmins}
+        handleCheckAll={handleCheckAll}
+        selectAll={selectAll}
+        handleCheckboxChange={handleCheckboxChange}
+        selectedAdmins={selectedAdmins}
+      />
 
       {/* Modal */}
       {isModalOpen && (
@@ -611,7 +619,7 @@ const Admins: React.FC = () => {
                       //     {category.name}
                       //   </option>
                       // </select>
-                    ))} 
+                    ))}
                   {/* {categoryGroup && (
                     <div className="mt-4 flex gap-2 flex-wrap">
                       {categoryGroup.map((item) => (
