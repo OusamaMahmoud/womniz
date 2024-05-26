@@ -92,6 +92,9 @@ const AdminProfile = () => {
           </div>
         </div>
       </dialog>
+      {targetAdminError && (
+        <p className="text-lg p-2 text-red-600">{targetAdminError}</p>
+      )}
       <div className="container mx-auto px-5">
         <div className="flex justify-between items-center shadow-xl p-8">
           <div className="flex gap-3 items-start">

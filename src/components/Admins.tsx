@@ -4,7 +4,7 @@ import avatar from "../assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Controller, useForm } from "react-hook-form";
-import z, { number } from "zod";
+import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 // import { CgClose } from "react-icons/cg";
@@ -12,7 +12,7 @@ import { FaEdit } from "react-icons/fa";
 import DataGrid from "./DataGrid";
 import useAdmins from "../hooks/useAdmins";
 import apiClient from "../services/api-client";
-import adminService, { Admin } from "../services/admins-service";
+import adminService from "../services/admins-service";
 import useCategories from "../hooks/useCategories";
 import Select from "react-select";
 import { customStyles } from "../components/CustomSelect";
@@ -75,8 +75,6 @@ const Admins: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
 
-  const [isCreatingAdminSuccess, setCreatingAdminSuccess] =
-    useState<boolean>(false);
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
@@ -161,6 +159,7 @@ const Admins: React.FC = () => {
       });
       try {
         const response = await apiClient.post("/admins/delete", data);
+        console.log(response)
         toast.success("Admins deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
@@ -194,7 +193,7 @@ const Admins: React.FC = () => {
 
     try {
       const res = await adminService.create<any>(formData);
-      setCreatingAdminSuccess(true);
+      console.log(res)
       setIsModalOpen(false);
       notify();
       setTrigerFetch(!trigerFetch);

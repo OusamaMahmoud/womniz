@@ -44,7 +44,7 @@ const useAdmins = ({
     const baseUrl = `/admins`;
     const params = new URLSearchParams();
 
-    categories.forEach((category, index) => {
+    categories.forEach((category) => {
       if (category) {
         params.append(`category[0]`, category);
       }

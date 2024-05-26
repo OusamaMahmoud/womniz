@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
-import categoryService, { Category } from "../services/category-service";
+import { Category } from "../services/category-service";
 
 const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
