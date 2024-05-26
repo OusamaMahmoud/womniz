@@ -11,8 +11,6 @@ import {
 import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
 import Login from "./components/Login";
-import DataGrid from './components/DataGrid'
-import { admins } from "./data/dummy";
 
 function App() {
   const { activeMenu } = useStateContext();
@@ -22,7 +20,7 @@ function App() {
       <BrowserRouter>
         <div className="flex relative">
           {activeMenu ? (
-            <div className="w-72 fixed  bg-white ">
+            <div className="w-72 fixed  bg-white  ">
               <Sidebar />
             </div>
           ) : (
@@ -41,7 +39,6 @@ function App() {
               <Navbar />
             </div>
             <div className="mt-8">
-              {/* <DataGrid  tableData={admins}/> */}
             </div>
             <div className="m-4">
               <Routes>

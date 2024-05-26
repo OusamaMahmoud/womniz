@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CanceledError } from "../services/api-client";
+import apiClient, { CanceledError } from "../services/api-client";
 import categoryService, { Category } from "../services/category-service";
 
 const useCategories = () => {
@@ -9,10 +9,13 @@ const useCategories = () => {
 
   useEffect(() => {
     setLoading(true);
-    const { request, cancel } = categoryService.getAll<Category>();
-    request
+    const controller = new AbortController();
+    apiClient
+      .get("/data", {
+        signal: controller.signal,
+      })
       .then((res) => {
-        setCategories(res.data.data);
+        setCategories(res.data.data.adminJobs);
         setLoading(false);
       })
       .catch((err) => {
@@ -20,8 +23,7 @@ const useCategories = () => {
         setError(err.message);
         setLoading(false);
       });
-
-    return () => cancel();
+    return () => controller.abort();
   }, []);
 
   return { categories, error, isLoading, setCategories, setError };

@@ -4,6 +4,7 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { RiNotification3Line } from "react-icons/ri";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import avatar from "../assets/navbar/avatar.svg";
+import { useAuth } from "../contexts/AuthProvider";
 interface NavButtonProps {
   title: string;
   customFunc: () => void;
@@ -35,13 +36,10 @@ const NavButton = ({
 );
 
 const Navbar = () => {
-  const {
-    activeMenu,
-    setActiveMenu,
-    handleClick,
-    setScreenSize,
-    screenSize,
-  } = useStateContext();
+  const { activeMenu, setActiveMenu, handleClick, setScreenSize, screenSize } =
+    useStateContext();
+  const { auth } = useAuth();
+  console.log(auth)
 
   useEffect(() => {
     const handleResize = () => setScreenSize(window.innerWidth);
@@ -91,7 +89,7 @@ const Navbar = () => {
             <p>
               <span className="text-gray-400 text-14">Hi,</span>{" "}
               <span className="text-gray-400 font-bold ml-1 text-14">
-                Michael
+                {auth?.name}
               </span>
             </p>
             <MdKeyboardArrowDown className="text-gray-400 text-14" />

@@ -45,6 +45,9 @@ const Sidebar = () => {
       setLoading(true);
       const res = await apiClient.post("/logout");
       console.log(res.status);
+      localStorage.removeItem("authToken"); // Adjust based on your storage method
+      setAuth(null);
+      navigate("/login");
       setLoading(false);
       (document.getElementById('logout_modal') as HTMLDialogElement).close()
     } catch (err: any) {
@@ -53,9 +56,7 @@ const Sidebar = () => {
       setLoading(false);
       (document.getElementById('logout_modal') as HTMLDialogElement).close()
     }
-    localStorage.removeItem("authToken"); // Adjust based on your storage method
-    setAuth(null);
-    navigate("/login");
+
   };
 
   const handleLogoutClick = () => {

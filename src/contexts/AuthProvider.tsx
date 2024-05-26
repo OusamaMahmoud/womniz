@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface AuthObject {
   name: string;
@@ -20,7 +20,18 @@ interface AuthContextValues {
 const AuthContext = createContext<AuthContextValues | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [auth, setAuth] = useState<AuthObject | null>(null);
+  const [auth, setAuth] = useState<AuthObject | null>(() => {
+    const storedAuth = localStorage.getItem("auth");
+    return storedAuth ? JSON.parse(storedAuth) : null;
+  });
+
+  useEffect(() => {
+    if (auth) {
+      localStorage.setItem("auth", JSON.stringify(auth));
+    } else {
+      localStorage.removeItem("auth");
+    }
+  }, [auth]);
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

@@ -5,6 +5,7 @@ import { getTheme } from "@table-library/react-table-library/baseline";
 import { useSort } from "@table-library/react-table-library/sort";
 import { usePagination } from "@table-library/react-table-library/pagination";
 import { Link } from "react-router-dom";
+import { GoDotFill } from "react-icons/go";
 
 const DataGrid = ({
   tableData,
@@ -91,7 +92,7 @@ const DataGrid = ({
     },
     {
       label: "Name",
-      renderCell: (item) => <div className=" py-5">{item.name}</div>,
+      renderCell: (item) => <Link to={`/accounts/Admins/${item.id}`} className=" py-5">{item.name}</Link>,
       sort: { sortKey: "name" },
     },
     {
@@ -106,12 +107,12 @@ const DataGrid = ({
     },
     {
       label: "Date of Birth",
-      renderCell: (item) => item.dateOfBirth,
+      renderCell: (item) => item.age,
       sort: { sortKey: "dateOfBirth" },
     },
     {
       label: "Location",
-      renderCell: (item) => item.location,
+      renderCell: (item) => item.address,
       sort: { sortKey: "location" },
     },
     {
@@ -126,7 +127,13 @@ const DataGrid = ({
     },
     {
       label: "Status",
-      renderCell: (item) => item.status,
+      renderCell: (item) => {
+        if (item.status === 0) {
+          return <p className="flex items-center p-2 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]"><GoDotFill className="text-[#14BA6D]  text-lg"/> Active</p>;
+        }else{
+          return <p className="flex items-center gap-2  p-2 rounded-md text-[#E20000] bg-[#F2F4F7]"><GoDotFill className="text-[#E2000099]  text-xl"/> InActive</p>;
+        }
+      },
       sort: { sortKey: "status" },
     },
   ];

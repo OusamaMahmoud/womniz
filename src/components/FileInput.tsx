@@ -20,21 +20,25 @@ const FileInput = React.forwardRef(
       onChange,
       name,
       icon,
+      error,
     }: FileInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => (
-    <label className={`${labelClass}`}>
-     <span className="text-2xl">{icon}</span> 
-      <input
-        type="file"
-        name={name}
-        multiple={multiple}
-        ref={ref}
-        onChange={onChange}
-        className="file-input file-input-bordered"
-        hidden
-      />
-    </label>
+    <>
+      <label className={`${labelClass}`}>
+        <span className="text-2xl">{icon}</span>
+        <input
+          type="file"
+          name={name}
+          multiple={multiple}
+          ref={ref}
+          onChange={onChange}
+          className="file-input file-input-bordered"
+          hidden
+        />
+       {error && <p className="absolute text-red-700 text-lg top-20 -left-40 w-96">Your Profile Image is Required!!</p>}
+      </label>
+    </>
   )
 );
 

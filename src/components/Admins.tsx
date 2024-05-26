@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { admins } from "../data/dummy";
-import {
-  BiDotsHorizontalRounded,
-  BiExport,
-  BiPlusCircle,
-  BiTrash,
-} from "react-icons/bi";
+import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import avatar from "../assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import z from "zod";
+import { Controller, useForm } from "react-hook-form";
+import z, { number } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
-import FileInput from "./FileInput";
 // import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
-import useCategories from "../hooks/useCategories";
 import DataGrid from "./DataGrid";
-
+import useAdmins from "../hooks/useAdmins";
+import apiClient from "../services/api-client";
+import adminService, { Admin } from "../services/admins-service";
+import useCategories from "../hooks/useCategories";
+import Select from "react-select";
+import { customStyles } from "../components/CustomSelect";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -27,16 +23,9 @@ const schema = z.object({
     .min(3)
     .max(255)
     .regex(/^[a-zA-Z\s]*$/),
-  password: z.string().min(8).max(50),
-  phone: z
-    .string()
-    .min(8)
-    .max(20)
-    .regex(/^\+?\d+$/),
-  location: z.string().min(3).max(255),
-  country: z.string().min(3).max(100),
   email: z.string().email(),
-  dateOfBirth: z
+  password: z.string().min(8).max(50),
+  birthdate: z
     .string()
     .refine((value) => {
       // Validate date format (YYYY-MM-DD)
@@ -57,42 +46,60 @@ const schema = z.object({
       }
       return age;
     }, "Must be 18 years or older"),
-  category: z.array(z.string()).min(1),
-  photo: z
+  address: z.string().min(3).max(255),
+  phone: z
+    .string()
+    .min(8)
+    .max(20)
+    .regex(/^\+?\d+$/),
+  image: z
     .any()
     .refine((file) => file && file.length > 0, "Profile picture is required"),
-  status: z.enum(["active", "inactive"]).default("active"),
+  jobs: z.array(z.string()).min(1),
+  status: z.enum(["0", "1"]).default("0"),
+  country_id: z.enum(["2", "1"]).default("2"),
 });
 
 type FormData = z.infer<typeof schema>;
-
-export interface Admin {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  location: string;
-  country: string;
-  category: string | string[];
-  status: string;
-  password: string;
-  photo?: string; // Add photo to the Admin interface
-}
-
+type OptionType = { label: string; value: string };
 const Admins: React.FC = () => {
+  // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [filteredAdmins, setFilteredAdmins] = useState<Admin[]>(admins);
-  const [selectedAdmins, setSelectedAdmins] = useState<Set<number>>(new Set());
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [newAdmin, setNewAdmin] = useState<Partial<Admin>>({});
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [selectAll, setSelectAll] = useState<boolean>(false);
-  // const [categoryGroup, setCategoryGroup] = useState<string[]>([]);
 
-  const { categories, isLoading } = useCategories();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  const [selectedAdmins, setSelectedAdmins] = useState<Set<number>>(new Set());
+  const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
+
+  const [isCreatingAdminSuccess, setCreatingAdminSuccess] =
+    useState<boolean>(false);
+  const [creatingAdminError, setCreatingAdminError] = useState<string>("");
+  const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
+
+  // const [selectedCategories, setSelectedCategories] = useState<
+  //   OnChangeValue<OptionType, boolean>
+  // >([]);
+
+  const { categories } = useCategories();
+
+  const options: OptionType[] = categories.map((item) => ({
+    label: item.title,
+    value: item.title,
+  }));
+
+  // Fetch Admins ..
+
+  const { admins } = useAdmins({
+    categories: selectedCategory,
+    status: selectedStatus,
+    search: searchValue,
+    isFetching: trigerFetch,
+  });
+  // const {categories ,setCategories}=useCategories()
 
   // Handle React Hook Form
   const {
@@ -104,65 +111,12 @@ const Admins: React.FC = () => {
     resolver: zodResolver(schema),
   });
 
-  // Handle Filters
-  useEffect(() => {
-    const filtered = admins.filter((admin) => {
-      const matchesSearch = admin.name
-        .toLowerCase()
-        .includes(searchValue.toLowerCase());
-      const matchesCategory = selectedCategory
-        ? admin.category === selectedCategory
-        : true;
-      const matchesStatus = selectedStatus
-        ? admin.status.toLowerCase() === selectedStatus.toLowerCase()
-        : true;
-      return matchesSearch && matchesCategory && matchesStatus;
-    });
-
-    setFilteredAdmins(filtered);
-  }, [searchValue, selectedCategory, selectedStatus]);
-
-  const handleDeleteButton = () => {
-    const newAdmins = filteredAdmins.filter(
-      (admin) => !selectedAdmins.has(admin.id)
-    );
-    setFilteredAdmins(newAdmins);
-    setSelectedAdmins(new Set());
-    setSelectAll(false);
-  };
-
-  const handleCheckboxChange = (id: number) => {
-    setSelectedAdmins((prev) => {
-      const newSelected = new Set(prev);
-      if (newSelected.has(id)) {
-        newSelected.delete(id);
-      } else {
-        newSelected.add(id);
-      }
-      if (newSelected.size !== filteredAdmins.length) {
-        setSelectAll(false);
-      }
-      return newSelected;
-    });
-  };
-
-  // Checkboxes
-  const handleCheckAll = () => {
-    if (selectAll) {
-      setSelectedAdmins(new Set());
-    } else {
-      setSelectedAdmins(new Set(filteredAdmins.map((admin) => admin.id)));
-    }
-    setSelectAll(!selectAll);
-  };
-
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setNewAdmin({});
     setPhotoPreview(null);
   };
 
@@ -170,102 +124,113 @@ const Admins: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setNewAdmin((prev) => ({ ...prev, photo: URL.createObjectURL(file) }));
+      // setNewAdmin((prev) => ({ ...prev, photo: URL.createObjectURL(file) }));
       setPhotoPreview(URL.createObjectURL(file));
     }
   };
 
-  // Handle Format Category
-  // const formatCategories = (categories: string[]) => {
-  //   if (categories.length === 0) return "";
-  //   if (categories.length === 1) return categories[0];
-  //   return (
-  //     categories.slice(0, -1).join(", ") +
-  //     " and " +
-  //     categories[categories.length - 1]
-  //   );
-  // };
+  useEffect(() => {
+    setIsDeleteEnabled(selectedAdmins.size > 0);
+  }, [selectedAdmins]);
 
-  // const handleInputChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  // ) => {
-  //   const { name, value } = e.target;
-  //   setNewAdmin((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //     category: formatCategories(categoryGroup),
-  //     status: "Active",
-  //   }));
-  // };
-
-  // Handle Category Group in Form
-  // const handleCategoryGroup = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  // ) => {
-  //   const newCategoryItem = e.target.value;
-
-  //   setCategoryGroup((prev) => {
-  //     if (prev.includes("")) {
-  //       return prev.filter((cat) => cat !== "");
-  //     }
-  //     if (prev.includes(newCategoryItem)) return [...prev];
-
-  //     return [
-  //       ...prev.map((item) => item.replace("Management", "")),
-  //       newCategoryItem,
-  //     ];
-  //   });
-  // };
-
-  // Toastify
-  const notify = () => toast.success("Wow so easy!");
-
-  // const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   const newId = Math.max(...admins.map((a) => a.id)) + 1;
-  //   const newAdminData = { ...newAdmin, id: newId } as Admin;
-
-  //   setFilteredAdmins((prev) => [...prev, newAdminData]);
-  //   notify();
-  //   closeModal();
-  // };
-
-  // Handle Submit
-  const onSubmit = (data: FieldValues) => {
-    console.log(data);
-    setNewAdmin({ ...data });
-    const newId = Math.max(...admins.map((a) => a.id)) + 1;
-    const newAdminData = { ...newAdmin, id: newId } as Admin;
-    console.log(newAdminData);
-
-    setFilteredAdmins((prev) => [...prev, newAdminData]);
-    notify();
-    closeModal();
+  const handleCheckAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      const allAdminIds = admins.map((admin) => admin.id);
+      setSelectedAdmins(new Set(allAdminIds));
+    } else {
+      setSelectedAdmins(new Set());
+    }
   };
+
+  const handleCheckboxChange = (id: number) => {
+    const newSelectedAdmins = new Set(selectedAdmins);
+    if (newSelectedAdmins.has(id)) {
+      newSelectedAdmins.delete(id);
+    } else {
+      newSelectedAdmins.add(id);
+    }
+    setSelectedAdmins(newSelectedAdmins);
+  };
+
+  const handleDelete = async () => {
+    if (selectedAdmins.size > 0) {
+      const data = new FormData();
+      Array.from(selectedAdmins).forEach((id, index) => {
+        data.append(`ids[${index}]`, id.toString());
+      });
+      try {
+        const response = await apiClient.post("/admins/delete", data);
+        toast.success("Admins deleted successfully");
+        setTrigerFetch(!trigerFetch);
+        setSelectAll(false);
+        // Optionally, refetch the data or update the state to remove the deleted admins
+      } catch (error) {
+        toast.error("Failed to delete admins");
+      }
+    }
+  };
+  // Toastify
+  const notify = () => toast.success("Create Admin Successfully!");
+
+  // const handleCategoryChange = (selectedOptions) => {
+  //   setSelectedCategories(selectedOptions);
+  // };
+  console.log(selectedStatus);
+  // Handle Submit
+  const onSubmit = async (data: FormData) => {
+    const formData = new FormData();
+
+    formData.append(`address`, data.address);
+    formData.append(`birthdate`, data.birthdate);
+    formData.append(`country_id`, data.country_id);
+    formData.append(`email`, data.email);
+    formData.append(`name`, data.name);
+    formData.append(`password`, data.password);
+    formData.append(`phone`, data.phone);
+    formData.append(`status`, data.status);
+    formData.append(`image`, data.image[0]);
+    formData.append("jobs[0]", "1");
+
+    try {
+      const res = await adminService.create<any>(formData);
+      setCreatingAdminSuccess(true);
+      setIsModalOpen(false);
+      notify();
+      setTrigerFetch(!trigerFetch);
+    } catch (error: any) {
+      setCreatingAdminError(error.response.data.data.error);
+    }
+  };
+
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
+
+      {/* ACTION BUTTONS */}
       <div className="flex justify-between items-center mb-5">
         <h1 className="font-medium text-4xl capitalize">Admins Details</h1>
         <div className="flex items-center gap-2">
-          <button className="btn bg-mainColor text-[white]" onClick={openModal}>
+          <button className="btn bg-[#577656] text-[white]" onClick={openModal}>
             <BiPlusCircle className="text-xl" /> Add Admin Account
           </button>
           <button
-            onClick={handleDeleteButton}
-            className="btn btn-outline"
-            disabled={selectedAdmins.size === 0}
+            onClick={handleDelete}
+            className={`btn btn-outline text-[#E20000B2] ${
+              !isDeleteEnabled && "cursor-not-allowed"
+            }`}
+            disabled={!isDeleteEnabled}
           >
-            <BiTrash className="text-lg" /> Delete
+            <BiTrash className="text-lg text-[#E20000B2]" /> Delete
           </button>
           <button className="btn btn-outline">
             <BiExport /> Export
           </button>
         </div>
       </div>
-
       {/* Handle Filters */}
       <div className="my-6 flex items-center gap-3">
+        {/* Search Bar */}
         <div className="form-control">
           <label className="input input-bordered grow flex items-center gap-2">
             <svg
@@ -289,10 +254,11 @@ const Admins: React.FC = () => {
             />
           </label>
         </div>
+        {/* Category Bar */}
         <div className="form-control">
           <select
             className="select select-bordered"
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => setSelectedCategory([e.target.value])}
             value={selectedCategory}
           >
             <option value="">ALL</option>
@@ -305,10 +271,11 @@ const Admins: React.FC = () => {
             </option>
           </select>
         </div>
+        {/* Status Bar */}
         <div className="form-control">
           <select
             className="select select-bordered"
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={(e) =>setSelectedStatus(e.target.value)}
             value={selectedStatus}
           >
             <option value="">ALL</option>
@@ -317,71 +284,9 @@ const Admins: React.FC = () => {
           </select>
         </div>
       </div>
-
       {/* Table */}
-      {/* <table className="table w-full">
-        <thead>
-          <tr>
-            <th>
-              <label>
-                <input
-                  type="checkbox"
-                  className="checkbox"
-                  checked={selectAll}
-                  onChange={handleCheckAll}
-                />
-              </label>
-            </th>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Age</th>
-            <th>Location</th>
-            <th>Category</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredAdmins.map((admin: Admin) => (
-            <tr key={admin.id}>
-              <th>
-                <label>
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    checked={selectedAdmins.has(admin.id)}
-                    onChange={() => handleCheckboxChange(admin.id)}
-                  />
-                </label>
-              </th>
-              <td>{admin.id}</td>
-              <td className="hover:bg-[#ECFDF3] hover:rounded-md">
-                <Link to={"/accounts/Admins/3"}>{admin.name}</Link>{" "}
-              </td>
-              <td>{admin.email}</td>
-              <td>{admin.phone}</td>
-              <td>{admin.dateOfBirth}</td>
-              <td>{admin.location}</td>
-              <td>{admin.category}</td>
-              <td>
-                <div
-                  className={`badge flex gap-1 ${
-                    admin.status === "Active"
-                      ? "bg-[#ECFDF3] text-[#037847]"
-                      : "bg-[#F2F4F7] text-[#E20000] "
-                  } `}
-                >
-                  <BiDotsHorizontalRounded /> {admin.status}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
-
       <DataGrid
-        tableData={filteredAdmins}
+        tableData={admins}
         handleCheckAll={handleCheckAll}
         selectAll={selectAll}
         handleCheckboxChange={handleCheckboxChange}
@@ -404,7 +309,11 @@ const Admins: React.FC = () => {
                 <img src={avatar} alt="" />
               )}
             </div>
-
+            {creatingAdminError && (
+              <p className="text-lg text-red-500 p-2 my-2">
+                {creatingAdminError}
+              </p>
+            )}
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="py-4 grid grid-cols-2 gap-8 ">
@@ -443,21 +352,21 @@ const Admins: React.FC = () => {
                       type="date"
                       id="dateOfBirth"
                       className={`input input-bordered grow ${
-                        errors.dateOfBirth && "border-[red]"
+                        errors.birthdate && "border-[red]"
                       }`}
-                      {...register("dateOfBirth")}
+                      {...register("birthdate")}
                     />
 
-                    {errors.dateOfBirth && (
+                    {errors.birthdate && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
                       />
                     )}
                   </div>
-                  {errors.dateOfBirth && (
+                  {errors.birthdate && (
                     <p className="text-[red] text-xs mt-3 ">
-                      {errors.dateOfBirth.message}
+                      {errors.birthdate.message}
                     </p>
                   )}
                 </div>
@@ -515,32 +424,6 @@ const Admins: React.FC = () => {
                 </div>
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Country</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      id="country"
-                      className={`input input-bordered grow ${
-                        errors.country && "border-[red]"
-                      }`}
-                      {...register("country")}
-                    />
-                    {errors.email && (
-                      <RiErrorWarningLine
-                        color="red"
-                        className="w-6 h-6 ml-1"
-                      />
-                    )}
-                  </div>
-                  {errors.country && (
-                    <p className="text-[red] text-xs mt-3 ">
-                      {errors.country.message}
-                    </p>
-                  )}
-                </div>
-                <div className="form-control">
-                  <label className="label">
                     <span className="label-text">Address</span>
                   </label>
                   <div className="flex items-center gap-2">
@@ -548,90 +431,22 @@ const Admins: React.FC = () => {
                       type="text"
                       id="location"
                       className={`input input-bordered grow ${
-                        errors.email && "border-[red]"
+                        errors.address && "border-[red]"
                       }`}
-                      {...register("location")}
+                      {...register("address")}
                     />
-                    {errors.email && (
+                    {errors.address && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
                       />
                     )}
                   </div>
-                  {errors.location && (
+                  {errors.address && (
                     <p className="text-[red] text-xs mt-3 ">
-                      {errors.location.message}
+                      {errors.address.message}
                     </p>
                   )}
-                </div>
-                <div className="form-control ">
-                  {/* testing 1*/}
-
-                  {/* <label className="label">
-                    <span className="flex grow mr-1 py-3 px-4 rounded-lg label-text text-lg border border-[#c3bebe] -ml-2">
-                      Category
-                    </span>
-                    {errors.category && (
-                          <RiErrorWarningLine
-                            color="red"
-                            className="w-6 h-6 ml-1"
-                          />
-                        )}
-                  </label>
-                  <div className="flex flex-col items-start justify-center">
-                    {catagories.map((category) => (
-                      <div key={category}>
-                        <input
-                          type="checkbox"
-                          id={category}
-                          {...register(`category`)}
-                          value={category}
-                        />
-                        <label htmlFor={category} className="pl-3 text-lg">
-                          {category}
-                        </label>
-               
-                      </div>
-                    ))}
-                    {errors.category && (
-                      <p className="text-[red] text-xs mt-3 ">
-                        {errors.category.message}
-                      </p>
-                    )}
-                  </div> */}
-
-                  {/* testing 2 */}
-                  {isLoading && <p className="loading loading-spinner"></p>}
-                  {categories &&
-                    categories.map((category) => (
-                      <div key={category.id}>{category.name}</div>
-                      // <select
-                      //   id="category"
-                      //   {...register("category")}
-                      //   className="select select-bordered"
-                      //   onChange={handleCategoryGroup}
-                      // >
-                      //   <option selected disabled>
-                      //     Select Category
-                      //   </option>
-                      //   <option key={category.id} value={category.name}>
-                      //     {category.name}
-                      //   </option>
-                      // </select>
-                    ))}
-                  {/* {categoryGroup && (
-                    <div className="mt-4 flex gap-2 flex-wrap">
-                      {categoryGroup.map((item) => (
-                        <p
-                          key={item}
-                          className="bg-[#B6C9B5] text-xs flex justify-center items-center p-2 rounded-md  gap-2"
-                        >
-                          {item} <CgClose color="#577656" />
-                        </p>
-                      ))}
-                    </div>
-                  )} */}
                 </div>
                 <div className="form-control">
                   <label className="label">
@@ -659,38 +474,60 @@ const Admins: React.FC = () => {
                     </p>
                   )}
                 </div>
-                <Controller
-                  name="photo"
-                  control={control}
-                  render={({ field: { onChange, ref } }) => (
-                    <FileInput
-                      labelClass="absolute top-40 z-100 right-[330px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer"
-                      name="photo"
-                      label="Upload a Profile Picture"
-                      multiple={false}
-                      onChange={(e) => {
-                        handleFileChange(e);
-                        onChange(e.target.value);
-                      }}
-                      ref={ref}
-                      icon={<FaEdit />}
-                    />
+                {/* Category Multi-Selector */}
+                <div className="form-control ">
+                  <Controller
+                    control={control}
+                    defaultValue={options.map((c) => c.value)}
+                    name="jobs"
+                    render={({ field: { onChange, value, ref } }) => (
+                      <Select
+                        isMulti
+                        ref={ref}
+                        value={options.filter((c) => value.includes(c.value))}
+                        onChange={(val) => onChange(val.map((c) => c.value))}
+                        options={options}
+                        styles={customStyles}
+                      />
+                    )}
+                  />
+                  {errors.jobs && (
+                    <p className="text-red-500 ">{errors.jobs.message}</p>
                   )}
-                />
+                </div>
+                <label
+                  className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
+                >
+                  <span className="text-3xl">
+                    <FaEdit />
+                  </span>
+                  <input
+                    type="file"
+                    {...register("image")}
+                    className="file-input file-input-bordered"
+                    multiple
+                    onChange={handleFileChange}
+                    hidden
+                  />
+                  {/* {errors.image && (
+                    <p className="absolute text-red-700 text-lg top-20 -left-40 w-96">
+                      {errors.image.message}
+                    </p>
+                  )} */}
+                </label>
               </div>
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
                   type="submit"
-                  className={`btn px-20 bg-mainColor text-[white] ${
+                  disabled={!isValid}
+                  className={`btn px-20 bg-[#577656] text-[white] ${
                     !isValid && "opacity-50 cursor-not-allowed"
                   }}`}
                 >
                   Save
                 </button>
                 <button
-                  className={`btn bg-transparent px-20 ${
-                    !isValid && "opacity-50 cursor-not-allowed"
-                  }}`}
+                  className={`btn bg-transparent px-20`}
                   onClick={closeModal}
                 >
                   Cancel

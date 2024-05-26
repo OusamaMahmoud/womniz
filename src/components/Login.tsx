@@ -4,7 +4,6 @@ import apiClient from "../services/api-client";
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
@@ -18,18 +17,17 @@ const schema = z.object({
 type LoginForm = z.infer<typeof schema>;
 
 const Login = () => {
-  const {  setAuth } = useAuth();
+  const { setAuth } = useAuth();
   const [apiError, setApiError] = useState("");
   const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken"); // Adjust based on your storage method
-
+    const token = localStorage.getItem("authToken");
     if (token) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
 
   const {
     register,
@@ -40,21 +38,21 @@ const Login = () => {
   });
 
   const onSubmit = async (data: FieldValues) => {
-    console.log(data);
     try {
       setApiError("");
       setLoading(true);
       const response = await apiClient.post("/login", data);
 
       const user = response.data.data;
+      localStorage.setItem("auth", JSON.stringify(user));
       localStorage.setItem("authToken", user.token);
 
-      setAuth({ ...user });
+      setAuth(user);
 
       navigate("/accounts/Admins");
       setLoading(false);
     } catch (err: any) {
-      setApiError(err.response.data.data.error);
+      setApiError(err.response?.data?.data?.error || "An unexpected error occurred");
       setLoading(false);
     }
   };
@@ -104,14 +102,14 @@ const Login = () => {
                 <p className="text-[red] text-lg my-4">{apiError}</p>
               )}
               <div className="flex justify-end mt-8 mb-4">
-                <p className="text-[#367AFF] ">Forget Password ?</p>
+                <p className="text-[#367AFF]">Forget Password?</p>
               </div>
             </div>
             <div className="mt-3 flex">
               <button
                 type="submit"
                 disabled={!isValid}
-                className={`bg-mainColor text-xl py-6 rounded-lg grow text-[white] ${
+                className={`bg-[#577656] text-xl py-6 rounded-lg grow text-[white] ${
                   !isValid && "opacity-50 cursor-not-allowed"
                 }`}
               >
