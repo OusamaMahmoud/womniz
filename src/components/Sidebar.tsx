@@ -44,14 +44,13 @@ const Sidebar = () => {
     try {
       setLoading(true);
       const res = await apiClient.post("/logout");
-      console.log(res.status);
+      console.log(res)
       localStorage.removeItem("authToken"); // Adjust based on your storage method
       setAuth(null);
       navigate("/login");
       setLoading(false);
       (document.getElementById('logout_modal') as HTMLDialogElement).close()
     } catch (err: any) {
-      console.log(err);
       setError(err.message);
       setLoading(false);
       (document.getElementById('logout_modal') as HTMLDialogElement).close()

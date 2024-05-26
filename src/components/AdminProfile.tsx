@@ -22,7 +22,6 @@ const AdminProfile = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setStatus(e.target.value);
-    console.log(e.target.value);
   };
 
   const handleEditButton = () => {};
@@ -48,8 +47,8 @@ const AdminProfile = () => {
         ).close();
       })
       .catch((err) => {
-        console.log(err.message);
         toast.error("Failed to delete admin");
+        toast.error(err.message);
         (
           document.getElementById("deletion-modal") as HTMLDialogElement
         ).close();

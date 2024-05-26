@@ -16,6 +16,7 @@ import adminService from "../services/admins-service";
 import useCategories from "../hooks/useCategories";
 import Select from "react-select";
 import { customStyles } from "../components/CustomSelect";
+import Pagination from "./Pagination";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -78,9 +79,8 @@ const Admins: React.FC = () => {
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
-  // const [selectedCategories, setSelectedCategories] = useState<
-  //   OnChangeValue<OptionType, boolean>
-  // >([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  // const [recordsPerPage] = useState(10);
 
   const { categories } = useCategories();
 
@@ -91,12 +91,19 @@ const Admins: React.FC = () => {
 
   // Fetch Admins ..
 
-  const { admins } = useAdmins({
+  const { admins, meta } = useAdmins({
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
     isFetching: trigerFetch,
   });
+
+  const recordsPerPage = 3;
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = admins.slice(indexOfFirstRecord, indexOfLastRecord);
+  const nPages = Math.ceil(admins.length / recordsPerPage);
+
   // const {categories ,setCategories}=useCategories()
 
   // Handle React Hook Form
@@ -159,7 +166,7 @@ const Admins: React.FC = () => {
       });
       try {
         const response = await apiClient.post("/admins/delete", data);
-        console.log(response)
+        console.log(response);
         toast.success("Admins deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
@@ -172,10 +179,6 @@ const Admins: React.FC = () => {
   // Toastify
   const notify = () => toast.success("Create Admin Successfully!");
 
-  // const handleCategoryChange = (selectedOptions) => {
-  //   setSelectedCategories(selectedOptions);
-  // };
-  console.log(selectedStatus);
   // Handle Submit
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
@@ -193,7 +196,7 @@ const Admins: React.FC = () => {
 
     try {
       const res = await adminService.create<any>(formData);
-      console.log(res)
+      console.log("hey ,im here => ", res);
       setIsModalOpen(false);
       notify();
       setTrigerFetch(!trigerFetch);
@@ -274,7 +277,7 @@ const Admins: React.FC = () => {
         <div className="form-control">
           <select
             className="select select-bordered"
-            onChange={(e) =>setSelectedStatus(e.target.value)}
+            onChange={(e) => setSelectedStatus(e.target.value)}
             value={selectedStatus}
           >
             <option value="">ALL</option>
@@ -284,13 +287,24 @@ const Admins: React.FC = () => {
         </div>
       </div>
       {/* Table */}
-      <DataGrid
-        tableData={admins}
-        handleCheckAll={handleCheckAll}
-        selectAll={selectAll}
-        handleCheckboxChange={handleCheckboxChange}
-        selectedAdmins={selectedAdmins}
-      />
+      {admins && (
+        <>
+          <DataGrid
+            tableData={currentRecords}
+            handleCheckAll={handleCheckAll}
+            selectAll={selectAll}
+            handleCheckboxChange={handleCheckboxChange}
+            selectedAdmins={selectedAdmins}
+            metaObject={meta}
+          />
+          <Pagination
+            itemsPerPage={recordsPerPage}
+            nPages={nPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </>
+      )}
 
       {/* Modal */}
       {isModalOpen && (
@@ -518,7 +532,6 @@ const Admins: React.FC = () => {
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
                   type="submit"
-                  disabled={!isValid}
                   className={`btn px-20 bg-[#577656] text-[white] ${
                     !isValid && "opacity-50 cursor-not-allowed"
                   }}`}
