@@ -1,17 +1,29 @@
 import React, { useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
-const Pagination = ({ nPages, currentPage, setCurrentPage, itemsPerPage }) => {
+const Pagination = ({
+  nPages,
+  currentPage,
+  setCurrentPage,
+  itemsPerPage,
+  onPage,
+  next,
+  prev,
+}) => {
   const [inputPage, setInputPage] = useState(currentPage);
 
   const pageNumbers = [...Array(nPages + 1).keys()].slice(1);
 
   const goToNextPage = () => {
-    if (currentPage !== nPages) setCurrentPage(currentPage + 1);
+    if (next === null) return;
+    setCurrentPage(currentPage + 1);
+    onPage(currentPage + 1);
   };
 
   const goToPrevPage = () => {
-    if (currentPage !== 1) setCurrentPage(currentPage - 1);
+    if (prev === null) return;
+    setCurrentPage(currentPage - 1);
+    onPage(currentPage - 1);
   };
 
   const handleInputChange = (e) => {
@@ -36,11 +48,9 @@ const Pagination = ({ nPages, currentPage, setCurrentPage, itemsPerPage }) => {
         1-{itemsPerPage} of {itemsPerPage * pageNumbers.length} items
       </p>
       <ul className="flex items-center justify-end gap-10">
-        <li className="page-item">
-          <a className="page-link" onClick={goToPrevPage} href="#">
+          <button onClick={goToPrevPage} className={`bg-[#B6C9B5] text-white rounded-lg ${prev === null && 'cursor-not-allowed '}`}>
             <MdKeyboardArrowLeft className="text-4xl" />
-          </a>
-        </li>
+          </button>
         <div>
           <form
             onSubmit={handlePageSubmit}
@@ -63,11 +73,11 @@ const Pagination = ({ nPages, currentPage, setCurrentPage, itemsPerPage }) => {
           </span>{" "}
           Pages{" "}
         </p>
-        <li className="page-item">
-          <a className="page-link" onClick={goToNextPage} href="#">
+
+          <button  onClick={goToNextPage} className={`bg-[#B6C9B5] text-white rounded-lg ${next === null && 'cursor-not-allowed '}`}>
             <MdKeyboardArrowRight className="text-4xl" />
-          </a>
-        </li>
+          </button>
+
       </ul>
     </nav>
   );

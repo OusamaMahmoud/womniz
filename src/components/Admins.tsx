@@ -17,8 +17,11 @@ import useCategories from "../hooks/useCategories";
 import Select from "react-select";
 import { customStyles } from "../components/CustomSelect";
 import Pagination from "./Pagination";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import useAllAdmins from "../hooks/useAllAdmins";
 // ZOD SCHEMA
-const schema = z.object({
+ const schema = z.object({
   name: z
     .string()
     .min(3)
@@ -53,16 +56,16 @@ const schema = z.object({
     .min(8)
     .max(20)
     .regex(/^\+?\d+$/),
-  image: z
-    .any()
-    .refine((file) => file && file.length > 0, "Profile picture is required"),
+  // image: z
+  //   .any()
+  //   .refine((file) => file && file.length > 0, "Profile picture is required"),
   jobs: z.array(z.string()).min(1),
   status: z.enum(["0", "1"]).default("0"),
   country_id: z.enum(["2", "1"]).default("2"),
 });
 
-type FormData = z.infer<typeof schema>;
-type OptionType = { label: string; value: string };
+export type FormData = z.infer<typeof schema>;
+export type OptionType = { label: string; value: string };
 const Admins: React.FC = () => {
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
@@ -79,7 +82,11 @@ const Admins: React.FC = () => {
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
+  const [imageFile, setImageFile] = useState<File>({} as File);
+  const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
+
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [paginationPage, setPaginationPage] = useState<string>("1");
   // const [recordsPerPage] = useState(10);
 
   const { categories } = useCategories();
@@ -91,17 +98,18 @@ const Admins: React.FC = () => {
 
   // Fetch Admins ..
 
-  const { admins, meta } = useAdmins({
+  const { admins, meta, next, prev, isLoading } = useAdmins({
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
     isFetching: trigerFetch,
+    page: paginationPage,
   });
 
-  const recordsPerPage = 3;
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = admins.slice(indexOfFirstRecord, indexOfLastRecord);
+  const recordsPerPage = meta.per_page || 5;
+  // const indexOfLastRecord = currentPage * recordsPerPage;
+  // const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  // const currentRecords = admins;
   const nPages = Math.ceil(admins.length / recordsPerPage);
 
   // const {categories ,setCategories}=useCategories()
@@ -129,7 +137,7 @@ const Admins: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      // setNewAdmin((prev) => ({ ...prev, photo: URL.createObjectURL(file) }));
+      setImageFile(file);
       setPhotoPreview(URL.createObjectURL(file));
     }
   };
@@ -191,26 +199,56 @@ const Admins: React.FC = () => {
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
     formData.append(`status`, data.status);
-    formData.append(`image`, data.image[0]);
-    formData.append("jobs[0]", "1");
-
+    formData.append(`image`, imageFile);
+    formData.append(`jobs[0]`, `1`);
     try {
+      setSubmitinLoading(true);
       const res = await adminService.create<any>(formData);
       console.log("hey ,im here => ", res);
+      setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
       setTrigerFetch(!trigerFetch);
     } catch (error: any) {
       setCreatingAdminError(error.response.data.data.error);
+      console.log(error);
+      setSubmitinLoading(false);
     }
   };
+  const { alladmins, isAllAdminsError } = useAllAdmins();
+  const exportToExcel = () => {
+    // Create a new workbook and a sheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(alladmins);
 
+    // Append the sheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Admins");
+
+    // Generate a binary string representation of the workbook
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
+
+    // Convert the binary string to an array buffer
+    const buf = new ArrayBuffer(wbout.length);
+    const view = new Uint8Array(buf);
+    for (let i = 0; i < wbout.length; i++) {
+      view[i] = wbout.charCodeAt(i) & 0xff;
+    }
+
+    // Create a Blob from the array buffer and trigger the download
+    saveAs(
+      new Blob([buf], { type: "application/octet-stream" }),
+      "admins.xlsx"
+    );
+  };
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
 
       {/* ACTION BUTTONS */}
       <div className="flex justify-between items-center mb-5">
+        {isAllAdminsError && (
+          <p className="text-red-600 text-lg p-2">{isAllAdminsError}</p>
+        )}
         <h1 className="font-medium text-4xl capitalize">Admins Details</h1>
         <div className="flex items-center gap-2">
           <button className="btn bg-[#577656] text-[white]" onClick={openModal}>
@@ -225,7 +263,7 @@ const Admins: React.FC = () => {
           >
             <BiTrash className="text-lg text-[#E20000B2]" /> Delete
           </button>
-          <button className="btn btn-outline">
+          <button onClick={exportToExcel} className="btn btn-outline">
             <BiExport /> Export
           </button>
         </div>
@@ -287,10 +325,25 @@ const Admins: React.FC = () => {
         </div>
       </div>
       {/* Table */}
-      {admins && (
+      {isLoading ? (
+        <div className="flex flex-col gap-10">
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-14 w-full"></div>
+        </div>
+      ) : (
         <>
           <DataGrid
-            tableData={currentRecords}
+            tableData={admins}
             handleCheckAll={handleCheckAll}
             selectAll={selectAll}
             handleCheckboxChange={handleCheckboxChange}
@@ -298,10 +351,13 @@ const Admins: React.FC = () => {
             metaObject={meta}
           />
           <Pagination
+            onPage={(pg: string) => setPaginationPage(pg)}
             itemsPerPage={recordsPerPage}
             nPages={nPages}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            next={next}
+            prev={prev}
           />
         </>
       )}
@@ -363,7 +419,7 @@ const Admins: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="date"
-                      id="dateOfBirth"
+                      id="birthdate"
                       className={`input input-bordered grow ${
                         errors.birthdate && "border-[red]"
                       }`}
@@ -442,7 +498,7 @@ const Admins: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
-                      id="location"
+                      id="address"
                       className={`input input-bordered grow ${
                         errors.address && "border-[red]"
                       }`}
@@ -516,15 +572,15 @@ const Admins: React.FC = () => {
                   </span>
                   <input
                     type="file"
-                    {...register("image")}
                     className="file-input file-input-bordered"
                     multiple
-                    onChange={handleFileChange}
                     hidden
+                    name="image"
+                    onChange={handleFileChange}
                   />
                   {/* {errors.image && (
                     <p className="absolute text-red-700 text-lg top-20 -left-40 w-96">
-                      {errors.image.message}
+                      {errors.image?.message}
                     </p>
                   )} */}
                 </label>
@@ -536,7 +592,11 @@ const Admins: React.FC = () => {
                     !isValid && "opacity-50 cursor-not-allowed"
                   }}`}
                 >
-                  Save
+                  {isSubmittinLoading ? (
+                    <span className="loading loading-spinner"></span>
+                  ) : (
+                    `Save`
+                  )}
                 </button>
                 <button
                   className={`btn bg-transparent px-20`}

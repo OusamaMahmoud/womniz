@@ -13,6 +13,7 @@ interface AdminsFilter {
   status: string;
   search: string;
   isFetching: boolean;
+  page: string;
 }
 
 const useAdmins = ({
@@ -20,18 +21,21 @@ const useAdmins = ({
   status,
   search,
   isFetching,
+  page,
 }: AdminsFilter) => {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
+  const [next, setNext] = useState<string | null>('');
+  const [prev, setPrev] = useState<string | null>('');
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
-
+  console.log(page);
   useEffect(() => {
     setLoading(true);
     const controller = new AbortController();
     console.log(buildUrl());
     const request = apiClient.get<{
-      data: { data: Admin[]; meta: MetaObject };
+      data: { data: Admin[]; meta: MetaObject ,links:{next:string | null , prev:string | null}};
     }>(buildUrl(), {
       signal: controller.signal,
     });
@@ -39,6 +43,10 @@ const useAdmins = ({
       .then((res) => {
         setMeta(res.data.data.meta);
         setAdmins(res.data.data.data);
+        setNext(res.data.data.links.next)
+        setPrev(res.data.data.links.prev)
+        console.log(next)
+        console.log(prev)
         setLoading(false);
       })
       .catch((err) => {
@@ -48,11 +56,15 @@ const useAdmins = ({
       });
 
     return () => controller.abort();
-  }, [categories, status, search, isFetching]);
+  }, [categories, status, search, isFetching, page]);
 
   const buildUrl = () => {
     const baseUrl = `/admins`;
     const params = new URLSearchParams();
+
+    if (page) {
+      params.append("page", page);
+    }
 
     categories.forEach((category) => {
       if (category) {
@@ -75,7 +87,7 @@ const useAdmins = ({
     return `${baseUrl}?${params.toString()}`;
   };
 
-  return { admins, error, isLoading, setAdmins, setError, meta, setMeta };
+  return { admins, error, isLoading, setAdmins, setError, meta, setMeta ,next ,prev };
 };
 
 export default useAdmins;

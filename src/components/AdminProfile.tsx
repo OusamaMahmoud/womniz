@@ -4,17 +4,104 @@ import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../services/api-client";
 import { Admin } from "../services/admins-service";
 import { toast } from "react-toastify";
+import avatar from "../assets/admin/avatar.svg";
+import { Controller, set, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { OptionType } from "./Admins";
+import { z } from "zod";
+import { RiErrorWarningLine } from "react-icons/ri";
+import useCategories from "../hooks/useCategories";
+import Select from "react-select";
+import { customStyles } from "../components/CustomSelect";
+import { FaEdit } from "react-icons/fa";
+const schema = z.object({
+  name: z
+    .string()
+    .min(3)
+    .max(255)
+    .regex(/^[a-zA-Z\s]*$/),
+  email: z.string().email(),
+  // password: z.string().min(8).max(50),
+  password: z.union([z.string().length(0), z.string().min(8).max(50)]),
+  birthdate: z
+    .string()
+    .refine((value) => {
+      // Validate date format (YYYY-MM-DD)
+      const regex = /^\d{4}-\d{2}-\d{2}$/;
+      return regex.test(value);
+    }, "Invalid date format (YYYY-MM-DD)")
+    .refine((value) => {
+      // Validate age (must be 18 years or older)
+      const birthDate = new Date(value);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        return age - 1;
+      }
+      return age;
+    }, "Must be 18 years or older"),
 
+  address: z.string().min(3).max(255),
+  phone: z
+    .string()
+    .min(8)
+    .max(20)
+    .regex(/^\+?\d+$/),
+  jobs: z.array(z.string()).min(1),
+  status: z.enum(["0", "1"]).default("0"),
+  country_id: z.enum(["2", "1"]).default("2"),
+});
+type FormData = z.infer<typeof schema>;
 const AdminProfile = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null | undefined>(
+    null
+  );
+  const [creatingAdminError, setCreatingAdminError] = useState<string>("");
+  const [imageFile, setImageFile] = useState<any>(null);
+  const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
+  const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
+
   const params = useParams();
   const navigate = useNavigate();
   const [targetAdmin, setTargetAdmin] = useState<Admin>({} as Admin);
   const [targetAdminError, setTaretAdminError] = useState<string>("");
 
+  const { categories } = useCategories();
+
+  const options: OptionType[] = categories.map((item) => ({
+    label: item.title,
+    value: item.title,
+  }));
+  // Handle Photo Create
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setPhotoPreview(null);
+  };
+
   useEffect(() => {
     apiClient
       .get<{ data: Admin }>(`/admins/${params.id}`)
-      .then((res) => setTargetAdmin(res.data.data))
+      .then((res) => {
+        setTargetAdmin(res.data.data);
+        if (targetAdmin) setPhotoPreview(res.data.data.image);
+      })
       .catch((err) => setTaretAdminError(err.message));
   }, []);
 
@@ -24,7 +111,9 @@ const AdminProfile = () => {
     setStatus(e.target.value);
   };
 
-  const handleEditButton = () => {};
+  const handleEditButton = () => {
+    openModal();
+  };
 
   const handleConfirmationDelete = () => {
     (
@@ -64,9 +153,314 @@ const AdminProfile = () => {
       return "bg-white"; // Default background
     }
   };
+  const notify = () => toast.success("Create Admin Successfully!");
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+console.log(imageFile)
+const onSubmit = async (data: FormData) => {
+  console.log(data);
+  const formData = new FormData();
+
+  formData.append(`name`, data.name);
+  formData.append(`address`, data.address);
+  formData.append(`birthdate`, data.birthdate);
+  formData.append(`country_id`, data.country_id);
+  formData.append(`email`, data.email);
+  formData.append(`password`, data.password);
+  formData.append(`phone`, data.phone);
+  formData.append(`status`, data.status);
+  formData.append(`jobs[0]`, `1`);
+  if (imageFile !== null) {
+    formData.append(`image`, imageFile);
+  }
+  formData.append("_method", "PUT");
+
+  try {
+    setSubmitinLoading(true);
+    const res = await apiClient.post(`/admins/${params.id}`, formData);
+    if (res.status === 200) {
+      setTargetAdmin((prev) => ({
+        ...prev,
+        ...data,
+        image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
+      }));
+      setPhotoPreview( imageFile && URL.createObjectURL(imageFile));
+      notify();
+    }
+    setSubmitinLoading(false);
+    setIsModalOpen(false);
+  } catch (error: any) {
+    if (!error?.response) {
+      setCreatingAdminError("No Server Response!!");
+      setSubmitinLoading(false);
+    } else {
+      setCreatingAdminError(error.response.data.data.error);
+      setSubmitinLoading(false);
+      setIsModalOpen(false);
+      console.log(error);
+    }
+  }
+};
+
 
   return (
     <>
+      {isModalOpen && (
+        <div className="modal modal-open tracking-wide">
+          <div className="modal-box max-w-3xl px-10">
+            <h3 className="font-bold text-lg text-left">Add Regular Admin</h3>
+            <div className="flex justify-center items-center my-8">
+              {photoPreview ? (
+                <img
+                  src={photoPreview}
+                  alt="Preview"
+                  className="w-36 h-36 object-cover rounded-full"
+                />
+              ) : (
+                <img src={avatar} alt="" />
+              )}
+            </div>
+            {creatingAdminError && (
+              <p className="text-lg text-red-500 p-2 my-2">
+                {creatingAdminError}
+              </p>
+            )}
+            {/* Form */}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="py-4 grid grid-cols-2 gap-8 ">
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Full Name</span>
+                  </label>
+                  <div className="flex  items-center gap-2">
+                    <input
+                      type="text"
+                      defaultValue={targetAdmin.name}
+                      {...register("name")}
+                      className={`input input-bordered  grow ${
+                        errors.name && "border-[red]"
+                      }`}
+                    />
+                    {errors.name && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.name && (
+                    <p className="text-[red] text-xs mt-3  ">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Date Of Birth</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      defaultValue={targetAdmin.birthdate}
+                      id="birthdate"
+                      className={`input input-bordered grow ${
+                        errors.birthdate && "border-[red]"
+                      }`}
+                      {...register("birthdate")}
+                    />
+
+                    {errors.birthdate && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.birthdate && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.birthdate.message}
+                    </p>
+                  )}
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Phone Number</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      defaultValue={targetAdmin.phone}
+                      id="phone"
+                      className={`input input-bordered grow ${
+                        errors.phone && "border-[red]"
+                      } `}
+                      {...register("phone")}
+                    />
+                    {errors.phone && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.phone && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.phone.message}
+                    </p>
+                  )}
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Email</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      defaultValue={targetAdmin.email}
+                      id="email"
+                      className={`input input-bordered ${
+                        errors.email && "border-[red]"
+                      }  grow`}
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.email && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Address</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      defaultValue={targetAdmin.address}
+                      id="address"
+                      className={`input input-bordered grow ${
+                        errors.address && "border-[red]"
+                      }`}
+                      {...register("address")}
+                    />
+                    {errors.address && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.address && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.address.message}
+                    </p>
+                  )}
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Password</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="password"
+                      id="password"
+                      className={`input input-bordered grow ${
+                        errors.email && "border-[red]"
+                      }`}
+                      {...register("password")}
+                    />
+                    {errors.email && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.password && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.password.message}
+                    </p>
+                  )}
+                </div>
+                {/* Category Multi-Selector */}
+                <div className="form-control ">
+                  <Controller
+                    control={control}
+                    defaultValue={options.map((c) => c.value)}
+                    name="jobs"
+                    render={({ field: { onChange, value, ref } }) => (
+                      <Select
+                        isMulti
+                        ref={ref}
+                        value={options?.filter((c) => value?.includes(c.value))}
+                        onChange={(val) => onChange(val.map((c) => c.value))}
+                        options={options}
+                        styles={customStyles}
+                      />
+                    )}
+                  />
+                  {errors.jobs && (
+                    <p className="text-red-500 ">{errors.jobs.message}</p>
+                  )}
+                </div>
+                <label
+                  className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
+                >
+                  <span className="text-3xl">
+                    <FaEdit />
+                  </span>
+                  <input
+                    type="file"
+                    className="file-input file-input-bordered"
+                    multiple
+                    hidden
+                    name="image"
+                    onChange={handleFileChange}
+                  />
+                  {/* {errors.image && (
+                    <p className="absolute text-red-700 text-lg top-20 -left-40 w-96">
+                      {errors.image?.message}
+                    </p>
+                  )} */}
+                </label>
+              </div>
+              <div className="modal-action flex justify-around items-center right-80 ">
+                <button
+                  type="submit"
+                  className={`btn px-20 bg-[#577656] text-[white] ${
+                    !isValid && "opacity-50 cursor-not-allowed"
+                  }}`}
+                >
+                  {isSubmittinLoading ? (
+                    <span className="loading loading-spinner"></span>
+                  ) : (
+                    `Updata`
+                  )}
+                </button>
+                <button
+                  className={`btn bg-transparent px-20`}
+                  onClick={closeModal}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       <dialog
         id="deletion-modal"
         className="modal modal-bottom sm:modal-middle"

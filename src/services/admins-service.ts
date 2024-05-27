@@ -6,7 +6,6 @@ export interface Admin {
   email: string;
   phone: string;
   birthdate: string;
-  age: string;
   address: string;
   country: string;
   category: string[];

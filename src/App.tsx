@@ -11,10 +11,11 @@ import {
 import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
 import Login from "./components/Login";
+import useAllAdmins from "./hooks/useAllAdmins";
 
 function App() {
   const { activeMenu } = useStateContext();
-
+  const {} = useAllAdmins();
   return (
     <div>
       <BrowserRouter>
@@ -38,8 +39,7 @@ function App() {
             <div className="static w-full mt-8">
               <Navbar />
             </div>
-            <div className="mt-8">
-            </div>
+            <div className="mt-8"></div>
             <div className="m-4">
               <Routes>
                 <Route path="/login" element={<Login />} />
