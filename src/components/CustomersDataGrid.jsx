@@ -10,7 +10,7 @@ import { BiRightArrow, BiSolidRightArrow } from "react-icons/bi";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Pagination from "./Pagination";
 
-const DataGrid = ({
+const CustomersDataGrid = ({
   tableData,
   selectAll,
   handleCheckAll,
@@ -78,51 +78,60 @@ const DataGrid = ({
       ),
     },
     {
-      label: "Admin ID",
+      label: <span className="text-xl py-2 mr-2">ID</span>,
       renderCell: (item) => <div className=" py-5">{item.id}</div>,
       sort: { sortKey: "id" },
     },
     {
-      label: "Name",
+      label: <span className="text-xl py-2 mr-2">Customer Name</span>,
       renderCell: (item) => (
-        <Link to={`/accounts/Admins/${item.id}`} className=" py-5">
+        <Link to={`/accounts/customers/${item.id}`} className=" py-5">
           {item.name}
         </Link>
       ),
       sort: { sortKey: "name" },
     },
     {
-      label: "Email",
+      label: <span className="text-xl py-2 mr-2">Customer Email</span>,
       renderCell: (item) => item.email,
       sort: { sortKey: "email" },
     },
     {
-      label: "Phone",
+      label: <span className="text-xl py-2 mr-2">Phone Number</span>,
       renderCell: (item) => item.phone,
       sort: { sortKey: "phone" },
     },
     {
-      label: "Date of Birth",
+      label: <span className="text-xl py-2 mr-2">Age</span>,
       renderCell: (item) => item.age,
       sort: { sortKey: "dateOfBirth" },
     },
     {
-      label: "Location",
-      renderCell: (item) => item.address,
+      label: <span className="text-xl py-2 mr-2">City</span>,
+      renderCell: (item) => item.city,
       sort: { sortKey: "location" },
     },
     {
-      label: "Country",
-      renderCell: (item) => item.country,
+      label: <span className="text-xl py-2 mr-2">Gender</span>,
+      renderCell: (item) => item.gender,
       sort: { sortKey: "country" },
     },
     {
-      label: "Category",
+      label: <span className="text-xl py-2 mr-2">Adress</span>,
+      renderCell: (item) => (
+        <span>
+          {item.addresses[0]}-{item.addresses[1]} 
+        </span>
+      ),
+      sort: { sortKey: "category" },
+    },
+    {
+      label: <span className="text-xl py-2 mr-2">Num of Orders</span>,
       renderCell: (item) => item.category,
       sort: { sortKey: "category" },
     },
     {
-      label: "Status",
+      label: <span className="text-xl py-2 mr-2">Status</span>,
       renderCell: (item) => {
         if (item.status === 0) {
           return (
@@ -144,16 +153,10 @@ const DataGrid = ({
 
   return (
     <>
-      <CompactTable
-        columns={COLUMNS}
-        data={data}
-        theme={theme}
-        sort={sort}
-      />
+      <CompactTable columns={COLUMNS} data={data} theme={theme} sort={sort} />
       <br />
     </>
   );
 };
 
-export default DataGrid;
-
+export default CustomersDataGrid;

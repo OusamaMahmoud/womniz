@@ -13,10 +13,10 @@ export const links = [
         name: "admins",
       },
       {
-        name: "Customers",
+        name: "customers",
       },
       {
-        name: "Vendors",
+        name: "vendors",
       },
     ],
   },

@@ -128,7 +128,6 @@ const AdminProfile = () => {
     apiClient
       .post("/admins/delete", data)
       .then((res) => {
-        console.log(res);
         toast.success("Admins deleted successfully");
         navigate("/accounts/Admins");
         (
@@ -162,9 +161,7 @@ const AdminProfile = () => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
-console.log(imageFile)
 const onSubmit = async (data: FormData) => {
-  console.log(data);
   const formData = new FormData();
 
   formData.append(`name`, data.name);
@@ -203,7 +200,6 @@ const onSubmit = async (data: FormData) => {
       setCreatingAdminError(error.response.data.data.error);
       setSubmitinLoading(false);
       setIsModalOpen(false);
-      console.log(error);
     }
   }
 };

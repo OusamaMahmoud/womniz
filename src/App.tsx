@@ -12,6 +12,8 @@ import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
 import Login from "./components/Login";
 import useAllAdmins from "./hooks/useAllAdmins";
+import CustomerProfile from "./components/CustomerProfile";
+import CustomerOrders from "./components/CustomerOrders";
 
 function App() {
   const { activeMenu } = useStateContext();
@@ -43,11 +45,13 @@ function App() {
             <div className="m-4">
               <Routes>
                 <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/accounts/Admins" element={<Admins />} />
-                <Route path="/accounts/Admins/:id" element={<AdminProfile />} />
-                <Route path="/accounts/Customers" element={<Customers />} />
-                <Route path="/accounts/Vendors" element={<Vendors />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/accounts/admins" element={<Admins />} />
+                <Route path="/accounts/admins/:id" element={<AdminProfile />} />
+                <Route path="/accounts/customers" element={<Customers />} />
+                <Route path="/accounts/customers/:id" element={<CustomerProfile />} />
+                <Route path="/see-all-customers-orders/:id" element={<CustomerOrders />} />
+                <Route path="/accounts/vendors" element={<Vendors />} />
               </Routes>
             </div>
             <div>{/* <Test /> */}</div>

@@ -21,7 +21,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllAdmins from "../hooks/useAllAdmins";
 // ZOD SCHEMA
- const schema = z.object({
+const schema = z.object({
   name: z
     .string()
     .min(3)
@@ -69,7 +69,7 @@ export type OptionType = { label: string; value: string };
 const Admins: React.FC = () => {
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -88,7 +88,6 @@ const Admins: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
   // const [recordsPerPage] = useState(10);
-
   const { categories } = useCategories();
 
   const options: OptionType[] = categories.map((item) => ({
@@ -111,8 +110,6 @@ const Admins: React.FC = () => {
   // const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   // const currentRecords = admins;
   const nPages = Math.ceil(admins.length / recordsPerPage);
-
-  // const {categories ,setCategories}=useCategories()
 
   // Handle React Hook Form
   const {
@@ -174,7 +171,6 @@ const Admins: React.FC = () => {
       });
       try {
         const response = await apiClient.post("/admins/delete", data);
-        console.log(response);
         toast.success("Admins deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
@@ -204,14 +200,12 @@ const Admins: React.FC = () => {
     try {
       setSubmitinLoading(true);
       const res = await adminService.create<any>(formData);
-      console.log("hey ,im here => ", res);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
       setTrigerFetch(!trigerFetch);
     } catch (error: any) {
       setCreatingAdminError(error.response.data.data.error);
-      console.log(error);
       setSubmitinLoading(false);
     }
   };
@@ -298,17 +292,15 @@ const Admins: React.FC = () => {
         <div className="form-control">
           <select
             className="select select-bordered"
-            onChange={(e) => setSelectedCategory([e.target.value])}
+            onChange={(e) => setSelectedCategory(e.target.value)}
             value={selectedCategory}
           >
             <option value="">ALL</option>
-            <option value="Account Management">Account Management</option>
-            <option value="Products Management">Products Management</option>
-            <option value="Jewellery Management">Jewellery Management</option>
-            <option value="Salons Management">Salons Management</option>
-            <option value="Orders and Discount Management">
-              Orders and Discount Management
-            </option>
+            {categories.map((cate) => (
+              <option key={cate.id} value={cate.title}>
+                {cate.title}
+              </option>
+            ))}
           </select>
         </div>
         {/* Status Bar */}
@@ -545,6 +537,7 @@ const Admins: React.FC = () => {
                 </div>
                 {/* Category Multi-Selector */}
                 <div className="form-control ">
+                  <label className="mb-3">Select Category</label>
                   <Controller
                     control={control}
                     defaultValue={options.map((c) => c.value)}
