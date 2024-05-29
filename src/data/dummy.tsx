@@ -26,13 +26,16 @@ export const links = [
     icon: <IoBagRemoveOutline />,
     links: [
       {
-        name: "orders",
+        name: "Clothes",
       },
       {
-        name: "employees",
+        name: "Jewelry",
       },
       {
-        name: "customers",
+        name: "Cosmetics",
+      },
+      {
+        name: "Celebrities",
       },
     ],
   },
@@ -41,13 +44,16 @@ export const links = [
     icon: <LuBox />,
     links: [
       {
-        name: "orders",
+        name: "Delivered",
       },
       {
-        name: "employees",
+        name: "Failed",
       },
       {
-        name: "customers",
+        name: "Canceled",
+      },
+      {
+        name: "Returned",
       },
     ],
   },
@@ -56,13 +62,10 @@ export const links = [
     icon: <PiHairDryer />,
     links: [
       {
-        name: "orders",
+        name: "Salon’s Profiles",
       },
       {
-        name: "employees",
-      },
-      {
-        name: "customers",
+        name: "Professionals",
       },
     ],
   },
@@ -71,13 +74,10 @@ export const links = [
     icon: <PiCodesandboxLogoThin />,
     links: [
       {
-        name: "orders",
+        name: "Scratch Coupon",
       },
       {
-        name: "employees",
-      },
-      {
-        name: "customers",
+        name: "Spin the Wheel",
       },
     ],
   },

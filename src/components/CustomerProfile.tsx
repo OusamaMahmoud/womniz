@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { BiCross, BiEdit, BiExit, BiTrash } from "react-icons/bi";
+import { RxCross2 } from "react-icons/rx";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import apiClient from "../services/api-client";
 import { Admin } from "../services/admins-service";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import avatar from "../assets/admin/avatar.svg";
 import { Controller, set, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +17,8 @@ import { customStyles } from "../components/CustomSelect";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import customerService, { Customer } from "../services/customer-service";
+import DiscountModal from "./Modal";
+import CustomerProductsGrid from "./CustomerProductsGrid";
 
 const schema = z.object({
   name: z
@@ -55,6 +58,47 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 const CustomerProfile = () => {
+  //Discount Modal
+
+  const generateRandomCode = () => {
+    return Math.random().toString(36).substr(2, 8).toUpperCase();
+  };
+
+  const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
+  const [expDate, setExpDate] = useState("");
+  const [discount, setDiscount] = useState("5%");
+  const [code, setCode] = useState(generateRandomCode());
+
+  const openDiscountModal = () => {
+    setCode(generateRandomCode());
+    setIsDiscountModalOpen(true);
+  };
+
+  const closeDiscountModal = () => {
+    setIsDiscountModalOpen(false);
+  };
+
+  const copyCodeToClipboard = () => {
+    navigator.clipboard.writeText(code);
+    toast.success("Code copied to clipboard!");
+  };
+
+  const handleConfirmDiscountDeletion = () => {
+    (
+      document.getElementById("deletion-discount-modal") as HTMLDialogElement
+    ).showModal();
+  };
+
+  const handleDeleteDiscountButton = () => {
+    (
+      document.getElementById("deletion-discount-modal") as HTMLDialogElement
+    ).close();
+  };
+
+  const handleAddingVoucherToCustomer = () => {
+    //Add Voucher to the API.
+  };
+
   const [orders, setOrdersOpen] = useState<boolean>(true);
   const [rewards, setRewardsOpen] = useState<boolean>(false);
 
@@ -117,12 +161,12 @@ const CustomerProfile = () => {
     openModal();
   };
 
-  const handleConfirmationDelete = () => {
+  const handleCustomerConfirmationDelete = () => {
     (
       document.getElementById("deletion-modal") as HTMLDialogElement
     ).showModal();
   };
-  const handleDeleteButton = () => {
+  const handleDeleteCustomerButton = () => {
     const data = new FormData();
     if (params && params.id) {
       data.append(`ids[1]`, params.id.toString());
@@ -130,14 +174,14 @@ const CustomerProfile = () => {
     apiClient
       .post("/users/delete", data)
       .then((res) => {
-        toast.success("Admins deleted successfully");
-        navigate("/accounts/Admins");
+        toast.success("Customer deleted successfully");
+        navigate("/accounts/customers");
         (
           document.getElementById("deletion-modal") as HTMLDialogElement
         ).close();
       })
       .catch((err) => {
-        toast.error("Failed to delete admin");
+        toast.error("Failed to delete customer");
         toast.error(err.message);
         (
           document.getElementById("deletion-modal") as HTMLDialogElement
@@ -155,6 +199,12 @@ const CustomerProfile = () => {
     }
   };
   const notify = () => toast.success("Create Admin Successfully!");
+  const [isProductsComponentExist, setIsProductsComponentExist] =
+    useState(false);
+  const handleAddingOrderToCustomer = () => {
+    setIsProductsComponentExist(true);
+  };
+
   const {
     register,
     handleSubmit,
@@ -163,6 +213,7 @@ const CustomerProfile = () => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
   const onSubmit = async (data: FormData) => {
     console.log(data);
 
@@ -197,6 +248,7 @@ const CustomerProfile = () => {
 
   return (
     <>
+      {/* {isProductsComponentExist && <CustomerProductsGrid />} */}
       {isModalOpen && (
         <div className="modal modal-open tracking-wide">
           <div className="modal-box max-w-3xl px-10">
@@ -415,6 +467,10 @@ const CustomerProfile = () => {
           </div>
         </div>
       )}
+      {targetAdminError && (
+        <p className="text-lg p-2 text-red-600">{targetAdminError}</p>
+      )}
+
       <dialog
         id="deletion-modal"
         className="modal modal-bottom sm:modal-middle"
@@ -433,15 +489,44 @@ const CustomerProfile = () => {
             >
               Cancel
             </button>
-            <button className="btn btn-error" onClick={handleDeleteButton}>
+            <button
+              className="btn btn-error"
+              onClick={handleDeleteCustomerButton}
+            >
               Confirm
             </button>
           </div>
         </div>
       </dialog>
-      {targetAdminError && (
-        <p className="text-lg p-2 text-red-600">{targetAdminError}</p>
-      )}
+      <dialog
+        id="deletion-discount-modal"
+        className="modal modal-bottom sm:modal-middle"
+      >
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Are you sure?</h3>
+          <p className="py-4">Do you really want to delete this Voucher?</p>
+          <div className="modal-action">
+            <button
+              className="btn"
+              onClick={() =>
+                (
+                  document.getElementById(
+                    "deletion-discount-modal"
+                  ) as HTMLDialogElement
+                ).close()
+              }
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-error"
+              onClick={handleDeleteDiscountButton}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </dialog>
       <div className="container mx-auto px-5">
         <div className="flex justify-between items-center shadow-xl p-8">
           <div className="flex gap-3 items-start">
@@ -470,7 +555,7 @@ const CustomerProfile = () => {
           </div>
           <div className="flex gap-4">
             <button
-              onClick={handleConfirmationDelete}
+              onClick={handleCustomerConfirmationDelete}
               className="flex items-center gap-2 text-[red] border border-[#d6cccc] rounded-md p-2"
             >
               <BiTrash className="text-xl" />
@@ -677,7 +762,10 @@ const CustomerProfile = () => {
                         </div>
                       </div>
                     </div>
-                    <button className="btn btn-outline hover:bg-[#BED3C4] self-center px-10">
+                    <button
+                      onClick={handleAddingOrderToCustomer}
+                      className="btn btn-outline hover:bg-[#BED3C4] self-center px-10"
+                    >
                       <img src="/src/assets/customer/add.svg" />
                       Add{" "}
                     </button>
@@ -689,53 +777,12 @@ const CustomerProfile = () => {
               <div className="mt-10 flex flex-col gap-20">
                 <div className="flex flex-col gap-10">
                   <div className="flex flex-col pt-1 pb-4 px-4 border rounded-lg shadow-md">
-                    <span className="self-end mb-5 text-xl">x</span>
-                    <div className="relative flex gap-16 bg-[#F5DED4] px-10 py-6 rounded-lg ">
-                      <div className="absolute  w-8 h-8 -top-3 right-[63%] rounded-full bg-white"></div>
-                      <div className="absolute  w-8 h-8 -bottom-3 right-[63%] rounded-full bg-white"></div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-black text-2xl font-extrabold">
-                          20%
-                        </span>
-                        <span className="text-black text-2xl font-extrabold">
-                          Discount
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-black text-2xl font-extrabold">
-                          Voucher from wheel
-                        </span>
-                        <span className="text-black text-sm font-extralight">
-                          Enjoy discount and get code : 234Mk
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col pt-1 pb-4 px-4 border rounded-lg shadow-md">
-                    <span className="self-end mb-5 text-xl">x</span>
-                    <div className="relative flex gap-16 bg-[#F5DED4] px-10 py-6 rounded-lg ">
-                      <div className="absolute  w-8 h-8 -top-3 right-[63%] rounded-full bg-white"></div>
-                      <div className="absolute  w-8 h-8 -bottom-3 right-[63%] rounded-full bg-white"></div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-black text-2xl font-extrabold">
-                          20%
-                        </span>
-                        <span className="text-black text-2xl font-extrabold">
-                          Discount
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-black text-2xl font-extrabold">
-                          Voucher from wheel
-                        </span>
-                        <span className="text-black text-sm font-extralight">
-                          Enjoy discount and get code : 234Mk
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col pt-1 pb-4 px-4 border rounded-lg shadow-md">
-                    <span className="self-end mb-5 text-xl">x</span>
+                    <span
+                      onClick={handleConfirmDiscountDeletion}
+                      className="self-end mb-5 text-xl cursor-pointer"
+                    >
+                      <RxCross2 />
+                    </span>
                     <div className="relative flex gap-16 bg-[#F5DED4] px-10 py-6 rounded-lg ">
                       <div className="absolute  w-8 h-8 -top-3 right-[63%] rounded-full bg-white"></div>
                       <div className="absolute  w-8 h-8 -bottom-3 right-[63%] rounded-full bg-white"></div>
@@ -758,13 +805,112 @@ const CustomerProfile = () => {
                     </div>
                   </div>
                 </div>
-                <button className="btn self-center px-20">
-                  <img src="/src/assets/customer/add.svg"/>
+                <button
+                  onClick={openDiscountModal}
+                  className="btn self-center px-20"
+                >
+                  <img src="/src/assets/customer/add.svg" />
                   add
-                  </button>
+                </button>
               </div>
             )}
           </div>
+        </div>
+        <div className="flex items-center justify-center">
+          {isDiscountModalOpen && (
+            <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto">
+              <div
+                className="fixed inset-0 bg-black opacity-30"
+                onClick={closeDiscountModal}
+              ></div>
+
+              <div className="relative bg-white rounded-lg shadow-lg w-full max-w-xl mx-auto p-6">
+                <h2 className="text-lg font-bold">Add Discount</h2>
+                <div className="flex flex-col pt-1 pb-4 px-4 border rounded-lg shadow-md my-8">
+                  <span
+                    className="self-end mb-5 text-xl cursor-pointer"
+                    onClick={closeDiscountModal}
+                  >
+                    x
+                  </span>
+                  <div className="relative flex gap-16 bg-[#F5DED4] px-10 py-6 rounded-lg">
+                    <div className="absolute w-8 h-8 -top-3 right-[63%] rounded-full bg-white"></div>
+                    <div className="absolute w-8 h-8 -bottom-3 right-[63%] rounded-full bg-white"></div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-black text-2xl font-extrabold">
+                        {discount}
+                      </span>
+                      <span className="text-black text-2xl font-extrabold">
+                        Discount
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-black text-2xl font-extrabold">
+                        Voucher from wheel
+                      </span>
+                      <span className="text-black text-sm font-extralight">
+                        Enjoy discount and get code : {code}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="label">Expiration Date</label>
+                  <input
+                    type="date"
+                    className="input input-bordered w-full"
+                    value={expDate}
+                    onChange={(e) => setExpDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <label className="label">Discount Percentage</label>
+                  <select
+                    className="select select-bordered w-full"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                  >
+                    <option value="5%">5%</option>
+                    <option value="20%">20%</option>
+                    <option value="60%">60%</option>
+                  </select>
+                </div>
+
+                <div className="mt-4">
+                  <label className="label">Code</label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      className="input input-bordered w-full"
+                      value={code}
+                      readOnly
+                    />
+                    <button
+                      className="btn btn-outline"
+                      onClick={copyCodeToClipboard}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-around space-x-2">
+                  <button className="btn px-10" onClick={closeDiscountModal}>
+                    Cancel
+                  </button>
+                  <button
+                    className="btn bg-[#577656] text-white px-20"
+                    onClick={handleAddingVoucherToCustomer}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <ToastContainer />
         </div>
       </div>
     </>
