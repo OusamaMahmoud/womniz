@@ -27,6 +27,8 @@ import CustomersDataGrid from "./CustomersDataGrid";
 import CustomerProductsGrid from "./CustomerProductsGrid";
 import CustomerProductsFilters from "./CustomerProductsFilters";
 import CustomerOrderId from "./CustomerOrderId";
+import OrdersDetails from "./OrdersDetails";
+import OrdersHistory from "./OrdersHistory";
 // ZOD SCHEMA
 // Custom file validation
 const imageFileSchema = z
@@ -336,8 +338,6 @@ const Customers: React.FC = () => {
           </select>
         </div>
       </div>
-      <CustomerProductsFilters />
-      <CustomerOrderId />
       {/* Table */}
       {isLoading ? (
         <div className="flex flex-col gap-10">
@@ -349,7 +349,7 @@ const Customers: React.FC = () => {
         </div>
       ) : (
         <>
-          <CustomerProductsGrid
+          <CustomersDataGrid
             tableData={customers}
             handleCheckAll={handleCheckAll}
             selectAll={selectAll}
@@ -357,14 +357,6 @@ const Customers: React.FC = () => {
             selectedAdmins={selectedAdmins}
             metaObject={meta}
           />
-          {/* <CustomersDataGrid
-            tableData={customers}
-            handleCheckAll={handleCheckAll}
-            selectAll={selectAll}
-            handleCheckboxChange={handleCheckboxChange}
-            selectedAdmins={selectedAdmins}
-            metaObject={meta}
-          /> */}
           <Pagination
             onPage={(pg: string) => setPaginationPage(pg)}
             itemsPerPage={recordsPerPage}
