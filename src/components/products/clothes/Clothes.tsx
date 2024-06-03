@@ -15,12 +15,12 @@ const Clothes = () => {
           Sub Category
         </button>
         <Link to={'/products/clothes/new-product'}
-        className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-lg">
+        className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl">
           <IoAdd className="text-white text-2xl hover:text-black" /> Add New
           Product
         </Link>
       </div>
-      <div className="flex items-center gap-8 justify-end">
+      <div className="flex items-center gap-8 justify-end mb-6">
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
           <MdDelete className="text-2xl text-red-700 " /> Delete
         </button>
