@@ -12,7 +12,7 @@ import { z } from "zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 import useCategories from "../hooks/useCategories";
 import Select from "react-select";
-import { customStyles } from "../components/CustomSelect";
+import { customStyles } from "./CustomSelect";
 import { FaEdit } from "react-icons/fa";
 const schema = z.object({
   name: z

@@ -10,13 +10,16 @@ export const links = [
     icon: <RiAccountCircleLine />,
     links: [
       {
-        name: "admins",
+        name: "Admins",
+        link: "/accounts/admins",
       },
       {
-        name: "customers",
+        name: "Customers",
+        link: "/accounts/customers",
       },
       {
-        name: "vendors",
+        name: "Vendors",
+        link: "/accounts/vendors",
       },
     ],
   },
@@ -27,62 +30,211 @@ export const links = [
     links: [
       {
         name: "Clothes",
+        link: "/products/clothes",
       },
       {
         name: "Jewelry",
+        link: "/products/jewelry",
       },
       {
         name: "Cosmetics",
+        link: "/products/cosmetics",
       },
       {
         name: "Celebrities",
+        link: "/products/celebrities",
       },
     ],
   },
-  {
-    title: "Orders",
-    icon: <LuBox />,
-    links: [
-      {
-        name: "Delivered",
-      },
-      {
-        name: "Failed",
-      },
-      {
-        name: "Canceled",
-      },
-      {
-        name: "Returned",
-      },
-    ],
-  },
-  {
-    title: "Salons",
-    icon: <PiHairDryer />,
-    links: [
-      {
-        name: "Salon’s Profiles",
-      },
-      {
-        name: "Professionals",
-      },
-    ],
-  },
-  {
-    title: "Games",
-    icon: <PiCodesandboxLogoThin />,
-    links: [
-      {
-        name: "Scratch Coupon",
-      },
-      {
-        name: "Spin the Wheel",
-      },
-    ],
-  },
+  // {
+  //   title: "Orders",
+  //   icon: <LuBox />,
+  //   links: [
+  //     {
+  //       name: "Delivered",
+  //     },
+  //     {
+  //       name: "Failed",
+  //     },
+  //     {
+  //       name: "Canceled",
+  //     },
+  //     {
+  //       name: "Returned",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Salons",
+  //   icon: <PiHairDryer />,
+  //   links: [
+  //     {
+  //       name: "Salon’s Profiles",
+  //     },
+  //     {
+  //       name: "Professionals",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Games",
+  //   icon: <PiCodesandboxLogoThin />,
+  //   links: [
+  //     {
+  //       name: "Scratch Coupon",
+  //     },
+  //     {
+  //       name: "Spin the Wheel",
+  //     },
+  //   ],
+  // },
 ];
-
+export const clothes = [
+  {
+    sku: "SKU12345",
+    productName: "Product 1",
+    vendor: "Vendor A",
+    brand: "Brand X",
+    subCategory: "Category 1",
+    quantity: 100,
+    price: 19.99,
+    totalOrdersNum: 150,
+    status: "Live",
+  },
+  {
+    sku: "SKU12346",
+    productName: "Product 2",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 2",
+    quantity: 200,
+    price: 29.99,
+    totalOrdersNum: 250,
+    status: "Draft",
+  },
+  {
+    sku: "SKU12347",
+    productName: "Product 3",
+    vendor: "Vendor A",
+    brand: "Brand Z",
+    subCategory: "Category 3",
+    quantity: 300,
+    price: 39.99,
+    totalOrdersNum: 350,
+    status: "Rejected",
+  },
+  {
+    sku: "SKU12348",
+    productName: "Product 4",
+    vendor: "Vendor C",
+    brand: "Brand X",
+    subCategory: "Category 4",
+    quantity: 400,
+    price: 49.99,
+    totalOrdersNum: 450,
+    status: "Deactivated",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 5",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 5",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Live",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 6",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 6",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Live",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 7",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 7",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Live",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 8",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 8",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Deactivated",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 8",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 8",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Live",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 8",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 8",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Deactivated",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 8",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 8",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Live",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 8",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 8",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Deactivated",
+  },
+  {
+    sku: "SKU12349",
+    productName: "Product 8",
+    vendor: "Vendor B",
+    brand: "Brand Y",
+    subCategory: "Category 8",
+    quantity: 500,
+    price: 59.99,
+    totalOrdersNum: 550,
+    status: "Deactivated",
+  },
+  // Add more products as needed
+];
 export const admins = [
   {
     id: 1,

@@ -52,7 +52,12 @@ const Login = () => {
       navigate("/accounts/Admins");
       setLoading(false);
     } catch (err: any) {
-      setApiError(err.response?.data?.data?.error || "An unexpected error occurred");
+      if (!err.response) {
+        setApiError("No Server Response!");
+      }
+      setApiError(
+        err.response?.data?.data?.error || "An unexpected error occurred"
+      );
       setLoading(false);
     }
   };

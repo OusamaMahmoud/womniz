@@ -4,13 +4,17 @@ import App from "./App.tsx";
 import "./index.css";
 import { ContextProvider } from "./contexts/ContextProvider.tsx";
 import { AuthProvider } from "./contexts/AuthProvider.tsx";
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <ContextProvider>
-        <App />
-      </ContextProvider>
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <ContextProvider>
+          <Routes>
+            <Route path="/*" element={<App />} />
+          </Routes>
+        </ContextProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

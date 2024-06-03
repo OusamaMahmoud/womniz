@@ -44,22 +44,25 @@ const Sidebar = () => {
     try {
       setLoading(true);
       const res = await apiClient.post("/logout");
-      console.log(res)
+      console.log(res);
       localStorage.removeItem("authToken"); // Adjust based on your storage method
       setAuth(null);
+
       navigate("/login");
       setLoading(false);
-      (document.getElementById('logout_modal') as HTMLDialogElement).close()
+      (document.getElementById("logout_modal") as HTMLDialogElement).close();
     } catch (err: any) {
+      if (!err?.response) {
+        setError("No Server Response!");
+      }
       setError(err.message);
       setLoading(false);
-      (document.getElementById('logout_modal') as HTMLDialogElement).close()
+      // (document.getElementById("logout_modal") as HTMLDialogElement).close();
     }
-
   };
 
   const handleLogoutClick = () => {
-    (document.getElementById('logout_modal') as HTMLDialogElement).showModal();
+    (document.getElementById("logout_modal") as HTMLDialogElement).showModal();
   };
 
   const activeLink =
@@ -88,7 +91,6 @@ const Sidebar = () => {
               </button>
             </div>
           </div>
-          {error && <p className="bg-error">{error}</p>}
           <div className="mt-10 mx-2">
             <NavLink
               onClick={handleCloseSideBar}
@@ -128,8 +130,8 @@ const Sidebar = () => {
                   <div className="collapse-content">
                     {item.links.map((link) => (
                       <NavLink
-                        to={`/accounts/${link.name}`}
-                        key={link.name}
+                        to={`${link.link}`}
+                        key={link.link}
                         onClick={handleCloseSideBar}
                         className={({ isActive }) =>
                           isActive ? activeLink : normalLink
@@ -211,11 +213,26 @@ const Sidebar = () => {
       {/* Logout Confirmation Modal */}
       <dialog id="logout_modal" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
+          {error && (
+            <p className="bg-error p-2 rounded-md text-white mb-4">{error}</p>
+          )}
           <h3 className="font-bold text-lg">Are you sure?</h3>
           <p className="py-4">Do you really want to log out?</p>
           <div className="modal-action">
-            <button className="btn" onClick={() => (document.getElementById('logout_modal') as HTMLDialogElement).close()}>Cancel</button>
-            <button className="btn btn-error" onClick={handleLogOutButton}>Confirm</button>
+            <button
+              className="btn"
+              onClick={() => {
+                (
+                  document.getElementById("logout_modal") as HTMLDialogElement
+                ).close();
+                setError("");
+              }}
+            >
+              Cancel
+            </button>
+            <button className="btn btn-error" onClick={handleLogOutButton}>
+              Confirm
+            </button>
           </div>
         </div>
       </dialog>

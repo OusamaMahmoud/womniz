@@ -8,9 +8,8 @@ import { Link } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import { BiRightArrow, BiSolidRightArrow } from "react-icons/bi";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import Pagination from "./Pagination";
-
-const CustomersDataGrid = ({
+import Pagination from "../Pagination";
+const VendorDataGrid = ({
   tableData,
   selectAll,
   handleCheckAll,
@@ -78,60 +77,47 @@ const CustomersDataGrid = ({
       ),
     },
     {
-      label: <span className="text-xl py-2 mr-2">ID</span>,
+      label: "ID",
       renderCell: (item) => <div className=" py-5">{item.id}</div>,
       sort: { sortKey: "id" },
     },
     {
-      label: <span className="text-xl py-2 mr-2">Customer Name</span>,
+      label: "Vendor Name",
       renderCell: (item) => (
-        <Link to={`/accounts/customers/${item.id}`} className=" py-5">
+        <Link to={`/accounts/vendors/${item.id}`} className=" py-5">
           {item.name}
         </Link>
       ),
       sort: { sortKey: "name" },
     },
     {
-      label: <span className="text-xl py-2 mr-2">Customer Email</span>,
+      label: "Vendor Email",
       renderCell: (item) => item.email,
       sort: { sortKey: "email" },
     },
     {
-      label: <span className="text-xl py-2 mr-2">Phone Number</span>,
-      renderCell: (item) => item.phone,
+      label: "Num Of Products",
+      renderCell: (item) => item.account_number,
+      sort: { sortKey: "email" },
+    },
+    {
+      label: "Commission",
+      renderCell: (item) => item.commission,
       sort: { sortKey: "phone" },
     },
     {
-      label: <span className="text-xl py-2 mr-2">Age</span>,
-      renderCell: (item) => item.age,
+      label: "Category",
+      renderCell: (item) =>
+        item.categories.map((cate) => <span key={cate.id}>{cate.name}</span>),
       sort: { sortKey: "dateOfBirth" },
     },
     {
-      label: <span className="text-xl py-2 mr-2">City</span>,
-      renderCell: (item) => item.city,
+      label: "Address",
+      renderCell: (item) => item.shipping_address,
       sort: { sortKey: "location" },
     },
     {
-      label: <span className="text-xl py-2 mr-2">Gender</span>,
-      renderCell: (item) => item.gender,
-      sort: { sortKey: "country" },
-    },
-    {
-      label: <span className="text-xl py-2 mr-2">Adress</span>,
-      renderCell: (item) => (
-        <span>
-          {item.addresses[0]}-{item.addresses[1]} 
-        </span>
-      ),
-      sort: { sortKey: "category" },
-    },
-    {
-      label: <span className="text-xl py-2 mr-2">Num of Orders</span>,
-      renderCell: (item) => item.category,
-      sort: { sortKey: "category" },
-    },
-    {
-      label: <span className="text-xl py-2 mr-2">Status</span>,
+      label: "Status",
       renderCell: (item) => {
         if (item.status === 0) {
           return (
@@ -159,4 +145,4 @@ const CustomersDataGrid = ({
   );
 };
 
-export default CustomersDataGrid;
+export default VendorDataGrid;

@@ -1,64 +1,43 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import {
-  Admins,
-  Customers,
-  Dashboard,
-  Navbar,
-  Sidebar,
-  Vendors,
-} from "./components";
-import { useStateContext } from "./contexts/ContextProvider";
 import AdminProfile from "./components/AdminProfile";
 import Login from "./components/Login";
-import useAllAdmins from "./hooks/useAllAdmins";
-import CustomerProfile from "./components/CustomerProfile";
-import CustomerOrders from "./components/CustomerOrders";
+import CustomerProfile from "./components/customers/CustomerProfile";
+import CustomerOrders from "./components/customers/CustomerOrders";
+import { Admins, Dashboard } from "./components";
+import Customers from "./components/customers/Customers";
+import Vendors from "./components/vendors/Vendors";
+import VendorProfile from "./components/vendors/VendorProfile";
+import Layout from "./components/Layout";
+import UnauthorizedPage from "./components/UnauthorizedPage";
+import MissingPage from "./components/MissingPage";
+import Clothes from "./components/products/clothes/Clothes";
+import NewClothesProduct from "./components/products/clothes/NewClothesProduct";
 
 function App() {
-  const { activeMenu } = useStateContext();
-  const {} = useAllAdmins();
   return (
-    <div>
-      <BrowserRouter>
-        <div className="flex relative">
-          {activeMenu ? (
-            <div className="w-72 fixed  bg-white  ">
-              <Sidebar />
-            </div>
-          ) : (
-            <div className="w-0">
-              <Sidebar />
-            </div>
-          )}
-          <div
-            className={
-              activeMenu
-                ? "   min-h-screen md:ml-72 w-full  "
-                : " w-full min-h-screen flex-2 "
-            }
-          >
-            <div className="static w-full mt-8">
-              <Navbar />
-            </div>
-            <div className="mt-8"></div>
-            <div className="m-4">
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/accounts/admins" element={<Admins />} />
-                <Route path="/accounts/admins/:id" element={<AdminProfile />} />
-                <Route path="/accounts/customers" element={<Customers />} />
-                <Route path="/accounts/customers/:id" element={<CustomerProfile />} />
-                <Route path="/see-all-customers-orders/:id" element={<CustomerOrders />} />
-                <Route path="/accounts/vendors" element={<Vendors />} />
-              </Routes>
-            </div>
-            <div>{/* <Test /> */}</div>
-          </div>
-        </div>
-      </BrowserRouter>
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route path="unauthorized" element={<UnauthorizedPage />} />
+
+        <Route path="login" element={<Login />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="accounts/admins" element={<Admins />} />
+        <Route path="accounts/admins/:id" element={<AdminProfile />} />
+        <Route path="accounts/customers" element={<Customers />} />
+        <Route path="accounts/customers/:id" element={<CustomerProfile />} />
+        <Route path="products/clothes" element={<Clothes />} />
+        <Route path="products/clothes/new-product" element={<NewClothesProduct />} />
+        <Route
+          path="see-all-customers-orders/:id"
+          element={<CustomerOrders />}
+        />
+        <Route path="accounts/vendors" element={<Vendors />} />
+        <Route path="accounts/vendors/:id" element={<VendorProfile />} />
+
+        <Route path="*" element={<MissingPage />} />
+      </Route>
+    </Routes>
   );
 }
 

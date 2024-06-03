@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
-import avatar from "../assets/admin/avatar.svg";
+import avatar from "../../assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Controller, useForm } from "react-hook-form";
@@ -9,26 +9,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 // import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
-import DataGrid from "./DataGrid";
-import useAdmins from "../hooks/useAdmins";
-import apiClient from "../services/api-client";
-import adminService from "../services/admins-service";
-import useCategories from "../hooks/useCategories";
+import DataGrid from "../DataGrid";
+import useAdmins from "../../hooks/useAdmins";
+import apiClient from "../../services/api-client";
+import adminService from "../../services/admins-service";
+import useCategories from "../../hooks/useCategories";
 import Select from "react-select";
-import { customStyles } from "../components/CustomSelect";
-import Pagination from "./Pagination";
+import { customStyles } from "../CustomSelect";
+import Pagination from "../Pagination";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import useAllAdmins from "../hooks/useAllAdmins";
-import useCustomers from "../hooks/useCustomers";
-import customerService from "../services/customer-service";
-import useAllCustomers from "../hooks/useAllCustomers";
-import CustomersDataGrid from "./CustomersDataGrid";
+import useAllAdmins from "../../hooks/useAllAdmins";
+import useCustomers from "../../hooks/useCustomers";
+import customerService from "../../services/customer-service";
+import useAllCustomers from "../../hooks/useAllCustomers";
+import CustomersDataGrid from "../customers/CustomersDataGrid";
 import CustomerProductsGrid from "./CustomerProductsGrid";
 import CustomerProductsFilters from "./CustomerProductsFilters";
 import CustomerOrderId from "./CustomerOrderId";
 import OrdersDetails from "./OrdersDetails";
-import OrdersHistory from "./OrdersHistory";
+import OrdersHistory from "../customers/OrdersHistory";
 // ZOD SCHEMA
 // Custom file validation
 const imageFileSchema = z
@@ -76,7 +76,7 @@ const schema = z.object({
     .min(8)
     .max(20)
     .regex(/^\+?\d+$/),
-  gender: z.enum(["Male", "female"]),
+  gender: z.enum(["Male", "Female"]),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -265,10 +265,10 @@ const Customers: React.FC = () => {
         {isAllCustomersError && (
           <p className="text-red-600 text-lg p-2">{isAllCustomersError}</p>
         )}
-        <h1 className="font-medium text-4xl capitalize">Admins Details</h1>
+        <h1 className="font-medium text-4xl capitalize">Customers Details</h1>
         <div className="flex items-center gap-2">
           <button className="btn bg-[#577656] text-[white]" onClick={openModal}>
-            <BiPlusCircle className="text-xl" /> Add Admin Account
+            <BiPlusCircle className="text-xl" /> Add Customer Account
           </button>
           <button
             onClick={handleDelete}
