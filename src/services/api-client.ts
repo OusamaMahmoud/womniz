@@ -6,7 +6,6 @@ const apiClient = axios.create({
 
 export { CanceledError };
 
-// Request interceptor to add the token to each request
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken"); // Adjust based on your storage method
@@ -27,8 +26,7 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response.status === 401) {
-      // Handle unauthorized errors (e.g., redirect to login)
-      // Optionally remove the token and redirect to login
+      localStorage.removeItem("auth");
       localStorage.removeItem("authToken");
       window.location.href = '/login';
     }

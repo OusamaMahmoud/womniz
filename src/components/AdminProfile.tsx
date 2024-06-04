@@ -105,10 +105,24 @@ const AdminProfile = () => {
       .catch((err) => setTaretAdminError(err.message));
   }, []);
 
-  const [status, setStatus] = useState<string>("Active");
+  // HANDLE STATUS CHANGE
+  const [status, setStatus] = useState<string>("0");
+
+  useEffect(() => {
+    setStatus(targetAdmin?.status);
+  }, [targetAdmin]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setStatus(e.target.value);
+    const newStatus = parseInt(e.target.value);
+    try {
+      const res = apiClient.post(`/admins/${targetAdmin.id}/switchstatus`, {
+        status: newStatus,
+      });
+      console.log(res);
+    } catch (err: any) {
+      console.log(err);
+    }
   };
 
   const handleEditButton = () => {
@@ -143,15 +157,6 @@ const AdminProfile = () => {
       });
   };
 
-  const getBackgroundColor = () => {
-    if (status === "Active") {
-      return "bg-[#ECFDF3]"; // Green background for Active
-    } else if (status === "Inactive") {
-      return "bg-[#FDECEC]"; // Red background for Inactive
-    } else {
-      return "bg-white"; // Default background
-    }
-  };
   const notify = () => toast.success("Create Admin Successfully!");
   const {
     register,
@@ -161,49 +166,48 @@ const AdminProfile = () => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
-const onSubmit = async (data: FormData) => {
-  const formData = new FormData();
+  const onSubmit = async (data: FormData) => {
+    const formData = new FormData();
 
-  formData.append(`name`, data.name);
-  formData.append(`address`, data.address);
-  formData.append(`birthdate`, data.birthdate);
-  formData.append(`country_id`, data.country_id);
-  formData.append(`email`, data.email);
-  formData.append(`password`, data.password);
-  formData.append(`phone`, data.phone);
-  formData.append(`status`, data.status);
-  formData.append(`jobs[0]`, `1`);
-  if (imageFile !== null) {
-    formData.append(`image`, imageFile);
-  }
-  formData.append("_method", "PUT");
-
-  try {
-    setSubmitinLoading(true);
-    const res = await apiClient.post(`/admins/${params.id}`, formData);
-    if (res.status === 200) {
-      setTargetAdmin((prev) => ({
-        ...prev,
-        ...data,
-        image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
-      }));
-      setPhotoPreview( imageFile && URL.createObjectURL(imageFile));
-      notify();
+    formData.append(`name`, data.name);
+    formData.append(`address`, data.address);
+    formData.append(`birthdate`, data.birthdate);
+    formData.append(`country_id`, data.country_id);
+    formData.append(`email`, data.email);
+    formData.append(`password`, data.password);
+    formData.append(`phone`, data.phone);
+    formData.append(`status`, data.status);
+    formData.append(`jobs[0]`, `1`);
+    if (imageFile !== null) {
+      formData.append(`image`, imageFile);
     }
-    setSubmitinLoading(false);
-    setIsModalOpen(false);
-  } catch (error: any) {
-    if (!error?.response) {
-      setCreatingAdminError("No Server Response!!");
-      setSubmitinLoading(false);
-    } else {
-      setCreatingAdminError(error.response.data.data.error);
+    formData.append("_method", "PUT");
+
+    try {
+      setSubmitinLoading(true);
+      const res = await apiClient.post(`/admins/${params.id}`, formData);
+      if (res.status === 200) {
+        setTargetAdmin((prev) => ({
+          ...prev,
+          ...data,
+          image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
+        }));
+        setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
+        notify();
+      }
       setSubmitinLoading(false);
       setIsModalOpen(false);
+    } catch (error: any) {
+      if (!error?.response) {
+        setCreatingAdminError("No Server Response!!");
+        setSubmitinLoading(false);
+      } else {
+        setCreatingAdminError(error.response.data.data.error);
+        setSubmitinLoading(false);
+        setIsModalOpen(false);
+      }
     }
-  }
-};
-
+  };
 
   return (
     <>
@@ -502,12 +506,14 @@ const onSubmit = async (data: FormData) => {
               <p className="capitalize">{targetAdmin.country}</p>
             </div>
             <select
-              className={`select select-bordered ml-4 ${getBackgroundColor()}`}
+              className={`select select-bordered ml-4 ${
+                status == "1" ? "bg-[#ECFDF3]" : "bg-[#FDECEC]"
+              }`}
               value={status}
               onChange={handleChange}
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option value={"1"}>Active</option>
+              <option value={"0"}>Inactive</option>
             </select>
           </div>
           <div className="flex gap-4">

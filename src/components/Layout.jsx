@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import { useAuth } from "../contexts/AuthProvider";
 
 const Layout = () => {
-  const { activeMenu } = useStateContext();
+  const { activeMenu, setActiveMenu } = useStateContext();
+
   return (
     <div>
       <div className="flex relative">

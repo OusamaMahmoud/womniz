@@ -96,7 +96,9 @@ const Admins: React.FC = () => {
   }));
 
   // Fetch Admins ..
-
+  useEffect(() => {
+    console.log(imageFile.size);
+  }, []);
   const { admins, meta, next, prev, isLoading } = useAdmins({
     categories: selectedCategory,
     status: selectedStatus,
@@ -535,28 +537,7 @@ const Admins: React.FC = () => {
                     </p>
                   )}
                 </div>
-                {/* Category Multi-Selector */}
-                <div className="form-control ">
-                  <label className="mb-3">Select Category</label>
-                  <Controller
-                    control={control}
-                    defaultValue={options.map((c) => c.value)}
-                    name="jobs"
-                    render={({ field: { onChange, value, ref } }) => (
-                      <Select
-                        isMulti
-                        ref={ref}
-                        value={options.filter((c) => value.includes(c.value))}
-                        onChange={(val) => onChange(val.map((c) => c.value))}
-                        options={options}
-                        styles={customStyles}
-                      />
-                    )}
-                  />
-                  {errors.jobs && (
-                    <p className="text-red-500 ">{errors.jobs.message}</p>
-                  )}
-                </div>
+
                 <label
                   className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
                 >
@@ -578,12 +559,33 @@ const Admins: React.FC = () => {
                   )} */}
                 </label>
               </div>
-              <div className="modal-action flex justify-around items-center right-80 ">
+              {/* Category Multi-Selector */}
+              <div className="form-control ">
+                <label className="mb-3 mt-5">Select Category</label>
+                <Controller
+                  control={control}
+                  defaultValue={options.map((c) => c.value)}
+                  name="jobs"
+                  render={({ field: { onChange, value, ref } }) => (
+                    <Select
+                      isMulti
+                      ref={ref}
+                      // value={options.filter((c) => value.includes(c.value))}
+                      onChange={(val) => onChange(val.map((c) => c.value))}
+                      options={options}
+                      styles={customStyles}
+                    />
+                  )}
+                />
+                {errors.jobs && (
+                  <p className="text-red-500 ">{errors.jobs.message}</p>
+                )}
+              </div>
+              <div className="modal-action flex justify-around items-center right-80 mt-20 mb-10 ">
                 <button
                   type="submit"
-                  className={`btn px-20 bg-[#577656] text-[white] ${
-                    !isValid && "opacity-50 cursor-not-allowed"
-                  }}`}
+                  disabled={!isValid}
+                  className={`btn px-20 bg-[#577656] text-[white]`}
                 >
                   {isSubmittinLoading ? (
                     <span className="loading loading-spinner"></span>

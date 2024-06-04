@@ -85,7 +85,7 @@ const DataGrid = ({
     {
       label: "Name",
       renderCell: (item) => (
-        <Link to={`/accounts/Admins/${item.id}`} className=" py-5">
+        <Link to={`/accounts/Admins/${item.id}`} className="py-5 text-lg">
           {item.name}
         </Link>
       ),
@@ -93,32 +93,32 @@ const DataGrid = ({
     },
     {
       label: "Email",
-      renderCell: (item) => item.email,
+      renderCell: (item) => <span className="text-lg">{item.email}</span>,
       sort: { sortKey: "email" },
     },
     {
       label: "Phone",
-      renderCell: (item) => item.phone,
+      renderCell: (item) => <span className="text-lg">{item.phone}</span>,
       sort: { sortKey: "phone" },
     },
     {
       label: "Date of Birth",
-      renderCell: (item) => item.age,
+      renderCell: (item) => <span className="text-lg">{item.age}</span>,
       sort: { sortKey: "dateOfBirth" },
     },
     {
       label: "Location",
-      renderCell: (item) => item.address,
+      renderCell: (item) => <span className="text-lg">{item.address}</span>,
       sort: { sortKey: "location" },
     },
     {
       label: "Country",
-      renderCell: (item) => item.country,
+      renderCell: (item) => <span className="text-lg">{item.country}</span>,
       sort: { sortKey: "country" },
     },
     {
       label: "Category",
-      renderCell: (item) => item.category,
+      renderCell: (item) => <span className="text-lg">{item.category}</span>,
       sort: { sortKey: "category" },
     },
     {
@@ -126,13 +126,13 @@ const DataGrid = ({
       renderCell: (item) => {
         if (item.status === 0) {
           return (
-            <p className="flex items-center p-2 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
+            <p className="badge  p-4 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
               <GoDotFill className="text-[#14BA6D]  text-lg" /> Active
             </p>
           );
         } else {
           return (
-            <p className="flex items-center gap-2  p-2 rounded-md text-[#E20000] bg-[#F2F4F7]">
+            <p className="badge  p-4 gap-2 rounded-md  text-[#E20000] bg-[#F2F4F7]">
               <GoDotFill className="text-[#E2000099]  text-xl" /> InActive
             </p>
           );
@@ -144,16 +144,10 @@ const DataGrid = ({
 
   return (
     <>
-      <CompactTable
-        columns={COLUMNS}
-        data={data}
-        theme={theme}
-        sort={sort}
-      />
+      <CompactTable columns={COLUMNS} data={data} theme={theme} sort={sort} />
       <br />
     </>
   );
 };
 
 export default DataGrid;
-

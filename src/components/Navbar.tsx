@@ -38,6 +38,7 @@ const NavButton = ({
 const Navbar = () => {
   const { activeMenu, setActiveMenu, handleClick, setScreenSize, screenSize } =
     useStateContext();
+
   const { auth } = useAuth();
 
   useEffect(() => {
@@ -51,22 +52,28 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    if (screenSize !== undefined && screenSize <= 900) {
+    if (auth === null) {
+      setActiveMenu(false);
+    } else if (screenSize !== undefined && screenSize <= 900) {
       setActiveMenu(false);
     } else {
       setActiveMenu(true);
     }
-  }, [screenSize]);
+  }, [screenSize, auth]);
 
   const handleActiveMenu = () => setActiveMenu(!activeMenu);
   return (
     <div className="flex justify-between p-2 md:ml-6 md:mr-6 relative ">
-      <NavButton
-        title="Menu"
-        customFunc={handleActiveMenu}
-        color={"black"}
-        icon={<AiOutlineMenu />}
-      />
+      <div className="w-20">
+        {auth !== null && (
+          <NavButton
+            title="Menu"
+            customFunc={handleActiveMenu}
+            color={"black"}
+            icon={<AiOutlineMenu />}
+          />
+        )}
+      </div>
       <div className="flex">
         <NavButton
           title="Notification"
