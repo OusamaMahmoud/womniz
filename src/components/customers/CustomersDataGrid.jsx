@@ -14,7 +14,7 @@ const CustomersDataGrid = ({
   tableData,
   selectAll,
   handleCheckAll,
-  selectedAdmins,
+  selectedCustomers,
   handleCheckboxChange,
   metaObject,
 }) => {
@@ -71,7 +71,7 @@ const CustomersDataGrid = ({
           <input
             type="checkbox"
             className="checkbox"
-            checked={selectedAdmins.has(item.id)}
+            checked={selectedCustomers.has(item.id)}
             onChange={() => handleCheckboxChange(item.id)}
           />
         </label>
@@ -127,7 +127,7 @@ const CustomersDataGrid = ({
     },
     {
       label: <span className="text-sm py-2 mr-2">Num of Orders</span>,
-      renderCell: (item) => item.category,
+      renderCell: (item) => 20,
       sort: { sortKey: "category" },
     },
     {
@@ -135,13 +135,13 @@ const CustomersDataGrid = ({
       renderCell: (item) => {
         if (item.status === 0) {
           return (
-            <p className="flex items-center p-2 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
+            <p className="badge flex items-center p-4 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
               <GoDotFill className="text-[#14BA6D]  text-lg" /> Active
             </p>
           );
         } else {
           return (
-            <p className="flex items-center gap-2  p-2 rounded-md text-[#E20000] bg-[#F2F4F7]">
+            <p className="badge flex items-center gap-2  p-4 rounded-md text-[#E20000] bg-[#F2F4F7]">
               <GoDotFill className="text-[#E2000099]  text-lg" /> InActive
             </p>
           );

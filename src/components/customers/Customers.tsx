@@ -3,45 +3,23 @@ import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import avatar from "../../assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 // import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
-import DataGrid from "../DataGrid";
-import useAdmins from "../../hooks/useAdmins";
 import apiClient from "../../services/api-client";
-import adminService from "../../services/admins-service";
 import useCategories from "../../hooks/useCategories";
-import Select from "react-select";
-import { customStyles } from "../CustomSelect";
 import Pagination from "../Pagination";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import useAllAdmins from "../../hooks/useAllAdmins";
 import useCustomers from "../../hooks/useCustomers";
 import customerService from "../../services/customer-service";
 import useAllCustomers from "../../hooks/useAllCustomers";
 import CustomersDataGrid from "../customers/CustomersDataGrid";
-import CustomerProductsGrid from "./CustomerProductsGrid";
-import CustomerProductsFilters from "./CustomerProductsFilters";
-import CustomerOrderId from "./CustomerOrderId";
-import OrdersDetails from "./OrdersDetails";
-import OrdersHistory from "../customers/OrdersHistory";
 // ZOD SCHEMA
-// Custom file validation
-const imageFileSchema = z
-  .custom<File>((file) => file instanceof File)
-  .refine(
-    (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
-    {
-      message: "Invalid file type. Only JPEG, PNG and GIF are allowed.",
-    }
-  )
-  .refine((file) => file.size <= 5 * 1024 * 1024, {
-    message: "File size must be less than 5MB.",
-  });
+
 const schema = z.object({
   name: z
     .string()
@@ -81,6 +59,7 @@ const schema = z.object({
 
 export type FormData = z.infer<typeof schema>;
 export type OptionType = { label: string; value: string };
+
 const Customers: React.FC = () => {
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
@@ -90,7 +69,9 @@ const Customers: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
-  const [selectedAdmins, setSelectedAdmins] = useState<Set<number>>(new Set());
+  const [selectedCustomers, setSelectedCustomers] = useState<Set<number>>(
+    new Set()
+  );
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
 
@@ -111,7 +92,7 @@ const Customers: React.FC = () => {
     value: item.title,
   }));
 
-  // Fetch Admins ..
+  // Fetch Customers ..
 
   const { customers, isLoading, meta, next, prev } = useCustomers({
     categories: selectedCategory,
@@ -122,9 +103,6 @@ const Customers: React.FC = () => {
   });
 
   const recordsPerPage = meta.per_page || 5;
-  // const indexOfLastRecord = currentPage * recordsPerPage;
-  // const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  // const currentRecords = admins;
   const nPages = Math.ceil(customers.length / recordsPerPage);
 
   // Handle React Hook Form
@@ -155,43 +133,43 @@ const Customers: React.FC = () => {
   };
 
   useEffect(() => {
-    setIsDeleteEnabled(selectedAdmins.size > 0);
-  }, [selectedAdmins]);
+    setIsDeleteEnabled(selectedCustomers.size > 0);
+  }, [selectedCustomers]);
 
   const handleCheckAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
       const allAdminIds = customers.map((customer) => customer.id);
-      setSelectedAdmins(new Set(allAdminIds));
+      setSelectedCustomers(new Set(allAdminIds));
     } else {
-      setSelectedAdmins(new Set());
+      setSelectedCustomers(new Set());
     }
   };
 
   const handleCheckboxChange = (id: number) => {
-    const newSelectedAdmins = new Set(selectedAdmins);
-    if (newSelectedAdmins.has(id)) {
-      newSelectedAdmins.delete(id);
+    const newSelectedCustomers = new Set(selectedCustomers);
+    if (newSelectedCustomers.has(id)) {
+      newSelectedCustomers.delete(id);
     } else {
-      newSelectedAdmins.add(id);
+      newSelectedCustomers.add(id);
     }
-    setSelectedAdmins(newSelectedAdmins);
+    setSelectedCustomers(newSelectedCustomers);
   };
 
   const handleDelete = async () => {
-    if (selectedAdmins.size > 0) {
+    if (selectedCustomers.size > 0) {
       const data = new FormData();
-      Array.from(selectedAdmins).forEach((id, index) => {
+      Array.from(selectedCustomers).forEach((id, index) => {
         data.append(`ids[${index}]`, id.toString());
       });
       try {
-        const response = await apiClient.post("/customers/delete", data);
-        toast.success("Admins deleted successfully");
+        const response = await apiClient.post("/users/delete", data);
+        console.log(response);
+        toast.success("Customers deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
-        // Optionally, refetch the data or update the state to remove the deleted admins
       } catch (error) {
-        toast.error("Failed to delete admins");
+        toast.error("Failed to delete Customers");
       }
     }
   };
@@ -354,7 +332,7 @@ const Customers: React.FC = () => {
             handleCheckAll={handleCheckAll}
             selectAll={selectAll}
             handleCheckboxChange={handleCheckboxChange}
-            selectedAdmins={selectedAdmins}
+            selectedCustomers={selectedCustomers}
             metaObject={meta}
           />
           <Pagination
@@ -503,14 +481,16 @@ const Customers: React.FC = () => {
                     <span className="label-text">Gender</span>
                   </label>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="text"
+                    <select
                       id="address"
-                      className={`input input-bordered grow ${
+                      className={`select select-bordered grow ${
                         errors.gender && "border-[red]"
                       }`}
                       {...register("gender")}
-                    />
+                    >
+                      <option value={"Male"}>Male</option>
+                      <option value={"Female"}>Female</option>
+                    </select>
                     {errors.gender && (
                       <RiErrorWarningLine
                         color="red"
@@ -569,6 +549,7 @@ const Customers: React.FC = () => {
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
                   type="submit"
+                  disabled={!isValid}
                   className={`btn px-20 bg-[#577656] text-[white]`}
                 >
                   {isSubmittinLoading ? (

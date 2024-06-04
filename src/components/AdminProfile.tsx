@@ -168,7 +168,6 @@ const AdminProfile = () => {
   });
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
-
     formData.append(`name`, data.name);
     formData.append(`address`, data.address);
     formData.append(`birthdate`, data.birthdate);
@@ -546,7 +545,7 @@ const AdminProfile = () => {
           </div>
           <div className="flex flex-col gap-1 mt-5">
             <span className="font-bold">Email</span>
-            <span className="text-[gray]">{targetAdmin.birthdate}</span>
+            <span className="text-[gray]">{targetAdmin.email}</span>
           </div>
           <div className="flex flex-col gap-1 mt-5">
             <span className="font-bold">Phone Number</span>

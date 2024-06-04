@@ -21,13 +21,9 @@ import DiscountModal from "../Modal";
 import CustomerProductsGrid from "./CustomerProductsGrid";
 
 const schema = z.object({
-  name: z
-    .string()
-    .min(3)
-    .max(255)
-    .regex(/^[a-zA-Z\s]*$/),
+  name: z.string().min(3).max(255),
   email: z.string().email(),
-  password: z.string().min(8).max(50),
+  password: z.union([z.string().length(0), z.string().min(8).max(50)]),
   birthdate: z
     .string()
     .refine((value) => {
@@ -54,7 +50,7 @@ const schema = z.object({
     .min(8)
     .max(20)
     .regex(/^\+?\d+$/),
-  gender: z.enum(["Male", "female"]),
+  gender: z.enum(["Male", "Female"]),
 });
 type FormData = z.infer<typeof schema>;
 const CustomerProfile = () => {
@@ -114,8 +110,10 @@ const CustomerProfile = () => {
 
   const params = useParams();
   const navigate = useNavigate();
-  const [targetAdmin, setTargetAdmin] = useState<Customer>({} as Customer);
-  const [targetAdminError, setTaretAdminError] = useState<string>("");
+  const [targetCustomer, setTargetCustomer] = useState<Customer>(
+    {} as Customer
+  );
+  const [targetCustomerError, setTaretCustomerError] = useState<string>("");
 
   const { categories } = useCategories();
 
@@ -145,16 +143,30 @@ const CustomerProfile = () => {
     apiClient
       .get<{ data: Customer }>(`/users/${params.id}`)
       .then((res) => {
-        setTargetAdmin(res.data.data);
-        if (targetAdmin) setPhotoPreview(res.data.data.image);
+        setTargetCustomer(res.data.data);
+        if (targetCustomer) setPhotoPreview(res.data.data.image);
       })
-      .catch((err) => setTaretAdminError(err.message));
+      .catch((err) => setTaretCustomerError(err.message));
   }, []);
 
-  const [status, setStatus] = useState<string>("Active");
+  // HANDLE STATUS CHANGE
+  const [status, setStatus] = useState<string>("0");
+
+  useEffect(() => {
+    setStatus(targetCustomer?.status);
+  }, [targetCustomer]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setStatus(e.target.value);
+    const newStatus = parseInt(e.target.value);
+    try {
+      const res = apiClient.post(`/users/${targetCustomer.id}/switchstatus`, {
+        status: newStatus,
+      });
+      console.log(res);
+    } catch (err: any) {
+      console.log(err);
+    }
   };
 
   const handleEditButton = () => {
@@ -189,15 +201,6 @@ const CustomerProfile = () => {
       });
   };
 
-  const getBackgroundColor = () => {
-    if (status === "Active") {
-      return "bg-[#ECFDF3]"; // Green background for Active
-    } else if (status === "Inactive") {
-      return "bg-[#FDECEC]"; // Red background for Inactive
-    } else {
-      return "bg-white"; // Default background
-    }
-  };
   const notify = () => toast.success("Create Admin Successfully!");
   const [isProductsComponentExist, setIsProductsComponentExist] =
     useState(false);
@@ -208,61 +211,77 @@ const CustomerProfile = () => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-
     const formData = new FormData();
-
-    formData.append(`email`, data.email);
     formData.append(`name`, data.name);
+    formData.append(`birthdate`, data.birthdate);
+    formData.append(`email`, data.email);
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
-    formData.append(`birthdate`, data.birthdate);
     formData.append(`gender`, data.gender);
-    formData.append(`country`, "Egypt");
+    formData.append(`jobs[0]`, `1`);
+    if (imageFile !== null) {
+      formData.append(`image`, imageFile);
+    }
     formData.append(`status`, "1");
     formData.append(`city`, "");
     formData.append(`addresses`, "");
-    formData.append(`image`, imageFile);
+    formData.append("_method", "PUT");
 
     try {
       setSubmitinLoading(true);
-      const res = await customerService.create<any>(formData);
+      const res = await apiClient.post(`/users/${params.id}`, formData);
       console.log(res);
+      if (res.status === 200) {
+        setTargetCustomer((prev) => ({
+          ...prev,
+          ...data,
+          image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
+        }));
+        setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
+        notify();
+      }
       setSubmitinLoading(false);
       setIsModalOpen(false);
-      notify();
-      setTrigerFetch(!trigerFetch);
     } catch (error: any) {
-      console.log(error);
-      setCreatingCustomerError(error.response.data.data.error);
-      setSubmitinLoading(false);
+      if (!error?.response) {
+        setCreatingCustomerError("No Server Response!!");
+        setSubmitinLoading(false);
+      } else {
+        setCreatingCustomerError(error.response.data.data.error);
+        setSubmitinLoading(false);
+        setIsModalOpen(false);
+      }
     }
   };
-
+  useEffect(() => {
+    console.log(targetCustomer.image);
+    console.log(photoPreview);
+  });
   return (
     <>
       {/* {isProductsComponentExist && <CustomerProductsGrid />} */}
       {isModalOpen && (
         <div className="modal modal-open tracking-wide">
           <div className="modal-box max-w-3xl px-10">
-            <h3 className="font-bold text-lg text-left">Add Customer</h3>
-            <div className="flex justify-center items-center my-8">
-              {photoPreview ? (
-                <img
-                  src={photoPreview}
-                  alt="Preview"
-                  className="w-36 h-36 object-cover rounded-full"
-                />
-              ) : (
-                <img src={avatar} alt="" />
-              )}
+            <h3 className="font-bold text-lg text-left">Edit Customer</h3>
+            <div className="relative flex justify-center items-center my-8">
+              <div className="flex justify-center items-center my-8">
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt="Preview"
+                    className="w-36 h-36 object-cover rounded-full"
+                  />
+                ) : (
+                  <img src={avatar} alt="" />
+                )}
+              </div>
             </div>
             {creatingCustomerError && (
               <p className="text-lg text-red-500 p-2 my-2">
@@ -280,6 +299,7 @@ const CustomerProfile = () => {
                     <input
                       type="text"
                       id="name"
+                      defaultValue={targetCustomer.name}
                       className={`input input-bordered  grow ${
                         errors.name && "border-[red]"
                       }`}
@@ -306,6 +326,7 @@ const CustomerProfile = () => {
                     <input
                       type="date"
                       id="birthdate"
+                      defaultValue={targetCustomer.birthdate}
                       className={`input input-bordered grow ${
                         errors.birthdate && "border-[red]"
                       }`}
@@ -333,6 +354,7 @@ const CustomerProfile = () => {
                     <input
                       type="text"
                       id="phone"
+                      defaultValue={targetCustomer.phone}
                       className={`input input-bordered grow ${
                         errors.phone && "border-[red]"
                       } `}
@@ -359,6 +381,7 @@ const CustomerProfile = () => {
                     <input
                       type="email"
                       id="email"
+                      defaultValue={targetCustomer.email}
                       className={`input input-bordered ${
                         errors.email && "border-[red]"
                       }  grow`}
@@ -382,14 +405,17 @@ const CustomerProfile = () => {
                     <span className="label-text">Gender</span>
                   </label>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="text"
+                    <select
                       id="address"
-                      className={`input input-bordered grow ${
+                      defaultValue={targetCustomer.gender}
+                      className={`select select-bordered grow ${
                         errors.gender && "border-[red]"
                       }`}
                       {...register("gender")}
-                    />
+                    >
+                      <option value={"Male"}>Male</option>
+                      <option value={"Female"}>Female</option>
+                    </select>
                     {errors.gender && (
                       <RiErrorWarningLine
                         color="red"
@@ -453,7 +479,7 @@ const CustomerProfile = () => {
                   {isSubmittinLoading ? (
                     <span className="loading loading-spinner"></span>
                   ) : (
-                    `Update`
+                    `Save`
                   )}
                 </button>
                 <button
@@ -467,8 +493,8 @@ const CustomerProfile = () => {
           </div>
         </div>
       )}
-      {targetAdminError && (
-        <p className="text-lg p-2 text-red-600">{targetAdminError}</p>
+      {targetCustomerError && (
+        <p className="text-lg p-2 text-red-600">{targetCustomerError}</p>
       )}
 
       <dialog
@@ -532,25 +558,27 @@ const CustomerProfile = () => {
           <div className="flex gap-3 items-start">
             <div className="w-20 h-20">
               <img
-                src={targetAdmin.image}
+                src={targetCustomer.image}
                 alt="avatar"
                 className="object-cover w-full h-full rounded-full"
               />
             </div>
             <div className="ml-2">
               <p className="text-xl font-bold capitalize ">
-                {targetAdmin.name}
+                {targetCustomer.name}
               </p>
               <p className="capitalize">Customer</p>
-              <p className="capitalize">{targetAdmin.country}</p>
+              <p className="capitalize">{targetCustomer.country}</p>
             </div>
             <select
-              className={`select select-bordered ml-4 ${getBackgroundColor()}`}
+              className={`select select-bordered ml-4 ${
+                status == "1" ? "bg-[#ECFDF3]" : "bg-[#FDECEC]"
+              }`}
               value={status}
               onChange={handleChange}
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option value={"1"}>Active</option>
+              <option value={"0"}>Inactive</option>
             </select>
           </div>
           <div className="flex gap-4">
@@ -576,20 +604,22 @@ const CustomerProfile = () => {
               <div className="flex justify-between max-w-xs mt-5">
                 <div className="flex flex-col gap-1">
                   <span className="font-bold">Name</span>
-                  <span>{targetAdmin.name}</span>
+                  <span>{targetCustomer.name}</span>
                 </div>
                 <div className="flex flex-col gap-1 mt-5">
                   <span className="font-bold">Date of Birth</span>
-                  <span className="text-[gray]">{targetAdmin.birthdate}</span>
+                  <span className="text-[gray]">
+                    {targetCustomer.birthdate}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-col gap-1 mt-5">
                 <span className="font-bold">Email</span>
-                <span className="text-[gray]">{targetAdmin.birthdate}</span>
+                <span className="text-[gray]">{targetCustomer.birthdate}</span>
               </div>
               <div className="flex flex-col gap-1 mt-5">
                 <span className="font-bold">Phone Number</span>
-                <span className="text-[gray]">{targetAdmin.phone}</span>
+                <span className="text-[gray]">{targetCustomer.phone}</span>
               </div>
               <div className="flex flex-col gap-1 mt-5">
                 <span className="font-bold">Bio</span>

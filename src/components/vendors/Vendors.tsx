@@ -22,6 +22,7 @@ import Select from "react-select";
 import { customStyles } from "../CustomSelect";
 import VendorDataGrid from "./VendorDataGrid";
 import useVendors from "../../hooks/useVendors";
+import useAllVendors from "../../hooks/useAllVendors";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -31,40 +32,19 @@ const schema = z.object({
     .max(255)
     .regex(/^[a-zA-Z\s]*$/),
   email: z.string().email(),
-  password: z.string().min(8).max(50),
-  birthdate: z
-    .string()
-    .refine((value) => {
-      // Validate date format (YYYY-MM-DD)
-      const regex = /^\d{4}-\d{2}-\d{2}$/;
-      return regex.test(value);
-    }, "Invalid date format (YYYY-MM-DD)")
-    .refine((value) => {
-      // Validate age (must be 18 years or older)
-      const birthDate = new Date(value);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        return age - 1;
-      }
-      return age;
-    }, "Must be 18 years or older"),
-  address: z.string().min(3).max(255),
+  contactPersonName: z.string().min(3).max(255),
   phone: z
-    .string()
-    .min(8)
-    .max(20)
-    .regex(/^\+?\d+$/),
-  // image: z
-  //   .any()
-  //   .refine((file) => file && file.length > 0, "Profile picture is required"),
+  .string()
+  .min(8)
+  .max(20)
+  .regex(/^\+?\d+$/),
+  hQAdress: z.string().min(3).max(255),
+  shippingAdress: z.string().min(3).max(255),
   jobs: z.array(z.string()).min(1),
-  status: z.enum(["0", "1"]).default("0"),
-  country_id: z.enum(["2", "1"]).default("2"),
+  commission: z.string().min(3).max(255),
+  password: z.string().min(8).max(50),
+  address: z.string().min(3).max(255),
+  bankName:z.string().min(8).max(50),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -78,7 +58,9 @@ const Vendors = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
-  const [selectedAdmins, setSelectedAdmins] = useState<Set<number>>(new Set());
+  const [selectedVendors, setSelectedVendors] = useState<Set<number>>(
+    new Set()
+  );
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
 
@@ -100,7 +82,7 @@ const Vendors = () => {
 
   // Fetch Admins ..
 
-  const {vendors , meta, next, prev, isLoading } = useVendors({
+  const { vendors, meta, next, prev, isLoading } = useVendors({
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
@@ -109,9 +91,6 @@ const Vendors = () => {
   });
 
   const recordsPerPage = meta.per_page || 5;
-  // const indexOfLastRecord = currentPage * recordsPerPage;
-  // const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  // const currentRecords = admins;
   const nPages = Math.ceil(vendors.length / recordsPerPage);
 
   // Handle React Hook Form
@@ -143,66 +122,64 @@ const Vendors = () => {
   };
 
   useEffect(() => {
-    setIsDeleteEnabled(selectedAdmins.size > 0);
-  }, [selectedAdmins]);
+    setIsDeleteEnabled(selectedVendors.size > 0);
+  }, [selectedVendors]);
 
   const handleCheckAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
-      const allAdminIds = vendors.map((admin) => admin.id);
-      setSelectedAdmins(new Set(allAdminIds));
+      const allVendorsIds = vendors.map((admin) => admin.id);
+      setSelectedVendors(new Set(allVendorsIds));
     } else {
-      setSelectedAdmins(new Set());
+      setSelectedVendors(new Set());
     }
   };
 
   const handleCheckboxChange = (id: number) => {
-    const newSelectedAdmins = new Set(selectedAdmins);
-    if (newSelectedAdmins.has(id)) {
-      newSelectedAdmins.delete(id);
+    const newSelectedVendors = new Set(selectedVendors);
+    if (newSelectedVendors.has(id)) {
+      newSelectedVendors.delete(id);
     } else {
-      newSelectedAdmins.add(id);
+      newSelectedVendors.add(id);
     }
-    setSelectedAdmins(newSelectedAdmins);
+    setSelectedVendors(newSelectedVendors);
   };
 
   const handleDelete = async () => {
-    if (selectedAdmins.size > 0) {
+    if (selectedVendors.size > 0) {
       const data = new FormData();
-      Array.from(selectedAdmins).forEach((id, index) => {
+      Array.from(selectedVendors).forEach((id, index) => {
         data.append(`ids[${index}]`, id.toString());
       });
       try {
-        const response = await apiClient.post("/admins/delete", data);
-        toast.success("Admins deleted successfully");
+        const response = await apiClient.post("/vendors/delete", data);
+        toast.success("Vendors deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
         // Optionally, refetch the data or update the state to remove the deleted admins
       } catch (error) {
-        toast.error("Failed to delete admins");
+        toast.error("Failed to delete Vendors");
       }
     }
   };
   // Toastify
-  const notify = () => toast.success("Create Admin Successfully!");
+  const notify = () => toast.success("Create Vendor Successfully!");
 
   // Handle Submit
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
 
     formData.append(`address`, data.address);
-    formData.append(`birthdate`, data.birthdate);
-    formData.append(`country_id`, data.country_id);
     formData.append(`email`, data.email);
     formData.append(`name`, data.name);
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
-    formData.append(`status`, data.status);
     formData.append(`image`, imageFile);
     formData.append(`jobs[0]`, `1`);
     try {
       setSubmitinLoading(true);
       const res = await adminsService.create<any>(formData);
+      console.log(res);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
@@ -212,11 +189,11 @@ const Vendors = () => {
       setSubmitinLoading(false);
     }
   };
-  const { alladmins, isAllAdminsError } = useAllAdmins();
+  const { allVendors, isAllVendorsError } = useAllVendors();
   const exportToExcel = () => {
     // Create a new workbook and a sheet
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(alladmins);
+    const ws = XLSX.utils.json_to_sheet(allVendors);
 
     // Append the sheet to the workbook
     XLSX.utils.book_append_sheet(wb, ws, "Admins");
@@ -243,8 +220,8 @@ const Vendors = () => {
 
       {/* ACTION BUTTONS */}
       <div className="flex justify-between items-center mb-5">
-        {isAllAdminsError && (
-          <p className="text-red-600 text-lg p-2">{isAllAdminsError}</p>
+        {isAllVendorsError && (
+          <p className="text-red-600 text-lg p-2">{isAllVendorsError}</p>
         )}
         <h1 className="font-medium text-4xl capitalize">Vendors Details</h1>
         <div className="flex items-center gap-2">
@@ -341,7 +318,7 @@ const Vendors = () => {
             handleCheckAll={handleCheckAll}
             selectAll={selectAll}
             handleCheckboxChange={handleCheckboxChange}
-            selectedAdmins={selectedAdmins}
+            selectedAdmins={selectedVendors}
             metaObject={meta}
           />
           <Pagination
@@ -360,7 +337,9 @@ const Vendors = () => {
       {isModalOpen && (
         <div className="modal modal-open tracking-wide ">
           <div className="modal-box max-w-4xl px-10 ">
-            <h3 className="font-bold text-lg text-left">Add Regular Admin</h3>
+            <h3 className="font-bold text-2xl text-left my-10">
+              Add New Vendor
+            </h3>
             <div className="flex justify-center items-center my-8 shadow-md p-6">
               {photoPreview ? (
                 <img
@@ -412,24 +391,24 @@ const Vendors = () => {
                   </label>
                   <div className="flex items-center gap-2">
                     <input
-                      type="date"
-                      id="birthdate"
+                      type="email"
+                      id="email"
                       className={`input input-bordered grow ${
-                        errors.birthdate && "border-[red]"
+                        errors.email && "border-[red]"
                       }`}
-                      {...register("birthdate")}
+                      {...register("email")}
                     />
 
-                    {errors.birthdate && (
+                    {errors.email && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
                       />
                     )}
                   </div>
-                  {errors.birthdate && (
+                  {errors.email && (
                     <p className="text-[red] text-xs mt-3 ">
-                      {errors.birthdate.message}
+                      {errors.email.message}
                     </p>
                   )}
                 </div>
@@ -440,10 +419,36 @@ const Vendors = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
-                      id="phone"
+                      id="contactPersonName"
                       className={`input input-bordered grow ${
                         errors.phone && "border-[red]"
                       } `}
+                      {...register("contactPersonName")}
+                    />
+                    {errors.contactPersonName && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.contactPersonName && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.contactPersonName.message}
+                    </p>
+                  )}
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Phone Number</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="tel"
+                      id="phone"
+                      className={`input input-bordered ${
+                        errors.email && "border-[red]"
+                      }  grow`}
                       {...register("phone")}
                     />
                     {errors.phone && (
@@ -461,53 +466,27 @@ const Vendors = () => {
                 </div>
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Phone Number</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="email"
-                      id="email"
-                      className={`input input-bordered ${
-                        errors.email && "border-[red]"
-                      }  grow`}
-                      {...register("email")}
-                    />
-                    {errors.email && (
-                      <RiErrorWarningLine
-                        color="red"
-                        className="w-6 h-6 ml-1"
-                      />
-                    )}
-                  </div>
-                  {errors.email && (
-                    <p className="text-[red] text-xs mt-3 ">
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
-                <div className="form-control">
-                  <label className="label">
                     <span className="label-text">HQ Adress</span>
                   </label>
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
-                      id="address"
+                      id="hQAdress"
                       className={`input input-bordered grow ${
-                        errors.address && "border-[red]"
+                        errors.hQAdress && "border-[red]"
                       }`}
-                      {...register("address")}
+                      {...register("hQAdress")}
                     />
-                    {errors.address && (
+                    {errors.hQAdress && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
                       />
                     )}
                   </div>
-                  {errors.address && (
+                  {errors.hQAdress && (
                     <p className="text-[red] text-xs mt-3 ">
-                      {errors.address.message}
+                      {errors.hQAdress.message}
                     </p>
                   )}
                 </div>
@@ -517,23 +496,23 @@ const Vendors = () => {
                   </label>
                   <div className="flex items-center gap-2">
                     <input
-                      type="password"
-                      id="password"
+                      type="text"
+                      id="shippingAdress"
                       className={`input input-bordered grow ${
                         errors.email && "border-[red]"
                       }`}
-                      {...register("password")}
+                      {...register("shippingAdress")}
                     />
-                    {errors.email && (
+                    {errors.shippingAdress && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
                       />
                     )}
                   </div>
-                  {errors.password && (
+                  {errors.shippingAdress && (
                     <p className="text-[red] text-xs mt-3 ">
-                      {errors.password.message}
+                      {errors.shippingAdress.message}
                     </p>
                   )}
                 </div>
@@ -542,13 +521,13 @@ const Vendors = () => {
                   <label className="mb-3">Select Category</label>
                   <Controller
                     control={control}
-                    defaultValue={options.map((c) => c.value)}
+                    // defaultValue={options.map((c) => c.value)}
                     name="jobs"
                     render={({ field: { onChange, value, ref } }) => (
                       <Select
                         isMulti
                         ref={ref}
-                        value={options.filter((c) => value.includes(c.value))}
+                        // value={options.filter((c) => value.includes(c.value))}
                         onChange={(val) => onChange(val.map((c) => c.value))}
                         options={options}
                         styles={customStyles}
@@ -565,23 +544,23 @@ const Vendors = () => {
                   </label>
                   <div className="flex items-center gap-2">
                     <input
-                      type="password"
-                      id="password"
+                      type="text"
+                      id="commission"
                       className={`input input-bordered grow ${
-                        errors.email && "border-[red]"
+                        errors.commission && "border-[red]"
                       }`}
-                      {...register("password")}
+                      {...register("commission")}
                     />
-                    {errors.email && (
+                    {errors.commission && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
                       />
                     )}
                   </div>
-                  {errors.password && (
+                  {errors.commission && (
                     <p className="text-[red] text-xs mt-3 ">
-                      {errors.password.message}
+                      {errors.commission.message}
                     </p>
                   )}
                 </div>
@@ -598,7 +577,7 @@ const Vendors = () => {
                       }`}
                       {...register("password")}
                     />
-                    {errors.email && (
+                    {errors.password && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
@@ -625,120 +604,141 @@ const Vendors = () => {
                     name="image"
                     onChange={handleFileChange}
                   />
-                  {/* {errors.image && (
-                    <p className="absolute text-red-700 text-lg top-20 -left-40 w-96">
-                      {errors.image?.message}
-                    </p>
-                  )} */}
                 </label>
               </div>
               <div className="my-4 shadow-md p-6">
                 <h1 className="text-xl p-2">Bank Details</h1>
+                <div className="form-control max-w-sm mb-10">
+                  <label className="label">
+                    <span className="label-text">Bank name</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      id="bankName"
+                      className={`input input-bordered grow ${
+                        errors.bankName && "border-[red]"
+                      }`}
+                      {...register("bankName")}
+                    />
+                    {errors.bankName && (
+                      <RiErrorWarningLine
+                        color="red"
+                        className="w-6 h-6 ml-1"
+                      />
+                    )}
+                  </div>
+                  {errors.bankName && (
+                    <p className="text-[red] text-xs mt-3 ">
+                      {errors.bankName.message}
+                    </p>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-8">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Bank account name</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="password"
-                      id="password"
-                      className={`input input-bordered grow ${
-                        errors.email && "border-[red]"
-                      }`}
-                      {...register("password")}
-                    />
-                    {errors.email && (
-                      <RiErrorWarningLine
-                        color="red"
-                        className="w-6 h-6 ml-1"
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">Bank account name</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        id="password"
+                        className={`input input-bordered grow ${
+                          errors.email && "border-[red]"
+                        }`}
+                        {...register("password")}
                       />
+                      {errors.email && (
+                        <RiErrorWarningLine
+                          color="red"
+                          className="w-6 h-6 ml-1"
+                        />
+                      )}
+                    </div>
+                    {errors.password && (
+                      <p className="text-[red] text-xs mt-3 ">
+                        {errors.password.message}
+                      </p>
                     )}
                   </div>
-                  {errors.password && (
-                    <p className="text-[red] text-xs mt-3 ">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Account name</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="password"
-                      id="password"
-                      className={`input input-bordered grow ${
-                        errors.email && "border-[red]"
-                      }`}
-                      {...register("password")}
-                    />
-                    {errors.email && (
-                      <RiErrorWarningLine
-                        color="red"
-                        className="w-6 h-6 ml-1"
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">Account name</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        id="password"
+                        className={`input input-bordered grow ${
+                          errors.email && "border-[red]"
+                        }`}
+                        {...register("password")}
                       />
+                      {errors.email && (
+                        <RiErrorWarningLine
+                          color="red"
+                          className="w-6 h-6 ml-1"
+                        />
+                      )}
+                    </div>
+                    {errors.password && (
+                      <p className="text-[red] text-xs mt-3 ">
+                        {errors.password.message}
+                      </p>
                     )}
                   </div>
-                  {errors.password && (
-                    <p className="text-[red] text-xs mt-3 ">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">IBAN Number</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="password"
-                      id="password"
-                      className={`input input-bordered grow ${
-                        errors.email && "border-[red]"
-                      }`}
-                      {...register("password")}
-                    />
-                    {errors.email && (
-                      <RiErrorWarningLine
-                        color="red"
-                        className="w-6 h-6 ml-1"
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">IBAN Number</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        id="password"
+                        className={`input input-bordered grow ${
+                          errors.email && "border-[red]"
+                        }`}
+                        {...register("password")}
                       />
+                      {errors.email && (
+                        <RiErrorWarningLine
+                          color="red"
+                          className="w-6 h-6 ml-1"
+                        />
+                      )}
+                    </div>
+                    {errors.password && (
+                      <p className="text-[red] text-xs mt-3 ">
+                        {errors.password.message}
+                      </p>
                     )}
                   </div>
-                  {errors.password && (
-                    <p className="text-[red] text-xs mt-3 ">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">SWIFT Number</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="password"
-                      id="password"
-                      className={`input input-bordered grow ${
-                        errors.email && "border-[red]"
-                      }`}
-                      {...register("password")}
-                    />
-                    {errors.email && (
-                      <RiErrorWarningLine
-                        color="red"
-                        className="w-6 h-6 ml-1"
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">SWIFT Number</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        id="password"
+                        className={`input input-bordered grow ${
+                          errors.email && "border-[red]"
+                        }`}
+                        {...register("password")}
                       />
+                      {errors.email && (
+                        <RiErrorWarningLine
+                          color="red"
+                          className="w-6 h-6 ml-1"
+                        />
+                      )}
+                    </div>
+                    {errors.password && (
+                      <p className="text-[red] text-xs mt-3 ">
+                        {errors.password.message}
+                      </p>
                     )}
                   </div>
-                  {errors.password && (
-                    <p className="text-[red] text-xs mt-3 ">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
                 </div>
               </div>
               <div className="modal-action flex justify-around items-center right-80 ">
