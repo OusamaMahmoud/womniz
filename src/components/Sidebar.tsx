@@ -154,11 +154,11 @@ const Sidebar = () => {
             </NavLink>
             <NavLink
               onClick={handleCloseSideBar}
-              to={`/`}
+              to={`/roles-permissions`}
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={permissions} alt="home" />
-              <span className="capitalize ">Permissions</span>
+              <span className="capitalize ">Roles & Permissions</span>
             </NavLink>
             <NavLink
               onClick={handleCloseSideBar}

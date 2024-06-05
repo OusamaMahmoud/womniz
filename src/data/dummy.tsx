@@ -76,18 +76,20 @@ export const links = [
   //     },
   //   ],
   // },
-  // {
-  //   title: "Games",
-  //   icon: <PiCodesandboxLogoThin />,
-  //   links: [
-  //     {
-  //       name: "Scratch Coupon",
-  //     },
-  //     {
-  //       name: "Spin the Wheel",
-  //     },
-  //   ],
-  // },
+  {
+    title: "Games",
+    icon: <PiCodesandboxLogoThin />,
+    links: [
+      {
+        name: "Scratch Coupon",
+        link: "/games/scratch",
+      },
+      {
+        name: "Spin the Wheel",
+        link: "/games/spin",
+      },
+    ],
+  },
 ];
 export const clothes = [
   {

@@ -13,6 +13,9 @@ import UnauthorizedPage from "./components/UnauthorizedPage";
 import MissingPage from "./components/MissingPage";
 import Clothes from "./components/products/clothes/Clothes";
 import NewClothesProduct from "./components/products/clothes/NewClothesProduct";
+import ScratchCoupon from "./components/games/ScratchCoupon";
+import SpinTheWheel from "./components/games/SpinTheWheel";
+import Roles from "./components/roles-and-permtions/Roles";
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route path="unauthorized" element={<UnauthorizedPage />} />
 
+        <Route path="roles-permissions" element={<Roles />} />
+        <Route path="games/scratch" element={<ScratchCoupon />} />
+        <Route path="games/spin" element={<SpinTheWheel />} />
         <Route path="login" element={<Login />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="accounts/admins" element={<Admins />} />
@@ -27,7 +33,10 @@ function App() {
         <Route path="accounts/customers" element={<Customers />} />
         <Route path="accounts/customers/:id" element={<CustomerProfile />} />
         <Route path="products/clothes" element={<Clothes />} />
-        <Route path="products/clothes/new-product" element={<NewClothesProduct />} />
+        <Route
+          path="products/clothes/new-product"
+          element={<NewClothesProduct />}
+        />
         <Route
           path="see-all-customers-orders/:id"
           element={<CustomerOrders />}
