@@ -20,6 +20,7 @@ import Pagination from "./Pagination";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllAdmins from "../hooks/useAllAdmins";
+import axios from "axios";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -89,16 +90,11 @@ const Admins: React.FC = () => {
   const [paginationPage, setPaginationPage] = useState<string>("1");
   // const [recordsPerPage] = useState(10);
   const { categories } = useCategories();
-
   const options: OptionType[] = categories.map((item) => ({
     label: item.title,
     value: item.title,
   }));
 
-  // Fetch Admins ..
-  useEffect(() => {
-    console.log(imageFile.size);
-  }, []);
   const { admins, meta, next, prev, isLoading } = useAdmins({
     categories: selectedCategory,
     status: selectedStatus,
@@ -107,10 +103,8 @@ const Admins: React.FC = () => {
     page: paginationPage,
   });
 
+
   const recordsPerPage = meta.per_page || 5;
-  // const indexOfLastRecord = currentPage * recordsPerPage;
-  // const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  // const currentRecords = admins;
   const nPages = Math.ceil(admins.length / recordsPerPage);
 
   // Handle React Hook Form
@@ -118,6 +112,7 @@ const Admins: React.FC = () => {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -132,12 +127,27 @@ const Admins: React.FC = () => {
     setPhotoPreview(null);
   };
 
-  // Handle Photo Create
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      // If a file is uploaded
       const file = e.target.files[0];
       setImageFile(file);
       setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const getDefaultImageFile = async () => {
+    // Create a default image file (you can use any default image file)
+    // For example, create a new File object with a default image URL
+    const defaultImageUrl = "https://placehold.co/100x100";
+    const defaultImageFileName = "default-image.png";
+    try {
+      const response = await fetch(defaultImageUrl);
+      console.log(response);
+      const blob = await response.blob();
+      return new File([blob], defaultImageFileName, { type: "image/png" });
+    } catch (error: any) {
+      throw new Error("Failed to fetch default image: " + error.message);
     }
   };
 
@@ -197,14 +207,34 @@ const Admins: React.FC = () => {
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
     formData.append(`status`, data.status);
-    formData.append(`image`, imageFile);
     formData.append(`jobs[0]`, `1`);
+
+    if (
+      imageFile &&
+      Object.keys(imageFile).length === 0 &&
+      imageFile.constructor === Object
+    ) {
+      try {
+        const defaultImageFile = await getDefaultImageFile();
+        formData.append(`image`, defaultImageFile);
+      } catch (error) {
+        console.error("Error fetching default image:", error);
+      }
+    } else {
+      formData.append(`image`, imageFile);
+      console.log(imageFile)
+      console.log(photoPreview)
+    }
+
     try {
       setSubmitinLoading(true);
       const res = await adminService.create<any>(formData);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
+      reset();
+      setImageFile({} as File);
+      setPhotoPreview("");
       setTrigerFetch(!trigerFetch);
     } catch (error: any) {
       setCreatingAdminError(error.response.data.data.error);

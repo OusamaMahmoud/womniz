@@ -14,6 +14,8 @@ import useCategories from "../hooks/useCategories";
 import Select from "react-select";
 import { customStyles } from "./CustomSelect";
 import { FaEdit } from "react-icons/fa";
+
+//FORM SCHEMA
 const schema = z.object({
   name: z
     .string()
@@ -55,7 +57,9 @@ const schema = z.object({
   status: z.enum(["0", "1"]).default("0"),
   country_id: z.enum(["2", "1"]).default("2"),
 });
+
 type FormData = z.infer<typeof schema>;
+
 const AdminProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [photoPreview, setPhotoPreview] = useState<string | null | undefined>(
@@ -71,13 +75,15 @@ const AdminProfile = () => {
   const [targetAdmin, setTargetAdmin] = useState<Admin>({} as Admin);
   const [targetAdminError, setTaretAdminError] = useState<string>("");
 
+  // ADMINS CATEGORIES
   const { categories } = useCategories();
 
   const options: OptionType[] = categories.map((item) => ({
     label: item.title,
     value: item.title,
   }));
-  // Handle Photo Create
+
+  // Handle PHOTO IN EDIT FORM
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -95,15 +101,19 @@ const AdminProfile = () => {
     setPhotoPreview(null);
   };
 
+  
+  // FETCH THE TARGET ADMIN.
   useEffect(() => {
     apiClient
       .get<{ data: Admin }>(`/admins/${params.id}`)
       .then((res) => {
         setTargetAdmin(res.data.data);
-        if (targetAdmin) setPhotoPreview(res.data.data.image);
+        setPhotoPreview(res.data.data.image)
       })
       .catch((err) => setTaretAdminError(err.message));
   }, []);
+
+
 
   // HANDLE STATUS CHANGE
   const [status, setStatus] = useState<string>("0");
@@ -129,6 +139,7 @@ const AdminProfile = () => {
     openModal();
   };
 
+  // DELETE ADMIN.
   const handleConfirmationDelete = () => {
     (
       document.getElementById("deletion-modal") as HTMLDialogElement
@@ -157,7 +168,7 @@ const AdminProfile = () => {
       });
   };
 
-  const notify = () => toast.success("Create Admin Successfully!");
+  // UPDATE ADMIN FORM.
   const {
     register,
     handleSubmit,
@@ -192,7 +203,7 @@ const AdminProfile = () => {
           image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
         }));
         setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
-        notify();
+        toast.success("Update Admin Successfully!");
       }
       setSubmitinLoading(false);
       setIsModalOpen(false);
@@ -207,22 +218,24 @@ const AdminProfile = () => {
       }
     }
   };
+  useEffect(()=>{
+console.log(targetAdmin.image)
+  },[targetAdmin])
 
   return (
     <>
+      {/* MODAL OF UPDATE ADMIN. */}
       {isModalOpen && (
         <div className="modal modal-open tracking-wide">
           <div className="modal-box max-w-3xl px-10">
             <h3 className="font-bold text-lg text-left">Add Regular Admin</h3>
             <div className="flex justify-center items-center my-8">
-              {photoPreview ? (
+              {targetAdmin && targetAdmin.image && (
                 <img
-                  src={photoPreview}
+                  src={targetAdmin.image}
                   alt="Preview"
                   className="w-36 h-36 object-cover rounded-full"
                 />
-              ) : (
-                <img src={avatar} alt="" />
               )}
             </div>
             {creatingAdminError && (
@@ -404,7 +417,7 @@ const AdminProfile = () => {
                       <Select
                         isMulti
                         ref={ref}
-                        value={options?.filter((c) => value?.includes(c.value))}
+                        // value={options?.filter((c) => value?.includes(c.value))}
                         onChange={(val) => onChange(val.map((c) => c.value))}
                         options={options}
                         styles={customStyles}
@@ -429,11 +442,6 @@ const AdminProfile = () => {
                     name="image"
                     onChange={handleFileChange}
                   />
-                  {/* {errors.image && (
-                    <p className="absolute text-red-700 text-lg top-20 -left-40 w-96">
-                      {errors.image?.message}
-                    </p>
-                  )} */}
                 </label>
               </div>
               <div className="modal-action flex justify-around items-center right-80 ">
@@ -460,6 +468,8 @@ const AdminProfile = () => {
           </div>
         </div>
       )}
+
+      {/* DELETE ADMIN.  */}
       <dialog
         id="deletion-modal"
         className="modal modal-bottom sm:modal-middle"
@@ -487,15 +497,19 @@ const AdminProfile = () => {
       {targetAdminError && (
         <p className="text-lg p-2 text-red-600">{targetAdminError}</p>
       )}
+
+      {/* NAVBAR */}
       <div className="container mx-auto px-5">
         <div className="flex justify-between items-center shadow-xl p-8">
           <div className="flex gap-3 items-start">
             <div className="w-20 h-20">
-              <img
-                src={targetAdmin.image}
-                alt="avatar"
-                className="object-cover w-full h-full rounded-full"
-              />
+              {photoPreview && (
+                <img
+                  src={photoPreview}
+                  alt="hi"
+                  className="object-cover w-full h-full rounded-full"
+                />
+              )}
             </div>
             <div className="ml-2">
               <p className="text-xl font-bold capitalize ">
@@ -531,6 +545,8 @@ const AdminProfile = () => {
             </button>
           </div>
         </div>
+        {/* PUT ADMIN INFORMATION */}
+
         <div className="mt-20 p-10  rounded-lg shadow-xl">
           <h1 className="font-bold text-xl">Personal Information</h1>
           <div className="flex justify-between max-w-xs mt-5">
