@@ -25,7 +25,7 @@ const Clothes = () => {
           <MdDelete className="text-2xl text-red-700 " /> Delete
         </button>
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
-          <img src="//assets/clothes/description.svg" /> Description
+          <img src="/assets/clothes/description.svg" /> Description
         </button>
       </div>
       <div className="flex gap-8 mb-8">

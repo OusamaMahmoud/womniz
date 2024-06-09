@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
-import avatar from "../../assets/admin/avatar.svg";
+import avatar from "../../../public/assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {  useForm } from "react-hook-form";

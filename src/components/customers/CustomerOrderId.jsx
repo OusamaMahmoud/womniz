@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MdDelete } from "react-icons/md";
-import car from "//assets/customer/car.svg";
+import car from "../../../customer/car.svg";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { RxCross1 } from "react-icons/rx";
 

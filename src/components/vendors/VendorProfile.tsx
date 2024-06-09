@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { Vendor } from "../../services/vendors-service";
 import {  toast } from "react-toastify";
-import avatar from "../../assets/admin/avatar.svg";
+import avatar from "/assets/admin/avatar.svg";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -624,7 +624,7 @@ const VendorProfile = () => {
                   .fill(null)
                   .map((_) => (
                     <img
-                      src="//assets/vendor/zara.svg"
+                      src="/assets/vendor/zara.svg"
                       className="object-cover"
                     />
                   ))}
@@ -645,7 +645,7 @@ const VendorProfile = () => {
                   .fill(null)
                   .map((_) => (
                     <img
-                      src="//assets/vendor/hoodie.svg"
+                      src="/assets/vendor/hoodie.svg"
                       className="object-cover"
                     />
                   ))}
@@ -671,7 +671,7 @@ const VendorProfile = () => {
                 </Link>
               </div>
               <div>
-                <img src="//assets/vendor/report.svg" />
+                <img src="/assets/vendor/report.svg" />
               </div>
               <div className="flex items-center justify-center gap-4">
                 <span>Clothes</span>
@@ -686,7 +686,7 @@ const VendorProfile = () => {
                     <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                       <div className="rounded-xl w-20 h-20">
                         <img
-                          src="//assets/customer/car.svg"
+                          src="/assets/customer/car.svg"
                           className="object-cover w-[100%]"
                         />
                       </div>
@@ -706,7 +706,7 @@ const VendorProfile = () => {
                     <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                       <div className="rounded-xl w-20 h-20">
                         <img
-                          src="//assets/customer/car.svg"
+                          src="/assets/customer/car.svg"
                           className="object-cover w-[100%]"
                         />
                       </div>
@@ -726,7 +726,7 @@ const VendorProfile = () => {
                     <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                       <div className="rounded-xl w-20 h-20">
                         <img
-                          src="//assets/customer/car.svg"
+                          src="/assets/customer/car.svg"
                           className="object-cover w-[100%]"
                         />
                       </div>
@@ -746,7 +746,7 @@ const VendorProfile = () => {
                     <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                       <div className="rounded-xl w-20 h-20">
                         <img
-                          src="//assets/customer/car.svg"
+                          src="/assets/customer/car.svg"
                           className="object-cover w-[100%]"
                         />
                       </div>

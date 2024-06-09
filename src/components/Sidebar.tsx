@@ -5,9 +5,9 @@ import { useStateContext } from "../contexts/ContextProvider";
 import { useAuth } from "../contexts/AuthProvider";
 import apiClient from "../services/api-client";
 import { links } from "../data/dummy";
-import dashboard from "../assets/sidebar/dashboard.svg";
-import home from "../assets/sidebar/home.svg";
-import logo from "../assets/logo.svg";
+import dashboard from "/assets/sidebar/dashboard.svg";
+import home from "/assets/sidebar/home.svg";
+import logo from "/assets/logo.svg";
 import {
   country,
   coupons,
@@ -16,7 +16,7 @@ import {
   reports,
   settings,
   termsConditions,
-} from "../assets/sidebar";
+} from "../../public/assets/sidebar";
 
 const Sidebar = () => {
   const { setAuth } = useAuth();
