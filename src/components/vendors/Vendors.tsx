@@ -23,6 +23,8 @@ import { customStyles } from "../CustomSelect";
 import VendorDataGrid from "./VendorDataGrid";
 import useVendors from "../../hooks/useVendors";
 import useAllVendors from "../../hooks/useAllVendors";
+import DropZone from "./DropZone";
+import DynamicForm from "./DynamicForm";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -34,17 +36,17 @@ const schema = z.object({
   email: z.string().email(),
   contactPersonName: z.string().min(3).max(255),
   phone: z
-  .string()
-  .min(8)
-  .max(20)
-  .regex(/^\+?\d+$/),
+    .string()
+    .min(8)
+    .max(20)
+    .regex(/^\+?\d+$/),
   hQAdress: z.string().min(3).max(255),
   shippingAdress: z.string().min(3).max(255),
   jobs: z.array(z.string()).min(1),
   commission: z.string().min(3).max(255),
   password: z.string().min(8).max(50),
   address: z.string().min(3).max(255),
-  bankName:z.string().min(8).max(50),
+  bankName: z.string().min(8).max(50),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -72,6 +74,19 @@ const Vendors = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
+
+  const [legalDocs, setLegalDocs] = useState<FileList>();
+
+  const [commercialRegistration, setCommercialRegistration] =
+    useState<FileList>();
+  const [vatCertificate, setVATCertificate] = useState<FileList>();
+
+  useEffect(() => {
+    console.log(legalDocs);
+    console.log(commercialRegistration);
+    console.log(vatCertificate);
+  }, [legalDocs, vatCertificate, commercialRegistration]);
+
   // const [recordsPerPage] = useState(10);
   const { categories } = useCategories();
 
@@ -214,6 +229,14 @@ const Vendors = () => {
       "admins.xlsx"
     );
   };
+  const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    files.forEach((file) => {
+      console.log("files", file);
+    });
+  }, [files]);
+
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -517,7 +540,7 @@ const Vendors = () => {
                   )}
                 </div>
                 {/* Category Multi-Selector */}
-                <div className="form-control ">
+                {/* <div className="form-control ">
                   <label className="mb-3">Select Category</label>
                   <Controller
                     control={control}
@@ -563,7 +586,8 @@ const Vendors = () => {
                       {errors.commission.message}
                     </p>
                   )}
-                </div>
+                </div> */}
+                <DynamicForm />
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Password</span>
@@ -606,6 +630,42 @@ const Vendors = () => {
                   />
                 </label>
               </div>
+              {/*  Attach legal Docs */}
+              <div>
+                <div className="my-10 border-b pb-12">
+                  <label className="block text-xl font-medium text-gray-700 mb-5">
+                    Attach legal Docs
+                  </label>
+                  <DropZone
+                    onSubmit={(files: FileList) => setLegalDocs(files)}
+                    className="p-2 my-2 border border-neutral-200"
+                  />
+                </div>
+                <div className="my-10 border-b pb-12">
+                  <label className="block text-xl font-medium text-gray-700 mb-5">
+                    Commercial Registration
+                  </label>
+                  <DropZone
+                    onSubmit={(files: FileList) =>
+                      setCommercialRegistration(files)
+                    }
+                    className="p-2 my-2 border border-neutral-200"
+                  />
+                </div>
+                <div className="my-10 border-b pb-12">
+                  <label
+                    htmlFor="legalDocs"
+                    className="block text-xl font-medium text-gray-700 mb-5"
+                  >
+                    VAT Certificate
+                  </label>
+                  <DropZone
+                    onSubmit={(files: FileList) => setVATCertificate(files)}
+                    className="p-2 my-2 border border-neutral-200"
+                  />
+                </div>
+              </div>
+
               <div className="my-4 shadow-md p-6">
                 <h1 className="text-xl p-2">Bank Details</h1>
                 <div className="form-control max-w-sm mb-10">
@@ -740,6 +800,7 @@ const Vendors = () => {
                     )}
                   </div>
                 </div>
+            
               </div>
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button

@@ -160,8 +160,8 @@ const CustomerProfile = () => {
     setStatus(e.target.value);
     const newStatus = parseInt(e.target.value);
     try {
-      const res = apiClient.post(`/users/${targetCustomer.id}/switchstatus`, {
-        status: newStatus,
+      const res = apiClient.get(`/users/${targetCustomer.id}/switchstatus`, {
+        params: { status: newStatus },
       });
       console.log(res);
     } catch (err: any) {
@@ -259,10 +259,6 @@ const CustomerProfile = () => {
       }
     }
   };
-  useEffect(() => {
-    console.log(targetCustomer.image);
-    console.log(photoPreview);
-  });
   return (
     <>
       {/* {isProductsComponentExist && <CustomerProductsGrid />} */}

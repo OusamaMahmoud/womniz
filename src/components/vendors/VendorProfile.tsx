@@ -152,11 +152,11 @@ const VendorProfile = () => {
       .catch((err) => setTaretAdminError(err.message));
   }, []);
 
-  const [status, setStatus] = useState<string>("Active");
+  // const [status, setStatus] = useState<string>("Active");
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatus(e.target.value);
-  };
+  // const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setStatus(e.target.value);
+  // };
 
   const handleEditButton = () => {
     openModal();
@@ -190,15 +190,26 @@ const VendorProfile = () => {
       });
   };
 
-  const getBackgroundColor = () => {
-    if (status === "Active") {
-      return "bg-[#ECFDF3]"; // Green background for Active
-    } else if (status === "Inactive") {
-      return "bg-[#FDECEC]"; // Red background for Inactive
-    } else {
-      return "bg-white"; // Default background
+  // HANDLE STATUS CHANGE
+  const [status, setStatus] = useState<string>("0");
+
+  useEffect(() => {
+    setStatus(targetAdmin?.status);
+  }, [targetAdmin]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatus(e.target.value);
+    const newStatus = parseInt(e.target.value);
+    try {
+      const res = apiClient.get(`/vendors/${targetAdmin.id}/switchstatus`, {
+        params: { status: newStatus },
+      });
+      console.log(res);
+    } catch (err: any) {
+      console.log(err);
     }
   };
+
   const notify = () => toast.success("Create Admin Successfully!");
   const [isProductsComponentExist, setIsProductsComponentExist] =
     useState(false);
@@ -546,12 +557,14 @@ const VendorProfile = () => {
               <p className="capitalize">{targetAdmin.shipping_address}</p>
             </div>
             <select
-              className={`select select-bordered ml-4 ${getBackgroundColor()}`}
+              className={`select select-bordered ml-4 ${
+                status == "1" ? "bg-[#ECFDF3]" : "bg-[#FDECEC]"
+              }`}
               value={status}
               onChange={handleChange}
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option value={"1"}>Active</option>
+              <option value={"0"}>Inactive</option>
             </select>
           </div>
           <div className="flex gap-4">
