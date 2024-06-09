@@ -73,39 +73,41 @@ const Navbar = () => {
           />
         )}
       </div>
-      <div className="flex">
-        <NavButton
-          title="Notification"
-          dotColor="rgb(254, 201, 15)"
-          customFunc={() => handleClick("notification")}
-          color={"black"}
-          icon={<RiNotification3Line />}
-        />
-        <div className="tooltip tooltip-bottom" data-tip="Profile">
-          <div
-            className="flex items-center gap-2 cursor-pointer p-1 hover:bg-light-gray rounded-lg"
-            onClick={() => handleClick("userProfile")}
-          >
-            <img
-              className="rounded-full w-8 h-8"
-              src={auth?.image}
-              alt="user-profile"
-            />
-            <p>
-              <span className="text-gray-400 text-14">Hi,</span>{" "}
-              <span className="text-gray-400 font-bold ml-1 text-14">
-                {auth?.name}
-              </span>
-            </p>
-            <MdKeyboardArrowDown className="text-gray-400 text-14" />
+      {auth !== null && (
+        <div className="flex">
+          <NavButton
+            title="Notification"
+            dotColor="rgb(254, 201, 15)"
+            customFunc={() => handleClick("notification")}
+            color={"black"}
+            icon={<RiNotification3Line />}
+          />
+          <div className="tooltip tooltip-bottom" data-tip="Profile">
+            <div
+              className="flex items-center gap-2 cursor-pointer p-1 hover:bg-light-gray rounded-lg"
+              onClick={() => handleClick("userProfile")}
+            >
+              <img
+                className="rounded-full w-8 h-8"
+                src={auth?.image}
+                alt="user-profile"
+              />
+              <p>
+                <span className="text-gray-400 text-14">Hi,</span>{" "}
+                <span className="text-gray-400 font-bold ml-1 text-14">
+                  {auth?.name}
+                </span>
+              </p>
+              <MdKeyboardArrowDown className="text-gray-400 text-14" />
+            </div>
           </div>
-        </div>
 
-        {/* {isClicked.cart && (<Cart />)}
+          {/* {isClicked.cart && (<Cart />)}
       {isClicked.chat && (<Chat />)}
       {isClicked.notification && (<Notification />)}
       {isClicked.userProfile && (<UserProfile />)} */}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

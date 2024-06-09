@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useNavigate } from "react-router-dom";
 
 interface AuthObject {
   name: string;
@@ -24,12 +31,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedAuth = localStorage.getItem("auth");
     return storedAuth ? JSON.parse(storedAuth) : null;
   });
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (auth) {
       localStorage.setItem("auth", JSON.stringify(auth));
     } else {
       localStorage.removeItem("auth");
+      navigate('/login')
     }
   }, [auth]);
 

@@ -27,7 +27,7 @@ const Login = () => {
     if (token) {
       navigate("/");
     }
-  }, [navigate]);
+  }, []);
 
   const {
     register,
@@ -49,7 +49,7 @@ const Login = () => {
 
       setAuth(user);
 
-      navigate("/accounts/Admins");
+      navigate("/");
       setLoading(false);
     } catch (err: any) {
       if (!err.response) {
