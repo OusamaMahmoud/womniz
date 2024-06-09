@@ -9,11 +9,11 @@ import { FaPlusCircle } from "react-icons/fa";
 
 const NewClothesProduct = () => {
   const IMAGESARRAY = [
-    { id: 1, img: "/src/assets/clothes/t-shirt.svg" },
-    { id: 2, img: "/src/assets/clothes/t-shirt.svg" },
-    { id: 3, img: "/src/assets/clothes/t-shirt.svg" },
-    { id: 4, img: "/src/assets/clothes/t-shirt.svg" },
-    { id: 5, img: "/src/assets/clothes/t-shirt.svg" },
+    { id: 1, img: "//assets/clothes/t-shirt.svg" },
+    { id: 2, img: "//assets/clothes/t-shirt.svg" },
+    { id: 3, img: "//assets/clothes/t-shirt.svg" },
+    { id: 4, img: "//assets/clothes/t-shirt.svg" },
+    { id: 5, img: "//assets/clothes/t-shirt.svg" },
   ];
   const SIZES = [
     { id: 1, size: "XS" },

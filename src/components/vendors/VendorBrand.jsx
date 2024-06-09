@@ -4,7 +4,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import { BiAddToQueue, BiEdit } from "react-icons/bi";
 import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
-import avatar from "/src/assets/admin/avatar.svg";
+import avatar from "//assets/admin/avatar.svg";
 const VendorBrand = () => {
   const [isDotsOpen, setDotsOpen] = useState(false);
   const [isAddingBrandOpen, setAddingBrandOpen] = useState(true);
@@ -56,7 +56,7 @@ const VendorBrand = () => {
           </div>
           <p className="w-36 relative">
             <img
-              src="/src/assets/vendor/zara.svg"
+              src="//assets/vendor/zara.svg"
               className="object-cover w-[100%]"
             />
           </p>

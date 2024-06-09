@@ -8,7 +8,7 @@ const ScratchCoupon = () => {
       </div>
       <div className="bg-[#F6EFE9] flex flex-col justify-center items-center w-fit self-center">
         <div className="">
-          <img src="/src/assets/games/background.svg" />
+          <img src="//assets/games/background.svg" />
         </div>
         <div>
           <h2 className="text-4xl text-[#577656] font-bold text-center">Discount percentage</h2>

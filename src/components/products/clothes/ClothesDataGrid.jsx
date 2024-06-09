@@ -52,7 +52,7 @@ const ClothesDataGrid = () => {
       ),
       renderCell: (item) => (
         <p className="flex gap-2 items-center text-sm xl:text-lg p-4">
-          <img src="/src/assets/vendor/hoodie.svg" /> {item.productName}
+          <img src="//assets/vendor/hoodie.svg" /> {item.productName}
         </p>
       ),
       sort: { sortKey: "PRODUCT_NAME" },

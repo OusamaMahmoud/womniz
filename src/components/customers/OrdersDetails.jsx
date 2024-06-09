@@ -55,7 +55,7 @@ const OrdersDetails = () => {
             <div className="flex justify-between items-center gap-2 mt-2">
               <span className="text-lg font-bold">Payment Method:</span>
               <span className="">
-                <img src="/src/assets/customer/visa.svg" className="mr-2" />
+                <img src="//assets/customer/visa.svg" className="mr-2" />
                 **** **** **** 1234
               </span>
             </div>
@@ -82,7 +82,7 @@ const OrdersDetails = () => {
             <tr>
               <td>123456789111</td>
               <td className="flex gap-2 items-center">
-                <img src="/src/assets/customer/car.svg" /> Hoodie
+                <img src="//assets/customer/car.svg" /> Hoodie
               </td>
               <td>Pranjalpets</td>
               <td>2</td>
@@ -96,7 +96,7 @@ const OrdersDetails = () => {
             <tr>
               <td>123456789111</td>
               <td className="flex gap-2 items-center">
-                <img src="/src/assets/customer/car.svg" /> Hoodie
+                <img src="//assets/customer/car.svg" /> Hoodie
               </td>
               <td>Pranjalpets</td>
               <td>2</td>

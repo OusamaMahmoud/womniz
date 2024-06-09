@@ -7,7 +7,7 @@ const SpinTheWheel = () => {
       </div>
       <div className="flex flex-col justify-center items-center w-fit self-center">
         <div className="">
-          <img src="/src/assets/games/wheel.svg" />
+          <img src="//assets/games/wheel.svg" />
         </div>
         <div className="mt-10">
           <div>

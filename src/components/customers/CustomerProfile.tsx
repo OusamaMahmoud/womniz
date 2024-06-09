@@ -682,7 +682,7 @@ const CustomerProfile = () => {
                   <div className="flex justify-between items-center">
                     <p className="text-3xl font-bold">850</p>
                     <p>
-                      <img src="/src/assets/customer/car.svg" />
+                      <img src="//assets/customer/car.svg" />
                     </p>
                   </div>
                 </div>
@@ -703,7 +703,7 @@ const CustomerProfile = () => {
                       <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                         <div className="rounded-xl w-20 h-20">
                           <img
-                            src="/src/assets/customer/car.svg"
+                            src="//assets/customer/car.svg"
                             className="object-cover w-[100%]"
                           />
                         </div>
@@ -723,7 +723,7 @@ const CustomerProfile = () => {
                       <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                         <div className="rounded-xl w-20 h-20">
                           <img
-                            src="/src/assets/customer/car.svg"
+                            src="//assets/customer/car.svg"
                             className="object-cover w-[100%]"
                           />
                         </div>
@@ -743,7 +743,7 @@ const CustomerProfile = () => {
                       <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                         <div className="rounded-xl w-20 h-20">
                           <img
-                            src="/src/assets/customer/car.svg"
+                            src="//assets/customer/car.svg"
                             className="object-cover w-[100%]"
                           />
                         </div>
@@ -763,7 +763,7 @@ const CustomerProfile = () => {
                       <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
                         <div className="rounded-xl w-20 h-20">
                           <img
-                            src="/src/assets/customer/car.svg"
+                            src="//assets/customer/car.svg"
                             className="object-cover w-[100%]"
                           />
                         </div>
@@ -785,7 +785,7 @@ const CustomerProfile = () => {
                       onClick={handleAddingOrderToCustomer}
                       className="btn btn-outline hover:bg-[#BED3C4] self-center px-10"
                     >
-                      <img src="/src/assets/customer/add.svg" />
+                      <img src="//assets/customer/add.svg" />
                       Add{" "}
                     </button>
                   </div>
@@ -828,7 +828,7 @@ const CustomerProfile = () => {
                   onClick={openDiscountModal}
                   className="btn self-center px-20"
                 >
-                  <img src="/src/assets/customer/add.svg" />
+                  <img src="//assets/customer/add.svg" />
                   add
                 </button>
               </div>
