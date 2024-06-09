@@ -1,25 +1,17 @@
 import { useEffect, useState } from "react";
-import { BiCross, BiEdit, BiExit, BiLink, BiTrash } from "react-icons/bi";
-import { RxCross2 } from "react-icons/rx";
+import {  BiEdit, BiTrash } from "react-icons/bi";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { Vendor } from "../../services/vendors-service";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import avatar from "../../assets/admin/avatar.svg";
-import { Controller, set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { OptionType } from "../Admins";
 import { z } from "zod";
 import { RiErrorWarningLine } from "react-icons/ri";
-import useCategories from "../../hooks/useCategories";
-import Select from "react-select";
-import { customStyles } from "../CustomSelect";
 import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
-import customerService, { Customer } from "../../services/customer-service";
-import DiscountModal from "../Modal";
-import CustomerProductsGrid from "../customers/CustomerProductsGrid";
 import { GoLink } from "react-icons/go";
+import customerService from "../../services/customer-service";
 
 const schema = z.object({
   name: z
@@ -61,34 +53,34 @@ type FormData = z.infer<typeof schema>;
 const VendorProfile = () => {
   //Discount Modal
 
-  const generateRandomCode = () => {
-    return Math.random().toString(36).substr(2, 8).toUpperCase();
-  };
+  // const generateRandomCode = () => {
+  //   return Math.random().toString(36).substr(2, 8).toUpperCase();
+  // };
 
-  const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
-  const [expDate, setExpDate] = useState("");
-  const [discount, setDiscount] = useState("5%");
-  const [code, setCode] = useState(generateRandomCode());
+  // const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
+  // const [expDate, setExpDate] = useState("");
+  // const [discount, setDiscount] = useState("5%");
+  // const [code, setCode] = useState(generateRandomCode());
 
-  const openDiscountModal = () => {
-    setCode(generateRandomCode());
-    setIsDiscountModalOpen(true);
-  };
+  // const openDiscountModal = () => {
+  //   setCode(generateRandomCode());
+  //   setIsDiscountModalOpen(true);
+  // };
 
-  const closeDiscountModal = () => {
-    setIsDiscountModalOpen(false);
-  };
+  // const closeDiscountModal = () => {
+  //   setIsDiscountModalOpen(false);
+  // };
 
-  const copyCodeToClipboard = () => {
-    navigator.clipboard.writeText(code);
-    toast.success("Code copied to clipboard!");
-  };
+  // const copyCodeToClipboard = () => {
+  //   navigator.clipboard.writeText(code);
+  //   toast.success("Code copied to clipboard!");
+  // };
 
-  const handleConfirmDiscountDeletion = () => {
-    (
-      document.getElementById("deletion-discount-modal") as HTMLDialogElement
-    ).showModal();
-  };
+  // const handleConfirmDiscountDeletion = () => {
+  //   (
+  //     document.getElementById("deletion-discount-modal") as HTMLDialogElement
+  //   ).showModal();
+  // };
 
   const handleDeleteDiscountButton = () => {
     (
@@ -96,12 +88,12 @@ const VendorProfile = () => {
     ).close();
   };
 
-  const handleAddingVoucherToCustomer = () => {
-    //Add Voucher to the API.
-  };
+  // const handleAddingVoucherToCustomer = () => {
+  //   //Add Voucher to the API.
+  // };
 
-  const [orders, setOrdersOpen] = useState<boolean>(true);
-  const [rewards, setRewardsOpen] = useState<boolean>(false);
+  // const [orders, setOrdersOpen] = useState<boolean>(true);
+  // const [rewards, setRewardsOpen] = useState<boolean>(false);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [photoPreview, setPhotoPreview] = useState<string | null | undefined>(
@@ -118,12 +110,11 @@ const VendorProfile = () => {
   const [targetAdmin, setTargetAdmin] = useState<Vendor>({} as Vendor);
   const [targetAdminError, setTaretAdminError] = useState<string>("");
 
-  const { categories } = useCategories();
 
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  // const options: OptionType[] = categories.map((item) => ({
+  //   label: item.title,
+  //   value: item.title,
+  // }));
   // Handle Photo Create
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -174,7 +165,7 @@ const VendorProfile = () => {
     }
     apiClient
       .post("/users/delete", data)
-      .then((res) => {
+      .then(() => {
         toast.success("Customer deleted successfully");
         navigate("/accounts/customers");
         (
@@ -211,17 +202,16 @@ const VendorProfile = () => {
   };
 
   const notify = () => toast.success("Create Admin Successfully!");
-  const [isProductsComponentExist, setIsProductsComponentExist] =
-    useState(false);
-  const handleAddingOrderToCustomer = () => {
-    setIsProductsComponentExist(true);
-  };
+  // const [isProductsComponentExist, setIsProductsComponentExist] =
+  //   useState(false);
+  // const handleAddingOrderToCustomer = () => {
+  //   setIsProductsComponentExist(true);
+  // };
 
   const {
     register,
     handleSubmit,
-    control,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });

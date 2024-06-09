@@ -4,8 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../services/api-client";
 import { Admin } from "../services/admins-service";
 import { toast } from "react-toastify";
-import avatar from "../assets/admin/avatar.svg";
-import { Controller, set, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OptionType } from "./Admins";
 import { z } from "zod";
@@ -68,7 +67,6 @@ const AdminProfile = () => {
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
   const [imageFile, setImageFile] = useState<any>(null);
   const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
-  const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -152,7 +150,8 @@ const AdminProfile = () => {
     }
     apiClient
       .post("/admins/delete", data)
-      .then((res) => {
+      .then(() => {
+        
         toast.success("Admins deleted successfully");
         navigate("/accounts/Admins");
         (
@@ -413,7 +412,7 @@ console.log(targetAdmin.image)
                     control={control}
                     defaultValue={options.map((c) => c.value)}
                     name="jobs"
-                    render={({ field: { onChange, value, ref } }) => (
+                    render={({ field: { onChange, ref } }) => (
                       <Select
                         isMulti
                         ref={ref}

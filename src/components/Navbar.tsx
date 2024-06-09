@@ -3,7 +3,6 @@ import { useStateContext } from "../contexts/ContextProvider";
 import { AiOutlineMenu } from "react-icons/ai";
 import { RiNotification3Line } from "react-icons/ri";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import avatar from "../assets/navbar/avatar.svg";
 import { useAuth } from "../contexts/AuthProvider";
 interface NavButtonProps {
   title: string;

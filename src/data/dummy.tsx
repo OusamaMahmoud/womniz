@@ -1,7 +1,5 @@
 import { RiAccountCircleLine } from "react-icons/ri";
 import { IoBagRemoveOutline } from "react-icons/io5";
-import { LuBox } from "react-icons/lu";
-import { PiHairDryer } from "react-icons/pi";
 import { PiCodesandboxLogoThin } from "react-icons/pi";
 
 export const links = [

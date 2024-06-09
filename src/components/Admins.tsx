@@ -20,7 +20,6 @@ import Pagination from "./Pagination";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllAdmins from "../hooks/useAllAdmins";
-import axios from "axios";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -182,7 +181,7 @@ const Admins: React.FC = () => {
         data.append(`ids[${index}]`, id.toString());
       });
       try {
-        const response = await apiClient.post("/admins/delete", data);
+        await apiClient.post("/admins/delete", data);
         toast.success("Admins deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
@@ -228,7 +227,7 @@ const Admins: React.FC = () => {
 
     try {
       setSubmitinLoading(true);
-      const res = await adminService.create<any>(formData);
+     await adminService.create<any>(formData);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
@@ -596,7 +595,7 @@ const Admins: React.FC = () => {
                   control={control}
                   defaultValue={options.map((c) => c.value)}
                   name="jobs"
-                  render={({ field: { onChange, value, ref } }) => (
+                  render={({ field: { onChange, ref } }) => (
                     <Select
                       isMulti
                       ref={ref}

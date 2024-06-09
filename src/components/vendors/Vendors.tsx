@@ -3,23 +3,18 @@ import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import avatar from "../../assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Controller, useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 // import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
-import useAdmins from "../../hooks/useAdmins";
 import apiClient from "../../services/api-client";
 import adminsService from "../../services/admins-service";
-import useAllAdmins from "../../hooks/useAllAdmins";
 import * as XLSX from "xlsx";
 import useCategories from "../../hooks/useCategories";
 import { saveAs } from "file-saver";
-import DataGrid from "../DataGrid";
 import Pagination from "../Pagination";
-import Select from "react-select";
-import { customStyles } from "../CustomSelect";
 import VendorDataGrid from "./VendorDataGrid";
 import useVendors from "../../hooks/useVendors";
 import useAllVendors from "../../hooks/useAllVendors";
@@ -90,10 +85,10 @@ const Vendors = () => {
   // const [recordsPerPage] = useState(10);
   const { categories } = useCategories();
 
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  // const options: OptionType[] = categories.map((item) => ({
+  //   label: item.title,
+  //   value: item.title,
+  // }));
 
   // Fetch Admins ..
 
@@ -112,7 +107,6 @@ const Vendors = () => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -167,7 +161,7 @@ const Vendors = () => {
         data.append(`ids[${index}]`, id.toString());
       });
       try {
-        const response = await apiClient.post("/vendors/delete", data);
+       await apiClient.post("/vendors/delete", data);
         toast.success("Vendors deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
@@ -229,13 +223,13 @@ const Vendors = () => {
       "admins.xlsx"
     );
   };
-  const [files, setFiles] = useState([]);
+  // const [files, setFiles] = useState([]);
 
-  useEffect(() => {
-    files.forEach((file) => {
-      console.log("files", file);
-    });
-  }, [files]);
+  // useEffect(() => {
+  //   files.forEach((file) => {
+  //     console.log("files", file);
+  //   });
+  // }, [files]);
 
   return (
     <div className="overflow-x-scroll p-5">

@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react";
-import { BiCross, BiEdit, BiExit, BiTrash } from "react-icons/bi";
+import {  BiEdit,  BiTrash } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
-import { Admin } from "../../services/admins-service";
 import { ToastContainer, toast } from "react-toastify";
 import avatar from "../../assets/admin/avatar.svg";
-import { Controller, set, useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { OptionType } from "../Admins";
 import { z } from "zod";
 import { RiErrorWarningLine } from "react-icons/ri";
-import useCategories from "../../hooks/useCategories";
-import Select from "react-select";
-import { customStyles } from "../CustomSelect";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import customerService, { Customer } from "../../services/customer-service";
-import DiscountModal from "../Modal";
-import CustomerProductsGrid from "./CustomerProductsGrid";
+import  { Customer } from "../../services/customer-service";
 
 const schema = z.object({
   name: z.string().min(3).max(255),
@@ -106,7 +99,6 @@ const CustomerProfile = () => {
     useState<string>("");
   const [imageFile, setImageFile] = useState<any>(null);
   const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
-  const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -115,12 +107,12 @@ const CustomerProfile = () => {
   );
   const [targetCustomerError, setTaretCustomerError] = useState<string>("");
 
-  const { categories } = useCategories();
+  // const { categories } = useCategories();
 
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  // const options: OptionType[] = categories.map((item) => ({
+  //   label: item.title,
+  //   value: item.title,
+  // }));
   // Handle Photo Create
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -185,7 +177,7 @@ const CustomerProfile = () => {
     }
     apiClient
       .post("/users/delete", data)
-      .then((res) => {
+      .then(() => {
         toast.success("Customer deleted successfully");
         navigate("/accounts/customers");
         (
@@ -206,12 +198,13 @@ const CustomerProfile = () => {
     useState(false);
   const handleAddingOrderToCustomer = () => {
     setIsProductsComponentExist(true);
+    console.log(isProductsComponentExist)
   };
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });

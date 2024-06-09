@@ -87,10 +87,10 @@ const Customers: React.FC = () => {
   // const [recordsPerPage] = useState(10);
   const { categories } = useCategories();
 
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  // const options: OptionType[] = categories.map((item) => ({
+  //   label: item.title,
+  //   value: item.title,
+  // }));
 
   // Fetch Customers ..
 
@@ -208,7 +208,7 @@ const Customers: React.FC = () => {
       setSubmitinLoading(false);
     }
   };
-  const { allacustomers, isAllCustomersError, isAllCustomersLoading } =
+  const { allacustomers, isAllCustomersError } =
     useAllCustomers();
   const exportToExcel = () => {
     // Create a new workbook and a sheet
