@@ -68,7 +68,7 @@ const Login = () => {
         <div className="grid grid-cols-2 items-center gap-40">
           <div>
             <img
-              src="/src/assets/login/loginImage.svg"
+              src="/assets/login/loginImage.svg"
               alt="loginImage"
               className="object-cover"
             />
