@@ -3,11 +3,8 @@ import { CompactTable } from "@table-library/react-table-library/compact";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
 import { useSort } from "@table-library/react-table-library/sort";
-import { usePagination } from "@table-library/react-table-library/pagination";
 import { Link } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
-import { BiRightArrow, BiSolidRightArrow } from "react-icons/bi";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Pagination from "./Pagination";
 
 const DataGrid = ({
@@ -29,29 +26,22 @@ const DataGrid = ({
     },
     {
       sortFns: {
-        id: (array) =>
-          array.sort((a, b) => (a.nodes || []).length - (b.nodes || []).length),
+        id: (array) => array.sort((a, b) => a.id - b.id),
         name: (array) => array.sort((a, b) => a.name.localeCompare(b.name)),
         email: (array) => array.sort((a, b) => a.email.localeCompare(b.email)),
         phone: (array) => array.sort((a, b) => a.phone.localeCompare(b.phone)),
         dateOfBirth: (array) =>
-          array.sort(
-            (a, b) => new Date(a.dateOfBirth) - new Date(b.dateOfBirth)
-          ),
-        location: (array) =>
-          array.sort((a, b) => a.location.localeCompare(b.location)),
-        country: (array) =>
-          array.sort((a, b) => a.country.localeCompare(b.country)),
-        category: (array) =>
-          array.sort((a, b) => a.category.localeCompare(b.category)),
-        status: (array) =>
-          array.sort((a, b) => a.status.localeCompare(b.status)),
+          array.sort((a, b) => new Date(a.dateOfBirth) - new Date(b.dateOfBirth)),
+        location: (array) => array.sort((a, b) => a.address.localeCompare(b.address)),
+        country: (array) => array.sort((a, b) => a.country.localeCompare(b.country)),
+        category: (array) => array.sort((a, b) => a.category.localeCompare(b.category)),
+        status: (array) => array.sort((a, b) => a.status - b.status),
       },
     }
   );
 
   function onSortChange(action, state) {
-    // console.log(action, state);
+    console.log(action, state);
   }
 
   const COLUMNS = [
@@ -79,7 +69,7 @@ const DataGrid = ({
     },
     {
       label: "Admin ID",
-      renderCell: (item) => <div className=" py-5">{item.id}</div>,
+      renderCell: (item) => <div className="py-5">{item.id}</div>,
       sort: { sortKey: "id" },
     },
     {
@@ -103,7 +93,7 @@ const DataGrid = ({
     },
     {
       label: "Date of Birth",
-      renderCell: (item) => <span className="text-lg">{item.age}</span>,
+      renderCell: (item) => <span className="text-lg">{item.dateOfBirth}</span>,
       sort: { sortKey: "dateOfBirth" },
     },
     {
@@ -126,14 +116,14 @@ const DataGrid = ({
       renderCell: (item) => {
         if (item.status === 0) {
           return (
-            <p className="badge  p-4 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
-              <GoDotFill className="text-[#14BA6D]  text-lg" /> Active
+            <p className="badge p-4 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
+              <GoDotFill className="text-[#14BA6D] text-lg" /> Active
             </p>
           );
         } else {
           return (
-            <p className="badge  p-4 gap-2 rounded-md  text-[#E20000] bg-[#F2F4F7]">
-              <GoDotFill className="text-[#E2000099]  text-xl" /> InActive
+            <p className="badge p-4 gap-2 rounded-md text-[#E20000] bg-[#F2F4F7]">
+              <GoDotFill className="text-[#E2000099] text-xl" /> Inactive
             </p>
           );
         }
@@ -145,7 +135,6 @@ const DataGrid = ({
   return (
     <>
       <CompactTable columns={COLUMNS} data={data} theme={theme} sort={sort} />
-      <br />
     </>
   );
 };

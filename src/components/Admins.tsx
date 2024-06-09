@@ -20,6 +20,7 @@ import Pagination from "./Pagination";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllAdmins from "../hooks/useAllAdmins";
+import usePermissions from "../hooks/usePremissions";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -56,12 +57,10 @@ const schema = z.object({
     .min(8)
     .max(20)
     .regex(/^\+?\d+$/),
-  // image: z
-  //   .any()
-  //   .refine((file) => file && file.length > 0, "Profile picture is required"),
   jobs: z.array(z.string()).min(1),
   status: z.enum(["0", "1"]).default("0"),
   country_id: z.enum(["2", "1"]).default("2"),
+  role: z.string().min(3, { message: "Role Must Be Selected!" }),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -94,15 +93,20 @@ const Admins: React.FC = () => {
     value: item.title,
   }));
 
-  const { admins, meta, next, prev, isLoading } = useAdmins({
+  const {
+    admins,
+    meta,
+    next,
+    prev,
+    isLoading,
+    error: fetchAdminsError,
+  } = useAdmins({
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
     isFetching: trigerFetch,
     page: paginationPage,
   });
-
-
   const recordsPerPage = meta.per_page || 5;
   const nPages = Math.ceil(admins.length / recordsPerPage);
 
@@ -116,6 +120,7 @@ const Admins: React.FC = () => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -196,6 +201,7 @@ const Admins: React.FC = () => {
 
   // Handle Submit
   const onSubmit = async (data: FormData) => {
+    console.log(data);
     const formData = new FormData();
 
     formData.append(`address`, data.address);
@@ -206,6 +212,7 @@ const Admins: React.FC = () => {
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
     formData.append(`status`, data.status);
+    formData.append(`role`, data.role);
     formData.append(`jobs[0]`, `1`);
 
     if (
@@ -221,13 +228,13 @@ const Admins: React.FC = () => {
       }
     } else {
       formData.append(`image`, imageFile);
-      console.log(imageFile)
-      console.log(photoPreview)
+      console.log(imageFile);
+      console.log(photoPreview);
     }
 
     try {
       setSubmitinLoading(true);
-     await adminService.create<any>(formData);
+      await adminService.create<any>(formData);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
@@ -235,6 +242,7 @@ const Admins: React.FC = () => {
       setImageFile({} as File);
       setPhotoPreview("");
       setTrigerFetch(!trigerFetch);
+      setCreatingAdminError("");
     } catch (error: any) {
       setCreatingAdminError(error.response.data.data.error);
       setSubmitinLoading(false);
@@ -268,7 +276,7 @@ const Admins: React.FC = () => {
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
-
+      {fetchAdminsError && <p>{fetchAdminsError}</p>}
       {/* ACTION BUTTONS */}
       <div className="flex justify-between items-center mb-5">
         {isAllAdminsError && (
@@ -587,6 +595,36 @@ const Admins: React.FC = () => {
                     </p>
                   )} */}
                 </label>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Roles</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <select
+                    id="role"
+                    className="select select-bordered grow"
+                    {...register("role")}
+                  >
+                    <option
+                      className="bg-gray-400 text-white"
+                      value=""
+                      disabled
+                      selected
+                    >
+                      Select Admin Role
+                    </option>
+                    <option value={"Super Admin"}>Super Admin</option>
+                  </select>
+                  {errors.role && (
+                    <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />
+                  )}
+                </div>
+                {errors.role && (
+                  <p className="text-[red] text-xs mt-3 ">
+                    {errors.role.message}
+                  </p>
+                )}
               </div>
               {/* Category Multi-Selector */}
               <div className="form-control ">
