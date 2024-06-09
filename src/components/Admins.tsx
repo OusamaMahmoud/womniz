@@ -20,7 +20,6 @@ import Pagination from "./Pagination";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllAdmins from "../hooks/useAllAdmins";
-import usePermissions from "../hooks/usePremissions";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -107,6 +106,8 @@ const Admins: React.FC = () => {
     isFetching: trigerFetch,
     page: paginationPage,
   });
+
+
   const recordsPerPage = meta.per_page || 5;
   const nPages = Math.ceil(admins.length / recordsPerPage);
 

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import _ from 'lodash';
 import apiClient, { CanceledError } from "../services/api-client";
 import { Admin } from "../services/admins-service";
 
@@ -29,7 +30,8 @@ const useAdmins = ({
   const [prev, setPrev] = useState<string | null>("");
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
-  useEffect(() => {
+
+  const fetchAdmins = useCallback(() => {
     setLoading(true);
     const controller = new AbortController();
     const request = apiClient.get<{
@@ -58,6 +60,18 @@ const useAdmins = ({
     return () => controller.abort();
   }, [categories, status, search, isFetching, page]);
 
+  // Debounce the fetchAdmins function
+  const debouncedFetchAdmins = useCallback(
+    _.debounce(fetchAdmins, 500), // 500ms delay
+    [fetchAdmins]
+  );
+
+  useEffect(() => {
+    debouncedFetchAdmins();
+    // Clean up the debounced function on unmount
+    return debouncedFetchAdmins.cancel;
+  }, [debouncedFetchAdmins]);
+
   const buildUrl = () => {
     const baseUrl = `/admins`;
     const params = new URLSearchParams();
@@ -65,10 +79,9 @@ const useAdmins = ({
     if (page) {
       params.append("page", page);
     }
-      if (categories) {
-        params.append(`category[0]`, categories);
-      }
-
+    if (categories) {
+      params.append(`category[0]`, categories);
+    }
 
     if (status) {
       if (status === "Active") {

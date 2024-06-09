@@ -15,7 +15,7 @@ const usePermissions = () => {
         signal: controller.signal,
       })
       .then((res) => {
-        const formattedPermissions = Object.entries(res.data.data).map(([key, value]) => {
+        const formattedPermissions = Object.entries(res.data.data).map(([,value]) => {
           const permissionsWithChecked = value.permissions.map((permission) => ({
             ...permission,
             checked: true, // Set the "checked" property to true for each permission

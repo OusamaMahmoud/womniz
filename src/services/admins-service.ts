@@ -11,6 +11,7 @@ export interface Admin {
   category: string[];
   status: string;
   password: string;
+  role: string;
   image?: string; // Add photo to the Admin interface
 }
 

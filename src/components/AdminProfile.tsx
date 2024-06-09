@@ -55,6 +55,7 @@ const schema = z.object({
   jobs: z.array(z.string()).min(1),
   status: z.enum(["0", "1"]).default("0"),
   country_id: z.enum(["2", "1"]).default("2"),
+  role: z.string().min(3),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -99,19 +100,16 @@ const AdminProfile = () => {
     setPhotoPreview(null);
   };
 
-  
   // FETCH THE TARGET ADMIN.
   useEffect(() => {
     apiClient
       .get<{ data: Admin }>(`/admins/${params.id}`)
       .then((res) => {
         setTargetAdmin(res.data.data);
-        setPhotoPreview(res.data.data.image)
+        setPhotoPreview(res.data.data.image);
       })
       .catch((err) => setTaretAdminError(err.message));
   }, []);
-
-
 
   // HANDLE STATUS CHANGE
   const [status, setStatus] = useState<string>("0");
@@ -151,7 +149,6 @@ const AdminProfile = () => {
     apiClient
       .post("/admins/delete", data)
       .then(() => {
-        
         toast.success("Admins deleted successfully");
         navigate("/accounts/Admins");
         (
@@ -186,6 +183,7 @@ const AdminProfile = () => {
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
     formData.append(`status`, data.status);
+    formData.append(`role`, data.role);
     formData.append(`jobs[0]`, `1`);
     if (imageFile !== null) {
       formData.append(`image`, imageFile);
@@ -217,9 +215,9 @@ const AdminProfile = () => {
       }
     }
   };
-  useEffect(()=>{
-console.log(targetAdmin.image)
-  },[targetAdmin])
+  useEffect(() => {
+    console.log(targetAdmin.image);
+  }, [targetAdmin]);
 
   return (
     <>
@@ -406,27 +404,7 @@ console.log(targetAdmin.image)
                     </p>
                   )}
                 </div>
-                {/* Category Multi-Selector */}
-                <div className="form-control ">
-                  <Controller
-                    control={control}
-                    defaultValue={options.map((c) => c.value)}
-                    name="jobs"
-                    render={({ field: { onChange, ref } }) => (
-                      <Select
-                        isMulti
-                        ref={ref}
-                        // value={options?.filter((c) => value?.includes(c.value))}
-                        onChange={(val) => onChange(val.map((c) => c.value))}
-                        options={options}
-                        styles={customStyles}
-                      />
-                    )}
-                  />
-                  {errors.jobs && (
-                    <p className="text-red-500 ">{errors.jobs.message}</p>
-                  )}
-                </div>
+
                 <label
                   className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
                 >
@@ -442,6 +420,58 @@ console.log(targetAdmin.image)
                     onChange={handleFileChange}
                   />
                 </label>
+              </div>
+              <div className="form-control mb-6">
+                <label className="label">
+                  <span className="label-text">Roles</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <select
+                    id="role"
+                    value={targetAdmin.role}
+                    className="select select-bordered grow"
+                    {...register("role")}
+                  >
+                    <option
+                      className="bg-gray-400 text-white"
+                      value=""
+                      disabled
+                      selected
+                    >
+                      Select Admin Role
+                    </option>
+                    <option value={"Super Admin"}>Super Admin</option>
+                  </select>
+                  {errors.role && (
+                    <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />
+                  )}
+                </div>
+                {errors.role && (
+                  <p className="text-[red] text-xs mt-3 ">
+                    {errors.role.message}
+                  </p>
+                )}
+              </div>
+              {/* Category Multi-Selector */}
+              <div className="form-control ">
+                <Controller
+                  control={control}
+                  defaultValue={options.map((c) => c.value)}
+                  name="jobs"
+                  render={({ field: { onChange, ref } }) => (
+                    <Select
+                      isMulti
+                      ref={ref}
+                      // value={options?.filter((c) => value?.includes(c.value))}
+                      onChange={(val) => onChange(val.map((c) => c.value))}
+                      options={options}
+                      styles={customStyles}
+                    />
+                  )}
+                />
+                {errors.jobs && (
+                  <p className="text-red-500 ">{errors.jobs.message}</p>
+                )}
               </div>
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
