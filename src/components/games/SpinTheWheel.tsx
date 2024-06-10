@@ -1,12 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSpinGame from "../../hooks/useSpinGame";
 import { FieldValues, useForm, UseFormRegister } from "react-hook-form";
+import { Spin } from "../../services/spinGame-service";
+import apiClient from "../../services/api-client";
+
 interface IFormInput {
   [key: string]: string | number;
 }
 
 const SpinTheWheel: React.FC = () => {
-  const { spinGameInform } = useSpinGame();
+  const numberToWord = (num: number): string => {
+    const words = [
+      "one",
+      "two",
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+    ];
+    return words[num - 1];
+  };
+  const { spinGameInform } = useSpinGame() as { spinGameInform: Spin };
   const { register, handleSubmit } = useForm<IFormInput>({
     defaultValues: {
       spinInput_0: spinGameInform.digit_one,
@@ -20,9 +37,37 @@ const SpinTheWheel: React.FC = () => {
       spinInput_8: spinGameInform.digit_nine,
     },
   });
+  const [isGameSpinAgain, setGameSpinAgain] = useState<
+    { name: string; bool: boolean }[]
+  >([]);
 
-  const onSubmit = (data: FieldValues) => {
+
+  const onSubmit = async (data: FieldValues) => {
     console.log(data);
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value], idx) => {
+      const digitKey = `digit_${numberToWord(idx + 1)}` as keyof Spin;
+      const inputName = `spinInput_${idx}`; // Get the input name
+      // Check if the inputName is in isGameSpinAgain and if it is checked
+      const isSpinAgain = isGameSpinAgain.some(
+        (input) => input.name === inputName && input.bool
+      );
+      formData.append(
+        digitKey,
+        value === undefined && isSpinAgain
+          ? 0
+          : value === undefined
+          ? `${
+              spinGameInform[digitKey] === "spin_again"
+                ? 0
+                : spinGameInform[digitKey]
+            }`
+          : value
+      );
+    });
+
+    const res = await apiClient.post("/spin/information/update", formData);
+    console.log(res);
   };
 
   return (
@@ -55,6 +100,12 @@ const SpinTheWheel: React.FC = () => {
             digit={spin.digit}
             register={register}
             inputName={`spinInput_${index}`}
+            onChecked={(inputName, isChecked) =>
+              setGameSpinAgain((prev) => [
+                ...prev,
+                { name: inputName, bool: isChecked },
+              ])
+            }
           />
         ))}
       </div>
@@ -72,6 +123,7 @@ interface SpinInputProps {
   digit: number | string;
   register: UseFormRegister<IFormInput>;
   inputName: string;
+  onChecked: (inputName: string, isChecked: boolean) => void;
 }
 
 const SpinInput: React.FC<SpinInputProps> = ({
@@ -79,11 +131,19 @@ const SpinInput: React.FC<SpinInputProps> = ({
   digit,
   register,
   inputName,
+  onChecked,
 }) => {
-  // const isSpinAgain = typeof digit === "string";
-  const [isChecked, setChecked] = useState<boolean>(typeof digit === "string");
+  const isSpinAgain = digit === "spin_again"; // Check if digit is "Spin again"
+  const [isChecked, setChecked] = useState<boolean>(true);
+
+  useEffect(() => {
+    setChecked(isSpinAgain);
+  }, [isSpinAgain]);
+
   const handleCheckedBox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(e.currentTarget.checked);
+    const isChecked = e.currentTarget.checked;
+    setChecked(isChecked);
+    onChecked(inputName, isChecked);
   };
 
   return (
@@ -94,27 +154,19 @@ const SpinInput: React.FC<SpinInputProps> = ({
           Discount percentage
         </label>
         <div className="flex gap-4 justify-center items-center">
-          {isChecked ? (
-            <input
-              {...register(inputName)}
-              type="number"
-              className="input input-bordered xl:w-[500px]"
-              disabled
-            />
-          ) : (
-            <input
-              {...register(inputName)}
-              defaultValue={digit}
-              type="number"
-              className="input input-bordered xl:w-[500px]"
-            />
-          )}
+          <input
+            {...register(inputName)}
+            defaultValue={isChecked ? "" : digit}
+            type="number"
+            className="input input-bordered xl:w-[500px]"
+            disabled={isChecked}
+          />
           <div>
             <input
               className="mr-2"
               type="checkbox"
-              checked={isChecked}
               onChange={handleCheckedBox}
+              checked={isChecked}
             />
             <span>Spin again</span>
           </div>
