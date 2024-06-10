@@ -80,7 +80,7 @@ const SpinInput: React.FC<SpinInputProps> = ({
   register,
   inputName,
 }) => {
-  const isSpinAgain = typeof digit === "string";
+  // const isSpinAgain = typeof digit === "string";
   const [isChecked, setChecked] = useState<boolean>(typeof digit === "string");
   const handleCheckedBox = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(e.currentTarget.checked);
