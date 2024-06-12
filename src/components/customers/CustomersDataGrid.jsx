@@ -127,7 +127,7 @@ const CustomersDataGrid = ({
     {
       label: <span className="text-sm py-2 mr-2">Status</span>,
       renderCell: (item) => {
-        if (item.status === 0) {
+        if (item.status === 1) {
           return (
             <p className="badge flex items-center p-4 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
               <GoDotFill className="text-[#14BA6D]  text-lg" /> Active

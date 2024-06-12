@@ -17,9 +17,10 @@ import {
   settings,
   termsConditions,
 } from "../../public/assets/sidebar";
+import { IoBagRemoveOutline } from "react-icons/io5";
 
 const Sidebar = () => {
-  const { setAuth } = useAuth();
+  const { setAuth, auth } = useAuth();
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -63,6 +64,29 @@ const Sidebar = () => {
 
   const handleLogoutClick = () => {
     (document.getElementById("logout_modal") as HTMLDialogElement).showModal();
+  };
+
+  const productsLinks = {
+    title: "Products",
+    icon: <IoBagRemoveOutline />,
+    links: [
+      {
+        name: "Clothes",
+        link: "/products/clothes",
+      },
+      {
+        name: "Jewelry",
+        link: "/products/jewelry",
+      },
+      {
+        name: "Cosmetics",
+        link: "/products/cosmetics",
+      },
+      {
+        name: "Celebrities",
+        link: "/products/celebrities",
+      },
+    ],
   };
 
   const activeLink =
@@ -127,20 +151,95 @@ const Sidebar = () => {
                     {item.icon}
                     {item.title}
                   </div>
-                  <div className="collapse-content">
-                    {item.links.map((link) => (
-                      <NavLink
-                        to={`${link.link}`}
-                        key={link.link}
-                        onClick={handleCloseSideBar}
-                        className={({ isActive }) =>
-                          isActive ? activeLink : normalLink
-                        }
-                      >
-                        <span className="capitalize ">{link.name}</span>
-                      </NavLink>
-                    ))}
-                  </div>
+                  {item.title === "Accounts" && (
+                    <div className="collapse-content">
+                      {auth?.permissions.find(
+                        (per) => per === "admin-list"
+                      ) && (
+                        <NavLink
+                          to={`/accounts/admins`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">Admins</span>
+                        </NavLink>
+                      )}
+
+                      {auth?.permissions.find((per) => per === "user-list") && (
+                        <NavLink
+                          to={`/accounts/customers`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">Customers</span>
+                        </NavLink>
+                      )}
+
+                      {auth?.permissions.find(
+                        (per) => per === "vendor-list"
+                      ) && (
+                        <NavLink
+                          to={`/accounts/vendors`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">Vendors</span>
+                        </NavLink>
+                      )}
+                    </div>
+                  )}
+                  {item.title === "Products" && (
+                    <div className="collapse-content">
+                      {productsLinks.links.map((pro) => (
+                        <NavLink
+                          to={`${pro.link}`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">{pro.name}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                  {item.title === "Games" && (
+                    <div className="collapse-content">
+                      {auth?.permissions.find(
+                        (per) => per === "scratch-game-information"
+                      ) && (
+                        <NavLink
+                          to={`/games/scratch`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">Scratch Coupon</span>
+                        </NavLink>
+                      )}
+
+                      {auth?.permissions.find(
+                        (per) => per === "spin-game-information"
+                      ) && (
+                        <NavLink
+                          to={`/games/spin`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">Spin the Wheel</span>
+                        </NavLink>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -152,14 +251,18 @@ const Sidebar = () => {
               <img src={coupons} alt="home" />
               <span className="capitalize ">Coupons & Vouchers</span>
             </NavLink>
-            <NavLink
-              onClick={handleCloseSideBar}
-              to={`/roles-permissions`}
-              className={({ isActive }) => (isActive ? activeLink : normalLink)}
-            >
-              <img src={permissions} alt="home" />
-              <span className="capitalize ">Roles & Permissions</span>
-            </NavLink>
+            {auth?.permissions.find((per) => per === "role-list") && (
+              <NavLink
+                onClick={handleCloseSideBar}
+                to={`/roles-permissions`}
+                className={({ isActive }) =>
+                  isActive ? activeLink : normalLink
+                }
+              >
+                <img src={permissions} alt="home" />
+                <span className="capitalize ">Roles & Permissions</span>
+              </NavLink>
+            )}
             <NavLink
               onClick={handleCloseSideBar}
               to={`/`}

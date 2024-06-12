@@ -549,7 +549,7 @@ const AdminProfile = () => {
             </div>
             <select
               className={`select select-bordered ml-4 ${
-                status == "1" ? "#ECFDF3]" : "bg-[#FDECEC]"
+                status == "1" ? "bg-[#ECFDF3]" : "bg-[#FDECEC]"
               }`}
               value={status}
               onChange={handleChange}

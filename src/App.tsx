@@ -21,36 +21,51 @@ import AllVendorBrandsProducts from "./components/vendors/AllVendorBrandsProduct
 import BrandProfile from "./components/vendors/BrandProfile";
 import FinancialReport from "./components/vendors/FinancialReport";
 import RequiredAuth from "./components/RequiredAuth";
+import usePermissions from "./hooks/usePremissions";
+import { useEffect } from "react";
 
 function App() {
+  const { permissions } = usePermissions();
+
+  const ADMINS_PERMISSIONS = permissions[0]?.permissions.map((_) => _.name);
+  const ROLES_PERMISSIONS = permissions[1]?.permissions.map((_) => _.name);
+  const SCRATCH_PERMISSIONS = permissions[2]?.permissions.map((_) => _.name);
+  const SPIN_PERMISSIONS = permissions[3]?.permissions.map((_) => _.name);
+  const USERS_PERMISSIONS = permissions[4]?.permissions.map((_) => _.name);
+  const VENDORS_PERMISSIONS = permissions[5]?.permissions.map((_) => _.name);
+  useEffect(() => {
+    console.log("hi", SCRATCH_PERMISSIONS);
+  }, [permissions]);
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route path="unauthorized" element={<UnauthorizedPage />} />
-        <Route
-          element={
-            <RequiredAuth
-              allowedRoles={[
-                "role-list",
-                "role-create",
-                "role-edit",
-                "role-show",
-                "role-delete",
-              ]}
-            />
-          }
-        >
+        <Route element={<RequiredAuth allowedRoles={ROLES_PERMISSIONS} />}>
           <Route path="roles-permissions" element={<Roles />} />
         </Route>
-        
-        <Route path="games/scratch" element={<ScratchCoupon />} />
-        <Route path="games/spin" element={<SpinTheWheel />} />
+        <Route element={<RequiredAuth allowedRoles={ADMINS_PERMISSIONS} />}>
+          <Route path="accounts/admins" element={<Admins />} />
+          <Route path="accounts/admins/:id" element={<AdminProfile />} />
+        </Route>
+        <Route element={<RequiredAuth allowedRoles={USERS_PERMISSIONS} />}>
+          <Route path="accounts/customers" element={<Customers />} />
+          <Route path="accounts/customers/:id" element={<CustomerProfile />} />
+        </Route>
+        <Route element={<RequiredAuth allowedRoles={VENDORS_PERMISSIONS} />}>
+          <Route path="accounts/vendors" element={<Vendors />} />
+          <Route path="accounts/vendors/:id" element={<VendorProfile />} />
+          <Route path="accounts/vendors/brands" element={<VendorBrand />} />
+        </Route>
+        <Route element={<RequiredAuth allowedRoles={SCRATCH_PERMISSIONS} />}>
+          <Route path="games/scratch" element={<ScratchCoupon />} />
+        </Route>
+        <Route element={<RequiredAuth allowedRoles={SPIN_PERMISSIONS} />}>
+          <Route path="games/spin" element={<SpinTheWheel />} />
+        </Route>
+
+
         <Route path="login" element={<Login />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="accounts/admins" element={<Admins />} />
-        <Route path="accounts/admins/:id" element={<AdminProfile />} />
-        <Route path="accounts/customers" element={<Customers />} />
-        <Route path="accounts/customers/:id" element={<CustomerProfile />} />
         <Route path="products/clothes" element={<Clothes />} />
         <Route
           path="products/clothes/new-product"
@@ -60,9 +75,7 @@ function App() {
           path="see-all-customers-orders/:id"
           element={<CustomerOrders />}
         />
-        <Route path="accounts/vendors" element={<Vendors />} />
-        <Route path="accounts/vendors/:id" element={<VendorProfile />} />
-        <Route path="accounts/vendors/brands" element={<VendorBrand />} />
+
         <Route
           path="AllVendorBrandsProducts"
           element={<AllVendorBrandsProducts />}

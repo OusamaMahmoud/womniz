@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface StateContextProps {
   chat: boolean;
@@ -18,7 +18,9 @@ interface ContextProps {
   setActiveMenu: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const StateContext = createContext<ContextProps | undefined>({} as ContextProps );
+const StateContext = createContext<ContextProps | undefined>(
+  {} as ContextProps
+);
 
 const initialState: StateContextProps = {
   chat: false,
@@ -27,13 +29,13 @@ const initialState: StateContextProps = {
   notification: false,
 };
 
-
-export const ContextProvider = ({ children }:{children:ReactNode}) => {
+export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [screenSize, setScreenSize] = useState<number | undefined>(undefined);
   const [activeMenu, setActiveMenu] = useState<boolean>(true);
   const [isClicked, setIsClicked] = useState<StateContextProps>(initialState);
 
-  const handleClick = (clicked: keyof StateContextProps) => setIsClicked({ ...initialState, [clicked]: true });
+  const handleClick = (clicked: keyof StateContextProps) =>
+    setIsClicked({ ...initialState, [clicked]: true });
 
   return (
     <StateContext.Provider
@@ -56,7 +58,7 @@ export const ContextProvider = ({ children }:{children:ReactNode}) => {
 export const useStateContext = (): ContextProps => {
   const context = useContext(StateContext);
   if (!context) {
-    throw new Error('useStateContext must be used within a ContextProvider');
+    throw new Error("useStateContext must be used within a ContextProvider");
   }
   return context;
 };

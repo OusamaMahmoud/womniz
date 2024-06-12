@@ -39,7 +39,9 @@ const NewClothesProduct = () => {
       <div className="flex items-center">
         <button
           onClick={() => setActiveTab("clothes")}
-          className={`btn btn-outline text-xl ${activeTab === "clothes" ? "bg-[#B6C9B5]" : ""}`}
+          className={`btn btn-outline text-xl ${
+            activeTab === "clothes" ? "bg-[#B6C9B5]" : ""
+          }`}
         >
           Clothes <BiArrowToBottom />
         </button>
@@ -48,7 +50,9 @@ const NewClothesProduct = () => {
 
         <button
           onClick={() => setActiveTab("productInfo")}
-          className={`btn btn-outline text-xl ${activeTab === "productInfo" ? "text-[#577656]" : "text-[#1B1B1B80]"}`}
+          className={`btn btn-outline text-xl ${
+            activeTab === "productInfo" ? "text-[#577656]" : "text-[#1B1B1B80]"
+          }`}
         >
           {activeTab === "productInfo" ? (
             <FaCheckCircle className="text-[#577656]" />
@@ -62,7 +66,11 @@ const NewClothesProduct = () => {
 
         <button
           onClick={() => setActiveTab("descriptionPrice")}
-          className={`btn btn-outline text-xl ${activeTab === "descriptionPrice" ? "text-[#577656]" : "text-[#1B1B1B80]"}`}
+          className={`btn btn-outline text-xl ${
+            activeTab === "descriptionPrice"
+              ? "text-[#577656]"
+              : "text-[#1B1B1B80]"
+          }`}
         >
           <span className="rounded-full w-4 h-4 bg-[#1B1B1B80]"></span>{" "}
           Description & Price
@@ -72,9 +80,12 @@ const NewClothesProduct = () => {
 
         <button
           onClick={() => setActiveTab("arPreview")}
-          className={`btn btn-outline text-xl ${activeTab === "arPreview" ? "text-[#577656]" : "text-[#1B1B1B80]"}`}
+          className={`btn btn-outline text-xl ${
+            activeTab === "arPreview" ? "text-[#577656]" : "text-[#1B1B1B80]"
+          }`}
         >
-          <span className="rounded-full w-4 h-4 bg-[#1B1B1B80]"></span> AR Preview
+          <span className="rounded-full w-4 h-4 bg-[#1B1B1B80]"></span> AR
+          Preview
         </button>
       </div>
 
@@ -213,6 +224,19 @@ const NewClothesProduct = () => {
         <div className="flex flex-col mt-8">
           {/* Product Information tab content */}
           <h1 className="text-2xl font-bold">Product Information</h1>
+          <div>
+            <h1 className="text-xl font-bold">Description</h1>
+            <div className="flex justify-around items-center gap-20 mt-4">
+              <div className="grow flex flex-col">
+                <h1>Description (Arabic)</h1>
+                <textarea className="grow border rounded-md p-4 mt-2 h-48" placeholder="Write your description here...."></textarea>
+              </div>
+              <div className="grow flex flex-col">
+                <h1>Description (English)</h1>
+                <textarea className="border rounded-md p-4 mt-2 h-48" placeholder="Write your description here...."></textarea>
+              </div>
+            </div>
+          </div>
           {/* Your content here */}
           <button
             onClick={() => setActiveTab("descriptionPrice")}
