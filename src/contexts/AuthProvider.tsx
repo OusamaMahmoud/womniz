@@ -17,6 +17,8 @@ interface AuthObject {
   age: string;
   status: number;
   category: string;
+  role:string;
+  permissions:string[];
 }
 
 interface AuthContextValues {

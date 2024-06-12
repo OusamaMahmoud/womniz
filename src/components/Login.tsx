@@ -48,7 +48,7 @@ const Login = () => {
       localStorage.setItem("authToken", user.token);
 
       setAuth(user);
-
+      console.log(user);
       navigate("/");
       setLoading(false);
     } catch (err: any) {

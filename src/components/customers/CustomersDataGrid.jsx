@@ -3,12 +3,8 @@ import { CompactTable } from "@table-library/react-table-library/compact";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
 import { useSort } from "@table-library/react-table-library/sort";
-import { usePagination } from "@table-library/react-table-library/pagination";
 import { Link } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
-import { BiRightArrow, BiSolidRightArrow } from "react-icons/bi";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import Pagination from "../Pagination";
 
 const CustomersDataGrid = ({
   tableData,
@@ -18,7 +14,7 @@ const CustomersDataGrid = ({
   handleCheckboxChange,
   metaObject,
 }) => {
-  const data = { nodes: tableData }; // Update data structure
+  const data = { nodes: tableData };
 
   const theme = useTheme(getTheme());
 
@@ -29,8 +25,7 @@ const CustomersDataGrid = ({
     },
     {
       sortFns: {
-        id: (array) =>
-          array.sort((a, b) => (a.nodes || []).length - (b.nodes || []).length),
+        id: (array) => array.sort((a, b) => a.id - b.id),
         name: (array) => array.sort((a, b) => a.name.localeCompare(b.name)),
         email: (array) => array.sort((a, b) => a.email.localeCompare(b.email)),
         phone: (array) => array.sort((a, b) => a.phone.localeCompare(b.phone)),
@@ -44,14 +39,13 @@ const CustomersDataGrid = ({
           array.sort((a, b) => a.country.localeCompare(b.country)),
         category: (array) =>
           array.sort((a, b) => a.category.localeCompare(b.category)),
-        status: (array) =>
-          array.sort((a, b) => a.status.localeCompare(b.status)),
+        status: (array) => array.sort((a, b) => a.status - b.status),
       },
     }
   );
 
   function onSortChange(action, state) {
-    // console.log(action, state);
+    console.log(action, state);
   }
 
   const COLUMNS = [

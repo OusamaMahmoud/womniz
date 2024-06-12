@@ -77,6 +77,7 @@ const AdminProfile = () => {
   // ADMINS CATEGORIES
   const { categories } = useCategories();
 
+
   const options: OptionType[] = categories.map((item) => ({
     label: item.title,
     value: item.title,
@@ -436,7 +437,6 @@ const AdminProfile = () => {
                       className="bg-gray-400 text-white"
                       value=""
                       disabled
-                      selected
                     >
                       Select Admin Role
                     </option>
@@ -532,10 +532,10 @@ const AdminProfile = () => {
         <div className="flex justify-between items-center shadow-xl p-8">
           <div className="flex gap-3 items-start">
             <div className="w-20 h-20">
-              {photoPreview && (
+              {targetAdmin && targetAdmin.image && (
                 <img
-                  src={photoPreview}
-                  alt="hi"
+                  src={targetAdmin.image}
+                  alt="Preview"
                   className="object-cover w-full h-full rounded-full"
                 />
               )}
@@ -549,7 +549,7 @@ const AdminProfile = () => {
             </div>
             <select
               className={`select select-bordered ml-4 ${
-                status == "1" ? "bg-[#ECFDF3]" : "bg-[#FDECEC]"
+                status == "1" ? "#ECFDF3]" : "bg-[#FDECEC]"
               }`}
               value={status}
               onChange={handleChange}

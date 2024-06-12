@@ -9,27 +9,45 @@ import { IoAdd } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import VendorProductsDataGrid from "./VendorProductsDataGrid";
 import BrandProfileDataGrid from "./BrandProfileDataGrid";
-import { BiExport } from "react-icons/bi";
-import FinancialReportDataGrid from "./FinancialReportDataGrid";
-import DateCalender from "./DateCalender";
-const FinancialReport = () => {
+const BrandProfile = () => {
   return (
     <div className="container mx-auto px-2 flex flex-col mt-10 ">
-      <div className="flex items-center justify-between mb-10">
-        <h1 className="text-4xl font-bold tracking-wider">Financial Report</h1>
+      <div className="flex items-center justify-between mb-20">
+        <h1 className="text-4xl font-bold tracking-wider">Zara Brand</h1>
         <div className="flex items-center gap-8">
-   
+          <Link
+            to={"/products/clothes/new-product"}
+            className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
+          >
+            <IoAdd className="text-white text-2xl hover:text-black" /> Add
+          </Link>
           <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg hover:bg-red-600">
             <MdDelete className="text-2xl   " /> Delete
           </button>
-          <button
-            className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
-          >
-            <BiExport className="text-white text-2xl hover:text-black" /> Export
-          </button>
         </div>
       </div>
-
+      <div className="flex justify-between mb-6">
+        <div className="p-5 flex flex-col gap-2 justify-center items-center shadow-xl mb-6 rounded-lg xl:min-w-[250px]">
+          <h1 className="text-2xl font-bold">Total Products</h1>
+          <p className="text-xl">2000</p>
+        </div>
+        <div className="p-5 flex flex-col gap-2 justify-center items-center shadow-xl mb-6 rounded-lg xl:min-w-[250px]">
+          <h1 className="text-2xl font-bold">Available Products</h1>
+          <p className="text-xl">1200</p>
+        </div>
+        <div className="p-5 flex flex-col gap-2 justify-center items-center shadow-xl mb-6 rounded-lg xl:min-w-[250px]">
+          <h1 className="text-2xl font-bold">Total Sales</h1>
+          <p className="text-xl">600$</p>
+        </div>
+        <div className="p-5 flex flex-col gap-2 justify-center items-center shadow-xl mb-6 rounded-lg xl:min-w-[250px]">
+          <h1 className="text-2xl font-bold">Today’s Sales</h1>
+          <p className="text-xl">50$</p>
+        </div>
+        <div className="p-5 flex flex-col gap-2 justify-center items-center shadow-xl mb-6 rounded-lg xl:min-w-[250px]">
+          <h1 className="text-2xl font-bold">Monthly Sales</h1>
+          <p className="text-xl">150$</p>
+        </div>
+      </div>
       <div className="flex gap-8 mb-8">
         <label className="input input-bordered flex items-center gap-2 max-w-xs">
           <input type="text" className="" placeholder="Search" />
@@ -46,9 +64,13 @@ const FinancialReport = () => {
             />
           </svg>
         </label>
-        <DateCalender />
+        <select className="select select-bordered w-full max-w-xs">
+          <option disabled>Select Status</option>
+          <option>Han Solo</option>
+          <option>Greedo</option>
+        </select>
       </div>
-      <FinancialReportDataGrid />
+      <BrandProfileDataGrid />
       <div className="mt-10">
         <nav className="flex justify-between items-center">
           <p className="text-2xl ml-4">1-15 of 20 items</p>
@@ -82,4 +104,4 @@ const FinancialReport = () => {
   );
 };
 
-export default FinancialReport;
+export default BrandProfile;

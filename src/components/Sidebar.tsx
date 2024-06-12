@@ -72,7 +72,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className=" h-screen md:overflow-hidden overflow-auto md:hover:overflow-auto pb-10 mt-14 sm:mt-2 rounded-e-[30px] "
+      className=" min-h-screen md:overflow-hidden overflow-auto md:hover:overflow-auto pb-10  sm:mt-2 rounded-e-[30px] "
       style={{ boxShadow: "rgb(26 39 39 / 17%) 12px -9px 11px -4px" }}
     >
       {activeMenu && (

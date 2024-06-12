@@ -5,6 +5,7 @@ import { BiAddToQueue, BiEdit } from "react-icons/bi";
 import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
 import avatar from "/assets/admin/avatar.svg";
+import { Link } from "react-router-dom";
 const VendorBrand = () => {
   const [isDotsOpen, setDotsOpen] = useState(false);
   const [isAddingBrandOpen, setAddingBrandOpen] = useState(true);
@@ -31,7 +32,7 @@ const VendorBrand = () => {
   };
   return (
     <>
-      <div className=" shadow-xl p-4">
+      <div className=" shadow-xl p-8">
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-semibold mb-10">Clothes Brands</h1>
           <span
@@ -41,29 +42,43 @@ const VendorBrand = () => {
             Add <BiAddToQueue />
           </span>
         </div>
-        <div className="flex flex-col  max-w-sm  border shadow-lg rounded-lg p-10 gap-2">
-          <div className="relative self-end cursor-pointer font-semibold">
-            <PiDotsThreeVerticalBold
-              className="text-xl"
-              onClick={(e) => setDotsOpen(!isDotsOpen)}
-            />
-            {isDotsOpen && (
-              <div className="absolute flex flex-col gap-2 border p-3 right-3 cursor-pointer">
-                <span className="border-b-2 pb-3">Edit</span>
-                <span onClick={(e) => document.getElementById('deletion-brand-modal').showModal()}>Delete</span>
+        <div className="grid grid-cols-3 gap-10">
+          {Array(6)
+            .fill()
+            .map((_) => (
+              <div className="flex flex-col  max-w-lg  border shadow-lg rounded-lg p-10 gap-2">
+                <div className="relative self-end cursor-pointer font-semibold">
+                  <PiDotsThreeVerticalBold
+                    className="text-xl"
+                    onClick={(e) => setDotsOpen(!isDotsOpen)}
+                  />
+                  {isDotsOpen && (
+                    <div className="absolute flex flex-col gap-2 border p-3 right-3 cursor-pointer">
+                      <span className="border-b-2 pb-3">Edit</span>
+                      <span
+                        onClick={(e) =>
+                          document
+                            .getElementById("deletion-brand-modal")
+                            .showModal()
+                        }
+                      >
+                        Delete
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <p className="w-36 relative">
+                  <img
+                    src="/assets/vendor/zara.svg"
+                    className="object-cover w-[100%]"
+                  />
+                </p>
+                <Link to={'/AllVendorBrandsProducts'}  className="self-center flex items-center gap-4 text-lg font-bold">
+                  Details
+                  <FaArrowRightLong />
+                </Link>
               </div>
-            )}
-          </div>
-          <p className="w-36 relative">
-            <img
-              src="/assets/vendor/zara.svg"
-              className="object-cover w-[100%]"
-            />
-          </p>
-          <p className="self-center flex items-center gap-4 text-lg font-bold">
-            Details
-            <FaArrowRightLong />
-          </p>
+            ))}
         </div>
       </div>
       {isAddingBrandOpen && (
@@ -97,19 +112,34 @@ const VendorBrand = () => {
                   />
                 </label>
                 <div className="flex flex-col gap-4 mb-10">
-                  <label htmlFor="name">Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    {...register("name")}
-                    className="input input-bordered"
-                  />
+                  <label htmlFor="name">Select Category</label>
+                  <select className="select select-bordered">
+                    <option>Category 1</option>
+                    <option>Category 2</option>
+                  </select>
+                </div>
+                <div className="flex gap-10 pb-10 ">
+                  <div className="flex flex-col gap-4 w-52 ">
+                    <label htmlFor="name">Name In Arabic</label>
+                    <input
+                      type="text"
+                      name="name"
+                      {...register("name")}
+                      className="input input-bordered"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-4 w-52">
+                    <label htmlFor="name">Name In English</label>
+                    <input
+                      type="text"
+                      name="name"
+                      {...register("name")}
+                      className="input input-bordered"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex justify-around">
-                  <button type="submit" className="btn px-10">
-                    Save
-                  </button>
                   <button
                     onClick={() =>
                       document.getElementById("my_modal_1").close()
@@ -117,6 +147,9 @@ const VendorBrand = () => {
                     className="btn px-10"
                   >
                     Close
+                  </button>
+                  <button type="submit" className=" btn px-10 hover:bg-[#577656] hover:text-white tracking-wide">
+                    Save
                   </button>
                 </div>
               </form>

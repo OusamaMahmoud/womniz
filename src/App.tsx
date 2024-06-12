@@ -16,14 +16,33 @@ import NewClothesProduct from "./components/products/clothes/NewClothesProduct";
 import ScratchCoupon from "./components/games/ScratchCoupon";
 import SpinTheWheel from "./components/games/SpinTheWheel";
 import Roles from "./components/roles-and-permtions/Roles";
+import VendorBrand from "./components/vendors/VendorBrand";
+import AllVendorBrandsProducts from "./components/vendors/AllVendorBrandsProducts";
+import BrandProfile from "./components/vendors/BrandProfile";
+import FinancialReport from "./components/vendors/FinancialReport";
+import RequiredAuth from "./components/RequiredAuth";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route path="unauthorized" element={<UnauthorizedPage />} />
-
-        <Route path="roles-permissions" element={<Roles />} />
+        <Route
+          element={
+            <RequiredAuth
+              allowedRoles={[
+                "role-list",
+                "role-create",
+                "role-edit",
+                "role-show",
+                "role-delete",
+              ]}
+            />
+          }
+        >
+          <Route path="roles-permissions" element={<Roles />} />
+        </Route>
+        
         <Route path="games/scratch" element={<ScratchCoupon />} />
         <Route path="games/spin" element={<SpinTheWheel />} />
         <Route path="login" element={<Login />} />
@@ -43,7 +62,16 @@ function App() {
         />
         <Route path="accounts/vendors" element={<Vendors />} />
         <Route path="accounts/vendors/:id" element={<VendorProfile />} />
-
+        <Route path="accounts/vendors/brands" element={<VendorBrand />} />
+        <Route
+          path="AllVendorBrandsProducts"
+          element={<AllVendorBrandsProducts />}
+        />
+        <Route
+          path="AllVendorBrandsProducts/brandProfile"
+          element={<BrandProfile />}
+        />
+        <Route path="financial-reports" element={<FinancialReport />} />
         <Route path="*" element={<MissingPage />} />
       </Route>
     </Routes>

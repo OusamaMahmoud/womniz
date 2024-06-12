@@ -613,7 +613,7 @@ const VendorProfile = () => {
               <div className="mb-8 flex justify-between items-center">
                 <h1 className="font-bold text-xl">Brands</h1>
                 <Link
-                  to={"/brands"}
+                  to={"/accounts/vendors/brands"}
                   className="text-green-300 flex gap-2 items-center"
                 >
                   View Details <GoLink />

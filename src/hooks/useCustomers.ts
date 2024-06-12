@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Customer } from "../services/customer-service";
+import _ from "lodash";
 
 interface MetaObject {
   current_page: number;
@@ -29,7 +30,7 @@ const useCustomers = ({
   const [prev, setPrev] = useState<string | null>("");
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
-  useEffect(() => {
+  const fetchCustomers = useCallback(() => {
     setLoading(true);
     const controller = new AbortController();
     const request = apiClient.get<{
@@ -58,6 +59,18 @@ const useCustomers = ({
     return () => controller.abort();
   }, [categories, status, search, isFetching, page]);
 
+  // Debounce the fetchAdmins function
+  const debouncedFetchCustomers = useCallback(
+    _.debounce(fetchCustomers, 500), // 500ms delayx
+    [fetchCustomers]
+  );
+
+  useEffect(() => {
+    debouncedFetchCustomers();
+    // Clean up the debounced function on unmount
+    return debouncedFetchCustomers.cancel;
+  }, [debouncedFetchCustomers]);
+  
   const buildUrl = () => {
     const baseUrl = `/users`;
     const params = new URLSearchParams();
@@ -65,10 +78,9 @@ const useCustomers = ({
     if (page) {
       params.append("page", page);
     }
-      if (categories) {
-        params.append(`category[0]`, categories);
-      }
-
+    if (categories) {
+      params.append(`category[0]`, categories);
+    }
 
     if (status) {
       if (status === "Active") {

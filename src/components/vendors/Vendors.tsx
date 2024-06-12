@@ -316,17 +316,12 @@ const Vendors = () => {
       {/* Table */}
       {isLoading ? (
         <div className="flex flex-col gap-10">
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
-          <div className="skeleton h-14 w-full"></div>
+          <div className="skeleton h-10 w-full"></div>
+          <div className="skeleton h-10 w-full"></div>
+          <div className="skeleton h-10 w-full"></div>
+          <div className="skeleton h-10 w-full"></div>
+          <div className="skeleton h-10 w-full"></div>
+          <div className="skeleton h-10 w-full"></div>
         </div>
       ) : (
         <>

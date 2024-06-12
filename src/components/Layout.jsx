@@ -12,7 +12,7 @@ const Layout = () => {
     <div>
       <div className="flex relative">
         {activeMenu ? (
-          <div className="w-72 fixed  bg-white  ">
+          <div className="w-72 fixed  bg-white z-[1000]  ">
             <Sidebar />
           </div>
         ) : (
@@ -23,7 +23,7 @@ const Layout = () => {
         <div
           className={
             activeMenu
-              ? "   min-h-screen md:ml-72 w-full  "
+              ? " min-h-screen md:ml-72 w-full   "
               : " w-full min-h-screen flex-2 "
           }
         >
