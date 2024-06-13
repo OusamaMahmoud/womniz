@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
-import { Category } from "../services/category-service";
+import { Role } from "../services/role-service";
 
 const useRoles = () => {
-  const [roles, setRoles] = useState<Category[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
@@ -15,8 +15,19 @@ const useRoles = () => {
         signal: controller.signal,
       })
       .then((res) => {
-        console.log(res.data);
-        setRoles(res.data);
+        const response = res.data.data.data;
+
+        const formattedRoles = response.map((role: Role) => {
+          return {
+            ...role,
+            permissions: role.permissions.map((per) => ({
+              name: per,
+              isChecked: true,
+            })),
+          };
+        });
+
+        setRoles(formattedRoles);
         setLoading(false);
       })
       .catch((err) => {

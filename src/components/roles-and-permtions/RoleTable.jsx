@@ -1,19 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CompactTable } from "@table-library/react-table-library/compact";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
 import { useSort } from "@table-library/react-table-library/sort";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import "tailwindcss/tailwind.css";
+import apiClient from "../../services/api-client";
 
-const RoleTable = () => {
-  const initialData = [
-    { id: 1, name: "Admin" },
-    { id: 2, name: "Editor" },
-    { id: 3, name: "Viewer" },
-  ];
-
-  const [roles, setRoles] = useState(initialData);
+const RoleTable = ({ onEditRole, roles, setRoles, onDeleteRole }) => {
   const data = { nodes: roles };
   const theme = useTheme(getTheme());
 
@@ -33,10 +27,22 @@ const RoleTable = () => {
 
   const handleEdit = (role) => {
     console.log(`Edit role: ${role.name}`);
+    onEditRole(role);
   };
 
   const handleDelete = (role) => {
-    setRoles(roles.filter((r) => r.id !== role.id));
+    console.log(`delete role: ${role.id}`);
+    const formData = new FormData();
+    formData.append("_method", "delete");
+    const orignalRoles = [...roles];
+    try {
+      // setLoading(true);
+      setRoles(roles.filter((r) => r.id !== role.id));
+      const res = apiClient.post(`/roles/${role.id}`, formData);
+      console.log(res);
+    } catch (error) {
+      console.log("error while deleting role!!", error);
+    }
   };
 
   const COLUMNS = [
@@ -53,13 +59,13 @@ const RoleTable = () => {
             onClick={() => handleEdit(item)}
             className="text-blue-500 hover:text-blue-700"
           >
-            <FaEdit />
+            <FaEdit className="text-xl mr-4" />
           </button>
           <button
             onClick={() => handleDelete(item)}
             className="text-red-500 hover:text-red-700"
           >
-            <FaTrash />
+            <FaTrash className="text-xl " />
           </button>
         </div>
       ),

@@ -18,7 +18,7 @@ const usePermissions = () => {
         const formattedPermissions = Object.entries(res.data.data).map(([,value]) => {
           const permissionsWithChecked = value.permissions.map((permission) => ({
             ...permission,
-            checked: true, // Set the "checked" property to true for each permission
+            checked: false, // Set the "checked" property to true for each permission
           }));
           return {
             grouping: value.grouping,
