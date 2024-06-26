@@ -7,6 +7,8 @@ import { Role } from "../../services/role-service";
 import useRoles from "../../hooks/useRoles";
 import EditRole from "./EditRole";
 import apiClient from "../../services/api-client";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Roles: React.FC = () => {
   const { permissions, setPermissions } = usePermissions();
@@ -15,11 +17,16 @@ const Roles: React.FC = () => {
   const [isCreatingRolePageShow, setCreatingRolePageShow] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
   const [searchKey, setSearchKey] = useState<string>('');
+  const [filteredRoles, setFilteredRoles] = useState<Role[]>(roles);
 
-  useEffect(()=>{
+  useEffect(() => {
+    if (searchKey === '') {
+      setFilteredRoles(roles);
+    } else {
+      setFilteredRoles(roles.filter((role) => role.name.toLowerCase().includes(searchKey.toLowerCase())));
+    }
+  }, [searchKey, roles]);
 
-    setRoles(prev => prev.filter(_ => _.name.includes(searchKey)))
-  },[searchKey])
   const handleCheckboxChange = (
     categoryIndex: number,
     permissionIndex: number
@@ -73,11 +80,12 @@ const Roles: React.FC = () => {
       formData.append(`permissions[${idx}]`, per);
       console.log(`permissions[${idx}]`, per);
     });
+
     // Send `selectedPermissions` to the API
     try {
-      const res = apiClient.post("/roles", formData);
-
-      console.log(res);
+      apiClient.post("/roles", formData);
+      toast.success(`${data.ro} Role is Successfully Created.`)
+      setCreatingRolePageShow(false);
     } catch (error) {
       console.log("error of create a Role =>", error);
     }
@@ -85,6 +93,7 @@ const Roles: React.FC = () => {
 
   return (
     <>
+    <ToastContainer />
       {/* MAIN PAGE */}
       {!targetRole?.name && (
         <div className="container mx-auto px-6">
@@ -109,6 +118,7 @@ const Roles: React.FC = () => {
                   type="text"
                   className="grow"
                   placeholder="Search"
+                  value={searchKey}
                   onChange={(e) => setSearchKey(e.currentTarget.value)}
                 />
                 <svg
@@ -128,7 +138,7 @@ const Roles: React.FC = () => {
                 <RoleTable
                   onEditRole={(role: Role) => setTargetRole(role)}
                   onDeleteRole={(role: Role) => setTargetRole(role)}
-                  roles={roles}
+                  roles={filteredRoles}
                   setRoles={setRoles}
                 />
               </div>
@@ -236,6 +246,7 @@ const Roles: React.FC = () => {
           permissions={permissions}
           setPermissions={setPermissions}
           roles={roles}
+          onCloseThisPage={(val)=>setTargetRole(val)}
         />
       )}
     </>

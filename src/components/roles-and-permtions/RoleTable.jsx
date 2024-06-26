@@ -62,11 +62,38 @@ const RoleTable = ({ onEditRole, roles, setRoles, onDeleteRole }) => {
             <FaEdit className="text-xl mr-4" />
           </button>
           <button
-            onClick={() => handleDelete(item)}
+            onClick={() =>
+              document.getElementById("deletion-modal").showModal()
+            }
             className="text-red-500 hover:text-red-700"
           >
             <FaTrash className="text-xl " />
           </button>
+          <dialog
+            id="deletion-modal"
+            className="modal modal-bottom sm:modal-middle"
+          >
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Are you sure?</h3>
+              <p className="py-4">Do you really want to delete this Role?</p>
+              <div className="modal-action">
+                <button
+                  className="btn"
+                  onClick={() =>
+                    document.getElementById("deletion-modal").close()
+                  }
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-error"
+                  onClick={() => handleDelete(item)}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </dialog>
         </div>
       ),
     },

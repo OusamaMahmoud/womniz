@@ -5,17 +5,20 @@ import useRoles from "../../hooks/useRoles";
 import { Role } from "../../services/role-service";
 import { PermissionCategory } from "../../services/permission-service";
 import apiClient from "../../services/api-client";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const EditRole = ({
   targetRole,
   permissions,
   setPermissions,
   roles,
+  onCloseThisPage
 }: {
   targetRole: Role;
   permissions: PermissionCategory[];
   setPermissions: any;
   roles: Role[];
+  onCloseThisPage: (value: null) => void;
 }) => {
   const { handleSubmit, register } = useForm();
   //   const { permissions, setPermissions } = usePermissions();
@@ -103,9 +106,9 @@ const EditRole = ({
       console.log(`permissions[${idx}]`, per);
     });
     try {
-      const res = apiClient.post(`/roles/${targetRole.id}`, formData);
-
-      console.log(res);
+       apiClient.post(`/roles/${targetRole.id}`, formData);
+       toast.success(`${data.ro} Role is Successfully Edited.`)
+       onCloseThisPage(null)
     } catch (error) {
       console.log("error of create a Role =>", error);
     }

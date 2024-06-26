@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import useVendorCategories from "../../hooks/useVendorCategories";
 
-const DynamicForm = () => {
-  // State to manage categories and commissions
-  const [fields, setFields] = useState([{ category: "", commission: "" }]);
+const DynamicForm = ({ onSelectedCategories }) => {
+  const { vendorCategories } = useVendorCategories();
+  const [fields, setFields] = useState([{ category: "", id: "" }]);
 
-  // Function to handle the change in inputs
+  // Function to handle the change in select inputs
   const handleChange = (index, event) => {
     const values = [...fields];
     values[index][event.target.name] = event.target.value;
+    values[index].id = vendorCategories.find((item) =>
+      item.name.includes(event.target.value)
+    ).id;
     setFields(values);
+    onSelectedCategories(values);
   };
 
   // Function to add new fields when a category input loses focus (onBlur event)
@@ -16,39 +21,45 @@ const DynamicForm = () => {
     if (event.target.name === "category" && event.target.value) {
       const values = [...fields];
       if (index === fields.length - 1) {
-        setFields([...fields, { category: "", commission: "" }]);
+        setFields([...fields, { category: "", id: "" }]);
       }
     }
   };
 
+  // Function to get available categories for the dropdown
+  const getAvailableCategories = (index) => {
+    const selectedCategories = fields
+      .slice(0, index)
+      .map((field) => field.category);
+    return vendorCategories.filter(
+      (category) => !selectedCategories.includes(category.name)
+    );
+  };
+
   return (
-    <div className="space-y-4 mt-4">
+    <div className="">
       {fields.map((field, index) => (
-        <div key={index} className="flex space-x-4">
+        <div key={index} className="">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Category
+            <label className="label">
+              <span className="label-text">Category</span>
             </label>
-            <input
-              type="text"
+            <select
               name="category"
               value={field.category}
               onChange={(event) => handleChange(index, event)}
               onBlur={(event) => handleBlur(index, event)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Commission
-            </label>
-            <input
-              type="text"
-              name="commission"
-              value={field.commission}
-              onChange={(event) => handleChange(index, event)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
+              className="select select-bordered w-[100%] "
+            >
+              <option value="" disabled>
+                Select a category
+              </option>
+              {getAvailableCategories(index).map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       ))}

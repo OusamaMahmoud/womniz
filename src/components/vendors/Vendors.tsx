@@ -3,7 +3,7 @@ import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import avatar from "../../../public/assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
@@ -25,23 +25,73 @@ import DynamicForm from "./DynamicForm";
 const schema = z.object({
   name: z
     .string()
-    .min(3)
-    .max(255)
-    .regex(/^[a-zA-Z\s]*$/),
-  email: z.string().email(),
-  contactPersonName: z.string().min(3).max(255),
+    .min(3, { message: "Name must be at least 3 characters long" })
+    .max(255, { message: "Name must be at most 255 characters long" })
+    .regex(/^[a-zA-Z\s]*$/, {
+      message: "Name can only contain letters and spaces",
+    }),
+  email: z.string().email({ message: "Invalid email address" }),
   phone: z
     .string()
-    .min(8)
-    .max(20)
-    .regex(/^\+?\d+$/),
-  hQAdress: z.string().min(3).max(255),
-  shippingAdress: z.string().min(3).max(255),
-  jobs: z.array(z.string()).min(1),
-  commission: z.string().min(3).max(255),
-  password: z.string().min(8).max(50),
-  address: z.string().min(3).max(255),
-  bankName: z.string().min(8).max(50),
+    .min(8, { message: "Phone number must be at least 8 digits long" })
+    .max(20, { message: "Phone number must be at most 20 digits long" })
+    .regex(/^\+?\d+$/, {
+      message: "Phone number can only contain digits and an optional leading +",
+    }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(50, { message: "Password must be at most 50 characters long" }),
+  contactName: z
+    .string()
+    .min(3, { message: "Contact name must be at least 3 characters long" })
+    .max(255, { message: "Contact name must be at most 255 characters long" }),
+  hQAdress: z
+    .string()
+    .min(3, { message: "HQ address must be at least 3 characters long" })
+    .max(255, { message: "HQ address must be at most 255 characters long" }),
+  shippingAdress: z
+    .string()
+    .min(3, { message: "Shipping address must be at least 3 characters long" })
+    .max(255, {
+      message: "Shipping address must be at most 255 characters long",
+    }),
+  commission: z
+    .string()
+    .min(3, { message: "Commission must be at least 3 characters long" })
+    .max(255, { message: "Commission must be at most 255 characters long" }),
+  ibanNumber: z
+    .string()
+    .min(15, { message: "IBAN number must be at least 15 characters long" })
+    .max(34, { message: "IBAN number must be at most 34 characters long" })
+    .regex(/^[A-Z0-9]+$/, {
+      message: "IBAN number can only contain uppercase letters and digits",
+    }),
+  bankName: z
+    .string()
+    .min(3, { message: "Bank name must be at least 3 characters long" })
+    .max(50, { message: "Bank name must be at most 50 characters long" }),
+  bankAccountName: z
+    .string()
+    .min(3, { message: "Bank account name must be at least 3 characters long" })
+    .max(50, {
+      message: "Bank account name must be at most 50 characters long",
+    }),
+  accountNumber: z
+    .string()
+    .min(5, { message: "Account number must be at least 5 characters long" })
+    .max(20, { message: "Account number must be at most 20 characters long" })
+    .regex(/^\d+$/, { message: "Account number can only contain digits" }),
+  swiftNumber: z
+    .string()
+    .min(8, { message: "SWIFT number must be at least 8 characters long" })
+    .max(11, { message: "SWIFT number must be at most 11 characters long" })
+    .regex(/^[A-Z0-9]+$/, {
+      message: "SWIFT number can only contain uppercase letters and digits",
+    }),
+  // categories: z
+  //   .array(z.string().min(1, { message: "Category cannot be empty" }))
+  //   .min(1, { message: "At least one category is required" }),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -161,7 +211,7 @@ const Vendors = () => {
         data.append(`ids[${index}]`, id.toString());
       });
       try {
-       await apiClient.post("/vendors/delete", data);
+        await apiClient.post("/vendors/delete", data);
         toast.success("Vendors deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
@@ -176,27 +226,46 @@ const Vendors = () => {
 
   // Handle Submit
   const onSubmit = async (data: FormData) => {
+    console.log(data);
     const formData = new FormData();
 
-    formData.append(`address`, data.address);
-    formData.append(`email`, data.email);
     formData.append(`name`, data.name);
+    formData.append(`email`, data.email);
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
-    formData.append(`image`, imageFile);
-    formData.append(`jobs[0]`, `1`);
-    try {
-      setSubmitinLoading(true);
-      const res = await adminsService.create<any>(formData);
-      console.log(res);
-      setSubmitinLoading(false);
-      setIsModalOpen(false);
-      notify();
-      setTrigerFetch(!trigerFetch);
-    } catch (error: any) {
-      setCreatingAdminError(error.response.data.data.error);
-      setSubmitinLoading(false);
-    }
+    formData.append(`contact_name`, data.contactName);
+    formData.append(`hq_address`, data.hQAdress);
+    formData.append(`contact_name`, data.contactName);
+    formData.append(`shipping_address`, data.shippingAdress);
+    formData.append(`commission`, data.commission);
+    formData.append(`iban_number`, data.ibanNumber);
+    formData.append(`categories[0]`, `1`);
+    formData.append(`categories[1]`, `1`);
+
+    // Bank Details
+    formData.append(`bank_name`, data.bankName);
+    formData.append(`bank_account_name`, data.bankAccountName);
+    formData.append(`account_number`, data.accountNumber);
+    formData.append(`swift_number`, data.swiftNumber);
+
+    // FILES
+    // formData.append(`image`, imageFile);
+    // formData.append(`legal_docs`, legal_docs);
+    // formData.append(`commercial_registration`, commercial_registration);
+    // formData.append(`vat_certificate`, vat_certificate);
+
+    // try {
+    //   setSubmitinLoading(true);
+    //   const res = await adminsService.create<any>(formData);
+    //   console.log(res);
+    //   setSubmitinLoading(false);
+    //   setIsModalOpen(false);
+    //   notify();
+    //   setTrigerFetch(!trigerFetch);
+    // } catch (error: any) {
+    //   setCreatingAdminError(error.response.data.data.error);
+    //   setSubmitinLoading(false);
+    // }
   };
   const { allVendors, isAllVendorsError } = useAllVendors();
   const exportToExcel = () => {
@@ -435,18 +504,18 @@ const Vendors = () => {
                       className={`input input-bordered grow ${
                         errors.phone && "border-[red]"
                       } `}
-                      {...register("contactPersonName")}
+                      {...register("contactName")}
                     />
-                    {errors.contactPersonName && (
+                    {errors.contactName && (
                       <RiErrorWarningLine
                         color="red"
                         className="w-6 h-6 ml-1"
                       />
                     )}
                   </div>
-                  {errors.contactPersonName && (
+                  {errors.contactName && (
                     <p className="text-[red] text-xs mt-3 ">
-                      {errors.contactPersonName.message}
+                      {errors.contactName.message}
                     </p>
                   )}
                 </div>
@@ -528,38 +597,22 @@ const Vendors = () => {
                     </p>
                   )}
                 </div>
-                {/* Category Multi-Selector */}
-                {/* <div className="form-control ">
-                  <label className="mb-3">Select Category</label>
-                  <Controller
-                    control={control}
-                    // defaultValue={options.map((c) => c.value)}
-                    name="jobs"
-                    render={({ field: { onChange, value, ref } }) => (
-                      <Select
-                        isMulti
-                        ref={ref}
-                        // value={options.filter((c) => value.includes(c.value))}
-                        onChange={(val) => onChange(val.map((c) => c.value))}
-                        options={options}
-                        styles={customStyles}
-                      />
-                    )}
-                  />
-                  {errors.jobs && (
-                    <p className="text-red-500 ">{errors.jobs.message}</p>
-                  )}
-                </div>
+                <DynamicForm
+                  onSelectedCategories={(seletedOnes: {
+                    category: string;
+                    id: number;
+                  }) => console.log(seletedOnes)}
+                />
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Commission</span>
                   </label>
                   <div className="flex items-center gap-2">
                     <input
-                      type="text"
+                      type="commission"
                       id="commission"
                       className={`input input-bordered grow ${
-                        errors.commission && "border-[red]"
+                        errors.email && "border-[red]"
                       }`}
                       {...register("commission")}
                     />
@@ -575,8 +628,7 @@ const Vendors = () => {
                       {errors.commission.message}
                     </p>
                   )}
-                </div> */}
-                <DynamicForm />
+                </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Password</span>
@@ -690,12 +742,12 @@ const Vendors = () => {
                     </label>
                     <div className="flex items-center gap-2">
                       <input
-                        type="password"
-                        id="password"
+                        type="text"
+                        id="BankAccountName"
                         className={`input input-bordered grow ${
                           errors.email && "border-[red]"
                         }`}
-                        {...register("password")}
+                        {...register("bankAccountName")}
                       />
                       {errors.email && (
                         <RiErrorWarningLine
@@ -712,16 +764,16 @@ const Vendors = () => {
                   </div>
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text">Account name</span>
+                      <span className="label-text">Account Number</span>
                     </label>
                     <div className="flex items-center gap-2">
                       <input
-                        type="password"
-                        id="password"
+                        type="text"
+                        id="accountNumber"
                         className={`input input-bordered grow ${
                           errors.email && "border-[red]"
                         }`}
-                        {...register("password")}
+                        {...register("accountNumber")}
                       />
                       {errors.email && (
                         <RiErrorWarningLine
@@ -742,12 +794,12 @@ const Vendors = () => {
                     </label>
                     <div className="flex items-center gap-2">
                       <input
-                        type="password"
-                        id="password"
+                        type="text"
+                        id="ibanNumber"
                         className={`input input-bordered grow ${
                           errors.email && "border-[red]"
                         }`}
-                        {...register("password")}
+                        {...register("ibanNumber")}
                       />
                       {errors.email && (
                         <RiErrorWarningLine
@@ -768,12 +820,12 @@ const Vendors = () => {
                     </label>
                     <div className="flex items-center gap-2">
                       <input
-                        type="password"
-                        id="password"
+                        type="text"
+                        id="swiftNumber"
                         className={`input input-bordered grow ${
                           errors.email && "border-[red]"
                         }`}
-                        {...register("password")}
+                        {...register("swiftNumber")}
                       />
                       {errors.email && (
                         <RiErrorWarningLine
@@ -789,7 +841,6 @@ const Vendors = () => {
                     )}
                   </div>
                 </div>
-            
               </div>
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
