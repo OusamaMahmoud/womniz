@@ -20,6 +20,8 @@ import Pagination from "./Pagination";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useAllAdmins from "../hooks/useAllAdmins";
+import useRoles from "../hooks/useRoles";
+import { useAuth } from "../contexts/AuthProvider";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -65,6 +67,8 @@ const schema = z.object({
 export type FormData = z.infer<typeof schema>;
 export type OptionType = { label: string; value: string };
 const Admins: React.FC = () => {
+  const { auth } = useAuth();
+  const { roles } = useRoles();
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -107,11 +111,11 @@ const Admins: React.FC = () => {
     page: paginationPage,
   });
 
-
   const recordsPerPage = meta.per_page || 5;
   const nPages = Math.ceil(admins.length / recordsPerPage);
 
   // Handle React Hook Form
+  
   const {
     register,
     handleSubmit,
@@ -121,7 +125,6 @@ const Admins: React.FC = () => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
-
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -249,7 +252,9 @@ const Admins: React.FC = () => {
       setSubmitinLoading(false);
     }
   };
+  
   const { alladmins, isAllAdminsError } = useAllAdmins();
+
   const exportToExcel = () => {
     // Create a new workbook and a sheet
     const wb = XLSX.utils.book_new();
@@ -285,21 +290,30 @@ const Admins: React.FC = () => {
         )}
         <h1 className="font-medium text-4xl capitalize">Admins Details</h1>
         <div className="flex items-center gap-2">
-          <button className="btn bg-[#577656] text-[white]" onClick={openModal}>
-            <BiPlusCircle className="text-xl" /> Add Admin Account
-          </button>
-          <button
-            onClick={handleDelete}
-            className={`btn btn-outline text-[#E20000B2] ${
-              !isDeleteEnabled && "cursor-not-allowed"
-            }`}
-            disabled={!isDeleteEnabled}
-          >
-            <BiTrash className="text-lg text-[#E20000B2]" /> Delete
-          </button>
-          <button onClick={exportToExcel} className="btn btn-outline">
-            <BiExport /> Export
-          </button>
+          {auth?.permissions.find((per) => per === "admin-create") && (
+            <button
+              className="btn bg-[#577656] text-[white]"
+              onClick={openModal}
+            >
+              <BiPlusCircle className="text-xl" /> Add Admin Account
+            </button>
+          )}
+          {auth?.permissions.find((per) => per === "admin-delete") && (
+            <button
+              onClick={handleDelete}
+              className={`btn btn-outline text-[#E20000B2] ${
+                !isDeleteEnabled && "cursor-not-allowed"
+              }`}
+              disabled={!isDeleteEnabled}
+            >
+              <BiTrash className="text-lg text-[#E20000B2]" /> Delete
+            </button>
+          )}
+          {auth?.permissions.find((per) => per === "admin-export") && (
+            <button onClick={exportToExcel} className="btn btn-outline">
+              <BiExport /> Export
+            </button>
+          )}
         </div>
       </div>
       {/* Handle Filters */}
@@ -609,7 +623,9 @@ const Admins: React.FC = () => {
                     >
                       Select Admin Role
                     </option>
-                    <option value={"Super Admin"}>Super Admin</option>
+                    {roles.map((role) => (
+                      <option value={`${role.name}`}>{role.name}</option>
+                    ))}
                   </select>
                   {errors.role && (
                     <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />

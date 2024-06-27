@@ -5,6 +5,7 @@ import { getTheme } from "@table-library/react-table-library/baseline";
 import { useSort } from "@table-library/react-table-library/sort";
 import { Link } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
+import { useAuth } from "../../contexts/AuthProvider";
 
 const CustomersDataGrid = ({
   tableData,
@@ -14,6 +15,7 @@ const CustomersDataGrid = ({
   handleCheckboxChange,
   metaObject,
 }) => {
+  const { auth } = useAuth();
   const data = { nodes: tableData };
 
   const theme = useTheme(getTheme());
@@ -78,11 +80,14 @@ const CustomersDataGrid = ({
     },
     {
       label: <span className="text-sm py-2 mr-2">Customer Name</span>,
-      renderCell: (item) => (
-        <Link to={`/accounts/customers/${item.id}`} className=" py-5">
-          {item.name}
-        </Link>
-      ),
+      renderCell: (item) =>
+        auth?.permissions.find((per) => per === "user-show") ? (
+          <Link to={`/accounts/customers/${item.id}`} className="py-5">
+            {item.name}
+          </Link>
+        ) : (
+          <p className="py-5">{item.name}</p>
+        ),
       sort: { sortKey: "name" },
     },
     {
@@ -114,7 +119,7 @@ const CustomersDataGrid = ({
       label: <span className="text-sm py-2 mr-2">Adress</span>,
       renderCell: (item) => (
         <span>
-          {item.addresses[0]}-{item.addresses[1]} 
+          {item.addresses[0]}-{item.addresses[1]}
         </span>
       ),
       sort: { sortKey: "category" },

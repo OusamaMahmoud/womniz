@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import {  BiEdit,  BiTrash } from "react-icons/bi";
+import { BiEdit, BiTrash } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { ToastContainer, toast } from "react-toastify";
 import avatar from "../../../public/assets/admin/avatar.svg";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import  { Customer } from "../../services/customer-service";
+import { Customer } from "../../services/customer-service";
+import { useAuth } from "../../contexts/AuthProvider";
 
 const schema = z.object({
   name: z.string().min(3).max(255),
@@ -49,6 +50,7 @@ type FormData = z.infer<typeof schema>;
 const CustomerProfile = () => {
   //Discount Modal
 
+  const { auth } = useAuth();
   const generateRandomCode = () => {
     return Math.random().toString(36).substr(2, 8).toUpperCase();
   };
@@ -198,7 +200,7 @@ const CustomerProfile = () => {
     useState(false);
   const handleAddingOrderToCustomer = () => {
     setIsProductsComponentExist(true);
-    console.log(isProductsComponentExist)
+    console.log(isProductsComponentExist);
   };
 
   const {
@@ -559,31 +561,37 @@ const CustomerProfile = () => {
               <p className="capitalize">Customer</p>
               <p className="capitalize">{targetCustomer.country}</p>
             </div>
-            <select
-              className={`select select-bordered ml-4 ${
-                status == "1" ? "bg-[#ECFDF3]" : "bg-[#FDECEC]"
-              }`}
-              value={status}
-              onChange={handleChange}
-            >
-              <option value={"1"}>Active</option>
-              <option value={"0"}>Inactive</option>
-            </select>
+            {auth?.permissions.find((per) => per === "user-change-status") && (
+              <select
+                className={`select select-bordered ml-4 ${
+                  status == "1" ? "bg-[#ECFDF3]" : "bg-[#FDECEC]"
+                }`}
+                value={status}
+                onChange={handleChange}
+              >
+                <option value={"1"}>Active</option>
+                <option value={"0"}>Inactive</option>
+              </select>
+            )}
           </div>
           <div className="flex gap-4">
-            <button
-              onClick={handleCustomerConfirmationDelete}
-              className="flex items-center gap-2 text-[red] border border-[#d6cccc] rounded-md p-2"
-            >
-              <BiTrash className="text-xl" />
-              Delete
-            </button>
-            <button
-              onClick={handleEditButton}
-              className="flex items-center gap-2  border border-[#d6cccc] rounded-md py-2 px-[18px]"
-            >
-              <BiEdit className="text-xl" /> Edit
-            </button>
+            {auth?.permissions.find((per) => per === "user-delete") && (
+              <button
+                onClick={handleCustomerConfirmationDelete}
+                className="flex items-center gap-2 text-[red] border border-[#d6cccc] rounded-md p-2"
+              >
+                <BiTrash className="text-xl" />
+                Delete
+              </button>
+            )}
+            {auth?.permissions.find((per) => per === "user-edit") && (
+              <button
+                onClick={handleEditButton}
+                className="flex items-center gap-2  border border-[#d6cccc] rounded-md py-2 px-[18px]"
+              >
+                <BiEdit className="text-xl" /> Edit
+              </button>
+            )}
           </div>
         </div>
         <div className="flex justify-between items-start gap-10 mt-20">

@@ -18,6 +18,7 @@ import useCustomers from "../../hooks/useCustomers";
 import customerService from "../../services/customer-service";
 import useAllCustomers from "../../hooks/useAllCustomers";
 import CustomersDataGrid from "../customers/CustomersDataGrid";
+import { useAuth } from "../../contexts/AuthProvider";
 // ZOD SCHEMA
 
 const schema = z.object({
@@ -208,8 +209,7 @@ const Customers: React.FC = () => {
       setSubmitinLoading(false);
     }
   };
-  const { allacustomers, isAllCustomersError } =
-    useAllCustomers();
+  const { allacustomers, isAllCustomersError } = useAllCustomers();
   const exportToExcel = () => {
     // Create a new workbook and a sheet
     const wb = XLSX.utils.book_new();
@@ -234,6 +234,7 @@ const Customers: React.FC = () => {
       "customers.xlsx"
     );
   };
+  const { auth } = useAuth();
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -245,21 +246,30 @@ const Customers: React.FC = () => {
         )}
         <h1 className="font-medium text-4xl capitalize">Customers Details</h1>
         <div className="flex items-center gap-2">
-          <button className="btn bg-[#577656] text-[white]" onClick={openModal}>
-            <BiPlusCircle className="text-xl" /> Add Customer Account
-          </button>
-          <button
-            onClick={handleDelete}
-            className={`btn btn-outline text-[#E20000B2] ${
-              !isDeleteEnabled && "cursor-not-allowed"
-            }`}
-            disabled={!isDeleteEnabled}
-          >
-            <BiTrash className="text-lg text-[#E20000B2]" /> Delete
-          </button>
-          <button onClick={exportToExcel} className="btn btn-outline">
-            <BiExport /> Export
-          </button>
+          {auth?.permissions.find((per) => per === "user-create") && (
+            <button
+              className="btn bg-[#577656] text-[white]"
+              onClick={openModal}
+            >
+              <BiPlusCircle className="text-xl" /> Add Customer Account
+            </button>
+          )}
+          {auth?.permissions.find((per) => per === "user-delete") && (
+            <button
+              onClick={handleDelete}
+              className={`btn btn-outline text-[#E20000B2] ${
+                !isDeleteEnabled && "cursor-not-allowed"
+              }`}
+              disabled={!isDeleteEnabled}
+            >
+              <BiTrash className="text-lg text-[#E20000B2]" /> Delete
+            </button>
+          )}
+          {auth?.permissions.find((per) => per === "user-export") && (
+            <button onClick={exportToExcel} className="btn btn-outline">
+              <BiExport /> Export
+            </button>
+          )}
         </div>
       </div>
       {/* Handle Filters */}

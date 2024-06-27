@@ -9,6 +9,7 @@ import EditRole from "./EditRole";
 import apiClient from "../../services/api-client";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../../contexts/AuthProvider";
 
 const Roles: React.FC = () => {
   const { permissions, setPermissions } = usePermissions();
@@ -16,14 +17,18 @@ const Roles: React.FC = () => {
   const [targetRole, setTargetRole] = useState<Role | null>({} as Role);
   const [isCreatingRolePageShow, setCreatingRolePageShow] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
-  const [searchKey, setSearchKey] = useState<string>('');
+  const [searchKey, setSearchKey] = useState<string>("");
   const [filteredRoles, setFilteredRoles] = useState<Role[]>(roles);
 
   useEffect(() => {
-    if (searchKey === '') {
+    if (searchKey === "") {
       setFilteredRoles(roles);
     } else {
-      setFilteredRoles(roles.filter((role) => role.name.toLowerCase().includes(searchKey.toLowerCase())));
+      setFilteredRoles(
+        roles.filter((role) =>
+          role.name.toLowerCase().includes(searchKey.toLowerCase())
+        )
+      );
     }
   }, [searchKey, roles]);
 
@@ -84,16 +89,17 @@ const Roles: React.FC = () => {
     // Send `selectedPermissions` to the API
     try {
       apiClient.post("/roles", formData);
-      toast.success(`${data.ro} Role is Successfully Created.`)
+      toast.success(`${data.ro} Role is Successfully Created.`);
       setCreatingRolePageShow(false);
     } catch (error) {
       console.log("error of create a Role =>", error);
     }
   };
+  const { auth } = useAuth();
 
   return (
     <>
-    <ToastContainer />
+      <ToastContainer />
       {/* MAIN PAGE */}
       {!targetRole?.name && (
         <div className="container mx-auto px-6">
@@ -102,15 +108,14 @@ const Roles: React.FC = () => {
               <div className="flex justify-between items-center">
                 <h1 className="text-4xl font-bold">Roles</h1>
                 <div className="flex gap-4 items-center">
-                  <button
-                    onClick={() => setCreatingRolePageShow(true)}
-                    className="btn btn-outline flex gap-1"
-                  >
-                    <BiPlus /> Add Role
-                  </button>
-                  <button className="btn btn-outline flex gap-1">
-                    <BiExport /> Export
-                  </button>
+                  {auth?.permissions.find((per) => per === "role-create") && (
+                    <button
+                      onClick={() => setCreatingRolePageShow(true)}
+                      className="btn btn-outline flex gap-1"
+                    >
+                      <BiPlus /> Add Role
+                    </button>
+                  )}
                 </div>
               </div>
               <label className="input input-bordered flex items-center gap-2 mt-4 w-fit">
@@ -246,7 +251,7 @@ const Roles: React.FC = () => {
           permissions={permissions}
           setPermissions={setPermissions}
           roles={roles}
-          onCloseThisPage={(val)=>setTargetRole(val)}
+          onCloseThisPage={(val) => setTargetRole(val)}
         />
       )}
     </>

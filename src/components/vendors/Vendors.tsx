@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import avatar from "../../../public/assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,7 +10,7 @@ import { RiErrorWarningLine } from "react-icons/ri";
 // import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
 import apiClient from "../../services/api-client";
-import adminsService from "../../services/admins-service";
+import vendorsService from "../../services/vendors-service";
 import * as XLSX from "xlsx";
 import useCategories from "../../hooks/useCategories";
 import { saveAs } from "file-saver";
@@ -20,6 +20,7 @@ import useVendors from "../../hooks/useVendors";
 import useAllVendors from "../../hooks/useAllVendors";
 import DropZone from "./DropZone";
 import DynamicForm from "./DynamicForm";
+import { useAuth } from "../../contexts/AuthProvider";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -56,10 +57,7 @@ const schema = z.object({
     .max(255, {
       message: "Shipping address must be at most 255 characters long",
     }),
-  commission: z
-    .string()
-    .min(3, { message: "Commission must be at least 3 characters long" })
-    .max(255, { message: "Commission must be at most 255 characters long" }),
+  commission: z.number().min(0).max(100),
   ibanNumber: z
     .string()
     .min(15, { message: "IBAN number must be at least 15 characters long" })
@@ -89,9 +87,6 @@ const schema = z.object({
     .regex(/^[A-Z0-9]+$/, {
       message: "SWIFT number can only contain uppercase letters and digits",
     }),
-  // categories: z
-  //   .array(z.string().min(1, { message: "Category cannot be empty" }))
-  //   .min(1, { message: "At least one category is required" }),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -111,11 +106,12 @@ const Vendors = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
 
-  const [creatingAdminError, setCreatingAdminError] = useState<string>("");
+  const [creatingVendorError, setCreatingVendorError] = useState<string>("");
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
   const [imageFile, setImageFile] = useState<File>({} as File);
-  const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
+  const [isCreatingVendorLoading, setCreatingVendorLoading] =
+    useState<boolean>(false);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
@@ -126,19 +122,11 @@ const Vendors = () => {
     useState<FileList>();
   const [vatCertificate, setVATCertificate] = useState<FileList>();
 
-  useEffect(() => {
-    console.log(legalDocs);
-    console.log(commercialRegistration);
-    console.log(vatCertificate);
-  }, [legalDocs, vatCertificate, commercialRegistration]);
+  const [dynamicCategories, setDynamicCategories] = useState<
+    { category: string; id: number }[]
+  >([]);
 
-  // const [recordsPerPage] = useState(10);
   const { categories } = useCategories();
-
-  // const options: OptionType[] = categories.map((item) => ({
-  //   label: item.title,
-  //   value: item.title,
-  // }));
 
   // Fetch Admins ..
 
@@ -157,7 +145,7 @@ const Vendors = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
@@ -221,12 +209,67 @@ const Vendors = () => {
       }
     }
   };
-  // Toastify
-  const notify = () => toast.success("Create Vendor Successfully!");
+
+  // Handle inputs that unrelated with Hook Form.
+
+  const [imageFileError, setImageFileError] = useState(false);
+  const [legalDocsError, setLegalDocsError] = useState(false);
+  const [commercialRegistrationError, setCommercialRegistrationError] =
+    useState(false);
+  const [vatCertificateError, setVatCertificateError] = useState(false);
+  const [DynamicCategoriesError, setDynamicCategoriesError] = useState(false);
+
+  useEffect(() => {
+    if (!isEmptyObject(imageFile)) {
+      setImageFileError(false);
+    }
+    if (legalDocs) {
+      setLegalDocsError(false);
+    }
+    if (commercialRegistration) {
+      setCommercialRegistrationError(false);
+    }
+    if (vatCertificate) {
+      setVatCertificateError(false);
+    }
+    if (dynamicCategories) {
+      setDynamicCategoriesError(false);
+    }
+  }, [
+    imageFile,
+    legalDocs,
+    commercialRegistration,
+    vatCertificate,
+    dynamicCategories,
+  ]);
 
   // Handle Submit
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+    // Handle inputs that unrelated with Hook Form.
+
+    if (isEmptyObject(imageFile)) {
+      setImageFileError(true);
+      return;
+    }
+
+    if (!legalDocs || legalDocs.length < 1) {
+      setLegalDocsError(true);
+      return;
+    }
+
+    if (!commercialRegistration || commercialRegistration.length < 1) {
+      setCommercialRegistrationError(true);
+      return;
+    }
+    if (!vatCertificate || vatCertificate?.length < 1) {
+      setVatCertificateError(true);
+      return;
+    }
+    if (!dynamicCategories || dynamicCategories?.length < 1) {
+      setDynamicCategoriesError(true);
+      return;
+    }
+
     const formData = new FormData();
 
     formData.append(`name`, data.name);
@@ -235,12 +278,12 @@ const Vendors = () => {
     formData.append(`phone`, data.phone);
     formData.append(`contact_name`, data.contactName);
     formData.append(`hq_address`, data.hQAdress);
-    formData.append(`contact_name`, data.contactName);
     formData.append(`shipping_address`, data.shippingAdress);
-    formData.append(`commission`, data.commission);
+    formData.append(`commission`, `${data.commission}`);
     formData.append(`iban_number`, data.ibanNumber);
-    formData.append(`categories[0]`, `1`);
-    formData.append(`categories[1]`, `1`);
+    dynamicCategories.map((item, index) => {
+      formData.append(`categories[${index}]`, `${item.id}`);
+    });
 
     // Bank Details
     formData.append(`bank_name`, data.bankName);
@@ -249,23 +292,29 @@ const Vendors = () => {
     formData.append(`swift_number`, data.swiftNumber);
 
     // FILES
-    // formData.append(`image`, imageFile);
-    // formData.append(`legal_docs`, legal_docs);
-    // formData.append(`commercial_registration`, commercial_registration);
-    // formData.append(`vat_certificate`, vat_certificate);
+    formData.append(`image`, imageFile);
+    if (legalDocs && legalDocs[0]) {
+      formData.append(`legal_docs`, legalDocs[0]);
+    }
+    if (commercialRegistration) {
+      formData.append(`commercial_registration`, commercialRegistration[0]);
+    }
+    if (vatCertificate) {
+      formData.append(`vat_certificate`, vatCertificate[0]);
+    }
 
-    // try {
-    //   setSubmitinLoading(true);
-    //   const res = await adminsService.create<any>(formData);
-    //   console.log(res);
-    //   setSubmitinLoading(false);
-    //   setIsModalOpen(false);
-    //   notify();
-    //   setTrigerFetch(!trigerFetch);
-    // } catch (error: any) {
-    //   setCreatingAdminError(error.response.data.data.error);
-    //   setSubmitinLoading(false);
-    // }
+    try {
+      setCreatingVendorLoading(true);
+      const res = await vendorsService.create<any>(formData);
+      console.log(res);
+      setCreatingVendorLoading(false);
+      setIsModalOpen(false);
+      toast.success("Create Vendor Account Successfully!");
+      setTrigerFetch(!trigerFetch);
+    } catch (error: any) {
+      setCreatingVendorError(error.response.data.data.error);
+      setCreatingVendorLoading(false);
+    }
   };
   const { allVendors, isAllVendorsError } = useAllVendors();
   const exportToExcel = () => {
@@ -292,13 +341,10 @@ const Vendors = () => {
       "admins.xlsx"
     );
   };
-  // const [files, setFiles] = useState([]);
-
-  // useEffect(() => {
-  //   files.forEach((file) => {
-  //     console.log("files", file);
-  //   });
-  // }, [files]);
+  const isEmptyObject = (obj: { [key: string]: any }) => {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+  };
+  const { auth } = useAuth();
 
   return (
     <div className="overflow-x-scroll p-5">
@@ -311,9 +357,14 @@ const Vendors = () => {
         )}
         <h1 className="font-medium text-4xl capitalize">Vendors Details</h1>
         <div className="flex items-center gap-2">
-          <button className="btn bg-[#577656] text-[white]" onClick={openModal}>
-            <BiPlusCircle className="text-xl" /> Add Vendor Account
-          </button>
+          {auth?.permissions.find((per) => per === "vendor-create") && (
+            <button
+              className="btn bg-[#577656] text-[white]"
+              onClick={openModal}
+            >
+              <BiPlusCircle className="text-xl" /> Add Vendor Account
+            </button>
+          )}
           <button
             onClick={handleDelete}
             className={`btn btn-outline text-[#E20000B2] ${
@@ -323,9 +374,11 @@ const Vendors = () => {
           >
             <BiTrash className="text-lg text-[#E20000B2]" /> Delete
           </button>
-          <button onClick={exportToExcel} className="btn btn-outline">
-            <BiExport /> Export
-          </button>
+          {auth?.permissions.find((per) => per === "vendor-export") && (
+            <button onClick={exportToExcel} className="btn btn-outline">
+              <BiExport /> Export
+            </button>
+          )}
         </div>
       </div>
       {/* Handle Filters */}
@@ -421,7 +474,7 @@ const Vendors = () => {
             <h3 className="font-bold text-2xl text-left my-10">
               Add New Vendor
             </h3>
-            <div className="flex justify-center items-center my-8 shadow-md p-6">
+            <div className="flex flex-col justify-center items-center my-8 shadow-md p-6">
               {photoPreview ? (
                 <img
                   src={photoPreview}
@@ -429,12 +482,20 @@ const Vendors = () => {
                   className="w-36 h-36 object-cover rounded-full"
                 />
               ) : (
-                <img src={avatar} alt="" />
+                <img src={avatar} alt="avatar" />
               )}
+              <p className="mt-3">
+                {" "}
+                {imageFileError && (
+                  <p className="text-red-600 text-lg tracking-wider">
+                    Image File iS Required!
+                  </p>
+                )}
+              </p>
             </div>
-            {creatingAdminError && (
+            {creatingVendorError && (
               <p className="text-lg text-red-500 p-2 my-2">
-                {creatingAdminError}
+                {creatingVendorError}
               </p>
             )}
             {/* Form */}
@@ -597,24 +658,30 @@ const Vendors = () => {
                     </p>
                   )}
                 </div>
-                <DynamicForm
-                  onSelectedCategories={(seletedOnes: {
-                    category: string;
-                    id: number;
-                  }) => console.log(seletedOnes)}
-                />
+                <div className="flex flex-col  w-[100%]">
+                  <DynamicForm
+                    onSelectedCategories={(
+                      selectedCate: { category: string; id: number }[]
+                    ) => setDynamicCategories(selectedCate)}
+                  />
+                  {DynamicCategoriesError && (
+                    <p className="text-red-600 text-lg tracking-wider mt-2">
+                      Category Filed iS Required!
+                    </p>
+                  )}
+                </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Commission</span>
                   </label>
                   <div className="flex items-center gap-2">
                     <input
-                      type="commission"
+                      type="number"
                       id="commission"
                       className={`input input-bordered grow ${
-                        errors.email && "border-[red]"
+                        errors.commission && "border-[red]"
                       }`}
-                      {...register("commission")}
+                      {...register("commission", { valueAsNumber: true })}
                     />
                     {errors.commission && (
                       <RiErrorWarningLine
@@ -656,7 +723,7 @@ const Vendors = () => {
                   )}
                 </div>
                 <label
-                  className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
+                  className={`absolute top-[230px] z-100 right-[390px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
                 >
                   <span className="text-3xl">
                     <FaEdit />
@@ -681,6 +748,11 @@ const Vendors = () => {
                     onSubmit={(files: FileList) => setLegalDocs(files)}
                     className="p-2 my-2 border border-neutral-200"
                   />
+                  {legalDocsError && (
+                    <p className="text-red-600 text-lg tracking-wider">
+                      Legal Documents is Required!
+                    </p>
+                  )}
                 </div>
                 <div className="my-10 border-b pb-12">
                   <label className="block text-xl font-medium text-gray-700 mb-5">
@@ -692,6 +764,11 @@ const Vendors = () => {
                     }
                     className="p-2 my-2 border border-neutral-200"
                   />
+                  {commercialRegistrationError && (
+                    <p className="text-red-600 text-lg tracking-wider">
+                      Commercial Registration is Required!
+                    </p>
+                  )}
                 </div>
                 <div className="my-10 border-b pb-12">
                   <label
@@ -704,6 +781,11 @@ const Vendors = () => {
                     onSubmit={(files: FileList) => setVATCertificate(files)}
                     className="p-2 my-2 border border-neutral-200"
                   />
+                  {vatCertificateError && (
+                    <p className="text-red-600 text-lg tracking-wider">
+                      Vat Certificate is Required!
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -749,16 +831,16 @@ const Vendors = () => {
                         }`}
                         {...register("bankAccountName")}
                       />
-                      {errors.email && (
+                      {errors.bankAccountName && (
                         <RiErrorWarningLine
                           color="red"
                           className="w-6 h-6 ml-1"
                         />
                       )}
                     </div>
-                    {errors.password && (
+                    {errors.bankAccountName && (
                       <p className="text-[red] text-xs mt-3 ">
-                        {errors.password.message}
+                        {errors.bankAccountName.message}
                       </p>
                     )}
                   </div>
@@ -771,20 +853,20 @@ const Vendors = () => {
                         type="text"
                         id="accountNumber"
                         className={`input input-bordered grow ${
-                          errors.email && "border-[red]"
+                          errors.accountNumber && "border-[red]"
                         }`}
                         {...register("accountNumber")}
                       />
-                      {errors.email && (
+                      {errors.accountNumber && (
                         <RiErrorWarningLine
                           color="red"
                           className="w-6 h-6 ml-1"
                         />
                       )}
                     </div>
-                    {errors.password && (
+                    {errors.accountNumber && (
                       <p className="text-[red] text-xs mt-3 ">
-                        {errors.password.message}
+                        {errors.accountNumber.message}
                       </p>
                     )}
                   </div>
@@ -797,20 +879,20 @@ const Vendors = () => {
                         type="text"
                         id="ibanNumber"
                         className={`input input-bordered grow ${
-                          errors.email && "border-[red]"
+                          errors.ibanNumber && "border-[red]"
                         }`}
                         {...register("ibanNumber")}
                       />
-                      {errors.email && (
+                      {errors.ibanNumber && (
                         <RiErrorWarningLine
                           color="red"
                           className="w-6 h-6 ml-1"
                         />
                       )}
                     </div>
-                    {errors.password && (
+                    {errors.ibanNumber && (
                       <p className="text-[red] text-xs mt-3 ">
-                        {errors.password.message}
+                        {errors.ibanNumber.message}
                       </p>
                     )}
                   </div>
@@ -827,16 +909,16 @@ const Vendors = () => {
                         }`}
                         {...register("swiftNumber")}
                       />
-                      {errors.email && (
+                      {errors.swiftNumber && (
                         <RiErrorWarningLine
                           color="red"
                           className="w-6 h-6 ml-1"
                         />
                       )}
                     </div>
-                    {errors.password && (
+                    {errors.swiftNumber && (
                       <p className="text-[red] text-xs mt-3 ">
-                        {errors.password.message}
+                        {errors.swiftNumber.message}
                       </p>
                     )}
                   </div>
@@ -845,11 +927,9 @@ const Vendors = () => {
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
                   type="submit"
-                  className={`btn px-20 bg-[#577656] text-[white] ${
-                    !isValid && "opacity-50 cursor-not-allowed"
-                  }}`}
+                  className={`btn px-20 bg-[#577656] text-[white]`}
                 >
-                  {isSubmittinLoading ? (
+                  {isCreatingVendorLoading ? (
                     <span className="loading loading-spinner"></span>
                   ) : (
                     `Save`

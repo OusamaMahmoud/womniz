@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Admin } from "../services/admins-service";
+import _ from "lodash";
 
 interface MetaObject {
   current_page: number;
@@ -30,7 +31,7 @@ const useVendors = ({
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchVendors = useCallback(() => {
     setLoading(true);
     const controller = new AbortController();
     const request = apiClient.get<{
@@ -59,6 +60,18 @@ const useVendors = ({
     return () => controller.abort();
   }, [categories, status, search, isFetching, page]);
 
+ // Debounce the fetchAdmins function
+ const debouncedFetchVendors = useCallback(
+  _.debounce(fetchVendors, 500), // 500ms delayx
+  [fetchVendors]
+);
+
+useEffect(() => {
+  debouncedFetchVendors();
+  // Clean up the debounced function on unmount
+  return debouncedFetchVendors.cancel;
+}, [debouncedFetchVendors]);
+
   const buildUrl = () => {
     const baseUrl = `/vendors`;
     const params = new URLSearchParams();
@@ -72,9 +85,9 @@ const useVendors = ({
 
     if (status) {
       if (status === "Active") {
-        params.append("status", "0");
-      } else {
         params.append("status", "1");
+      } else {
+        params.append("status", "0");
       }
     }
 

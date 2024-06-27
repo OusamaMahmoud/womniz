@@ -63,7 +63,6 @@ function App() {
           <Route path="games/spin" element={<SpinTheWheel />} />
         </Route>
 
-
         <Route path="login" element={<Login />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="products/clothes" element={<Clothes />} />

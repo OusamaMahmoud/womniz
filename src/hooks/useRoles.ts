@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Role } from "../services/role-service";
+import { useAuth } from "../contexts/AuthProvider";
 
 const useRoles = () => {
+  const{auth} = useAuth()
   const [roles, setRoles] = useState<Role[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!auth?.permissions.find((per) => per === "role-list")) return;
     setLoading(true);
     const controller = new AbortController();
     apiClient

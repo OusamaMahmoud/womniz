@@ -37,7 +37,7 @@ const DynamicForm = ({ onSelectedCategories }) => {
   };
 
   return (
-    <div className="">
+    <div className="w-[100%]">
       {fields.map((field, index) => (
         <div key={index} className="">
           <div className="flex-1">

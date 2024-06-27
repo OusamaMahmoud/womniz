@@ -9,6 +9,8 @@ import { GoDotFill } from "react-icons/go";
 import { BiRightArrow, BiSolidRightArrow } from "react-icons/bi";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Pagination from "../Pagination";
+import { useAuth } from "../../contexts/AuthProvider";
+
 const VendorDataGrid = ({
   tableData,
   selectAll,
@@ -17,6 +19,7 @@ const VendorDataGrid = ({
   handleCheckboxChange,
   metaObject,
 }) => {
+  const { auth } = useAuth();
   const data = { nodes: tableData }; // Update data structure
 
   const theme = useTheme(getTheme());
@@ -83,11 +86,17 @@ const VendorDataGrid = ({
     },
     {
       label: "Vendor Name",
-      renderCell: (item) => (
-        <Link to={`/accounts/vendors/${item.id}`} className=" py-5">
-          {item.name}
-        </Link>
-      ),
+      renderCell: (item) => 
+        auth?.permissions.find((per) => per === "vendor-show")  ? (
+          <Link to={`/accounts/vendors/${item.id}`} className=" py-5">
+            {item.name}
+          </Link>
+        ) : (
+          <p to={`/accounts/vendors/${item.id}`} className=" py-5">
+            {item.name}
+          </p>
+        )
+      ,
       sort: { sortKey: "name" },
     },
     {

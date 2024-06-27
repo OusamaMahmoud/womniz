@@ -6,6 +6,7 @@ import { useSort } from "@table-library/react-table-library/sort";
 import { Link } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import Pagination from "./Pagination";
+import { useAuth } from "../contexts/AuthProvider";
 
 const DataGrid = ({
   tableData,
@@ -15,6 +16,7 @@ const DataGrid = ({
   handleCheckboxChange,
   metaObject,
 }) => {
+  const { auth } = useAuth();
   const data = { nodes: tableData }; // Update data structure
 
   const theme = useTheme(getTheme());
@@ -31,10 +33,15 @@ const DataGrid = ({
         email: (array) => array.sort((a, b) => a.email.localeCompare(b.email)),
         phone: (array) => array.sort((a, b) => a.phone.localeCompare(b.phone)),
         dateOfBirth: (array) =>
-          array.sort((a, b) => new Date(a.dateOfBirth) - new Date(b.dateOfBirth)),
-        location: (array) => array.sort((a, b) => a.address.localeCompare(b.address)),
-        country: (array) => array.sort((a, b) => a.country.localeCompare(b.country)),
-        category: (array) => array.sort((a, b) => a.category.localeCompare(b.category)),
+          array.sort(
+            (a, b) => new Date(a.dateOfBirth) - new Date(b.dateOfBirth)
+          ),
+        location: (array) =>
+          array.sort((a, b) => a.address.localeCompare(b.address)),
+        country: (array) =>
+          array.sort((a, b) => a.country.localeCompare(b.country)),
+        category: (array) =>
+          array.sort((a, b) => a.category.localeCompare(b.category)),
         status: (array) => array.sort((a, b) => a.status - b.status),
       },
     }
@@ -74,11 +81,14 @@ const DataGrid = ({
     },
     {
       label: "Name",
-      renderCell: (item) => (
-        <Link to={`/accounts/Admins/${item.id}`} className="py-5 text-lg">
-          {item.name}
-        </Link>
-      ),
+      renderCell: (item) =>
+        auth.permissions.find((per) => per === "admin-show") ? (
+          <Link to={`/accounts/Admins/${item.id}`} className="py-5 text-lg">
+            {item.name}
+          </Link>
+        ) : (
+          <p className="py-5 text-lg">{item.name}</p>
+        ),
       sort: { sortKey: "name" },
     },
     {
