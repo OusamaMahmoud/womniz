@@ -23,6 +23,7 @@ import FinancialReport from "./components/vendors/FinancialReport";
 import RequiredAuth from "./components/RequiredAuth";
 import usePermissions from "./hooks/usePremissions";
 import { useEffect } from "react";
+import AllProducts from "./components/products/AllProducts";
 
 function App() {
   const { permissions } = usePermissions();
@@ -65,6 +66,7 @@ function App() {
 
         <Route path="login" element={<Login />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="products/all-products" element={<AllProducts />} />
         <Route path="products/clothes" element={<Clothes />} />
         <Route
           path="products/clothes/new-product"

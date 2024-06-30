@@ -6,23 +6,33 @@ import {
 import ClothesDataGrid from "./ClothesDataGrid";
 import { IoAdd } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { BiUpload } from "react-icons/bi";
+import { FaFileExport } from "react-icons/fa";
 
 const Clothes = () => {
   return (
     <div className="flex flex-col ">
       <div className="flex items-center gap-8 justify-end mb-8">
-        <button className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-16 xl:text-lg">
+        <button className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg">
           Sub Category
         </button>
-        <Link to={'/products/clothes/new-product'}
-        className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl">
+        <Link
+          to={"/products/clothes/new-product"}
+          className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
+        >
           <IoAdd className="text-white text-2xl hover:text-black" /> Add New
           Product
         </Link>
+        <button className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg">
+          <BiUpload /> Bulk Upload
+        </button>
       </div>
       <div className="flex items-center gap-8 justify-end mb-6">
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
           <MdDelete className="text-2xl text-red-700 " /> Delete
+        </button>
+        <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
+          <FaFileExport className="text-2xl " /> Export
         </button>
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
           <img src="/assets/clothes/description.svg" /> Description

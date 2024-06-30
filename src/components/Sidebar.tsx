@@ -71,6 +71,10 @@ const Sidebar = () => {
     icon: <IoBagRemoveOutline />,
     links: [
       {
+        name: "All",
+        link: "/products/all-products",
+      },
+      {
         name: "Clothes",
         link: "/products/clothes",
       },
