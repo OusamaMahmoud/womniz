@@ -9,7 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 // import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
-import DataGrid from "./DataGrid";
 import useAdmins from "../hooks/useAdmins";
 import apiClient from "../services/api-client";
 import adminService from "../services/admins-service";
@@ -285,24 +284,24 @@ const Admins: React.FC = () => {
       <ToastContainer />
       {fetchAdminsError && <p>{fetchAdminsError}</p>}
       {/* ACTION BUTTONS */}
-      <div className="flex justify-between items-center mb-5">
+      <div className=" justify-between items-center lg:flex mb-5">
         {isAllAdminsError && (
           <p className="text-red-600 text-lg p-2">{isAllAdminsError}</p>
         )}
-        <h1 className="font-medium xl:text-4xl capitalize">Admins Details</h1>
-        <div className="flex items-center gap-2">
+        <h1 className="font-medium xl:text-4xl text-xl capitalize mb-3 lg:mb-0">Admins Details</h1>
+        <div className="flex items-center flex-wrap gap-2">
           {auth?.permissions.find((per) => per === "admin-create") && (
             <button
-              className="btn bg-[#577656] text-[white]"
+              className="btn bg-[#577656] text-[white] text-[10px] lg:text-lg"
               onClick={openModal}
             >
-              <BiPlusCircle className="text-xl" /> Add Admin Account
+              <BiPlusCircle className="xl:text-xl" /> Add Admin Account
             </button>
           )}
           {auth?.permissions.find((per) => per === "admin-delete") && (
             <button
               onClick={handleDelete}
-              className={`btn btn-outline text-[#E20000B2] ${
+              className={`btn btn-outline text-[#E20000B2] text-[10px] lg:text-lg ${
                 !isDeleteEnabled && "cursor-not-allowed"
               }`}
               disabled={!isDeleteEnabled}
@@ -311,7 +310,7 @@ const Admins: React.FC = () => {
             </button>
           )}
           {auth?.permissions.find((per) => per === "admin-export") && (
-            <button onClick={exportToExcel} className="btn btn-outline">
+            <button onClick={exportToExcel} className="btn text-[10px] lg:text-lg btn-outline">
               <BiExport /> Export
             </button>
           )}

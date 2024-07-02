@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go"; // Assuming you're using react-icons for icons
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthProvider";
+import { useAuth } from "../../contexts/AuthProvider";
 
 const CustomerResponsiveTable = ({
   tableData,
@@ -35,7 +35,7 @@ const CustomerResponsiveTable = ({
 
   const { auth } = useAuth();
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overflow-y-auto">
       <table className="min-w-full bg-white">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal ">

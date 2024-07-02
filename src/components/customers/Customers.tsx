@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
-// import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
 import apiClient from "../../services/api-client";
 import useCategories from "../../hooks/useCategories";
@@ -17,10 +16,8 @@ import { saveAs } from "file-saver";
 import useCustomers from "../../hooks/useCustomers";
 import customerService from "../../services/customer-service";
 import useAllCustomers from "../../hooks/useAllCustomers";
-import CustomersDataGrid from "../customers/CustomersDataGrid";
 import { useAuth } from "../../contexts/AuthProvider";
-import AdminsResponsiveTable from "../AdminsResponsiveTable";
-import CustomerResponsiveTable from "../CustomerResponsiveTable";
+import CustomerResponsiveTable from "./CustomerResponsiveTable"
 // ZOD SCHEMA
 
 const schema = z.object({

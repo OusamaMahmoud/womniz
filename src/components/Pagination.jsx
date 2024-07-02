@@ -43,8 +43,8 @@ const Pagination = ({
   };
 
   return (
-    <nav className="flex justify-between items-center my-14">
-      <p className="text-[9px] flex items-center xl:text-2xl ml-4">
+    <nav className="xl:flex flex flex-col gap-4 justify-between items-center my-14">
+      <p className="text-[16px] flex items-center xl:text-2xl ml-4">
         1-{itemsPerPage} of {itemsPerPage * pageNumbers.length} items
       </p>
       <ul className="flex items-center justify-end gap-10">
