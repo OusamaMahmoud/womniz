@@ -19,6 +19,8 @@ import customerService from "../../services/customer-service";
 import useAllCustomers from "../../hooks/useAllCustomers";
 import CustomersDataGrid from "../customers/CustomersDataGrid";
 import { useAuth } from "../../contexts/AuthProvider";
+import AdminsResponsiveTable from "../AdminsResponsiveTable";
+import CustomerResponsiveTable from "../CustomerResponsiveTable";
 // ZOD SCHEMA
 
 const schema = z.object({
@@ -337,13 +339,12 @@ const Customers: React.FC = () => {
         </div>
       ) : (
         <>
-          <CustomersDataGrid
+          <CustomerResponsiveTable
             tableData={customers}
             handleCheckAll={handleCheckAll}
             selectAll={selectAll}
             handleCheckboxChange={handleCheckboxChange}
-            selectedCustomers={selectedCustomers}
-            metaObject={meta}
+            selectedObjects={selectedCustomers}
           />
           <Pagination
             onPage={(pg: string) => setPaginationPage(pg)}

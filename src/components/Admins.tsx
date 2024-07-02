@@ -22,6 +22,7 @@ import { saveAs } from "file-saver";
 import useAllAdmins from "../hooks/useAllAdmins";
 import useRoles from "../hooks/useRoles";
 import { useAuth } from "../contexts/AuthProvider";
+import AdminsResponsiveTable from "./AdminsResponsiveTable";
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -115,7 +116,7 @@ const Admins: React.FC = () => {
   const nPages = Math.ceil(admins.length / recordsPerPage);
 
   // Handle React Hook Form
-  
+
   const {
     register,
     handleSubmit,
@@ -252,7 +253,7 @@ const Admins: React.FC = () => {
       setSubmitinLoading(false);
     }
   };
-  
+
   const { alladmins, isAllAdminsError } = useAllAdmins();
 
   const exportToExcel = () => {
@@ -288,7 +289,7 @@ const Admins: React.FC = () => {
         {isAllAdminsError && (
           <p className="text-red-600 text-lg p-2">{isAllAdminsError}</p>
         )}
-        <h1 className="font-medium text-4xl capitalize">Admins Details</h1>
+        <h1 className="font-medium xl:text-4xl capitalize">Admins Details</h1>
         <div className="flex items-center gap-2">
           {auth?.permissions.find((per) => per === "admin-create") && (
             <button
@@ -306,7 +307,7 @@ const Admins: React.FC = () => {
               }`}
               disabled={!isDeleteEnabled}
             >
-              <BiTrash className="text-lg text-[#E20000B2]" /> Delete
+              <BiTrash className="xl:text-lg text-[#E20000B2]" /> Delete
             </button>
           )}
           {auth?.permissions.find((per) => per === "admin-export") && (
@@ -317,7 +318,7 @@ const Admins: React.FC = () => {
         </div>
       </div>
       {/* Handle Filters */}
-      <div className="my-6 flex items-center gap-3">
+      <div className="my-6 flex items-center flex-wrap gap-3">
         {/* Search Bar */}
         <div className="form-control">
           <label className="input input-bordered grow flex items-center gap-2">
@@ -373,22 +374,21 @@ const Admins: React.FC = () => {
       {/* Table */}
       {isLoading ? (
         <div className="flex flex-col gap-10">
-          <div className="skeleton h-10 w-full"></div>
-          <div className="skeleton h-10 w-full"></div>
-          <div className="skeleton h-10 w-full"></div>
-          <div className="skeleton h-10 w-full"></div>
-          <div className="skeleton h-10 w-full"></div>
-          <div className="skeleton h-10 w-full"></div>
+          <div className="skeleton xl:h-10 w-full"></div>
+          <div className="skeleton xl:h-10 w-full"></div>
+          <div className="skeleton xl:h-10 w-full"></div>
+          <div className="skeleton xl:h-10 w-full"></div>
+          <div className="skeleton xl:h-10 w-full"></div>
+          <div className="skeleton xl:h-10 w-full"></div>
         </div>
       ) : (
         <>
-          <DataGrid
+          <AdminsResponsiveTable
             tableData={admins}
             handleCheckAll={handleCheckAll}
             selectAll={selectAll}
             handleCheckboxChange={handleCheckboxChange}
-            selectedAdmins={selectedAdmins}
-            metaObject={meta}
+            selectedObjects={selectedAdmins}
           />
           <Pagination
             onPage={(pg: string) => setPaginationPage(pg)}

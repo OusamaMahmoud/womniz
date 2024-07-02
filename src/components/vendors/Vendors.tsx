@@ -21,6 +21,7 @@ import useAllVendors from "../../hooks/useAllVendors";
 import DropZone from "./DropZone";
 import DynamicForm from "./DynamicForm";
 import { useAuth } from "../../contexts/AuthProvider";
+import VendorsResponsiveTable from "./VendorsResponsiveTable";
 
 // ZOD SCHEMA
 const schema = z.object({
@@ -447,14 +448,22 @@ const Vendors = () => {
         </div>
       ) : (
         <>
-          <VendorDataGrid
+          <VendorsResponsiveTable
+            tableData={vendors}
+            handleCheckAll={handleCheckAll}
+            selectAll={selectAll}
+            handleCheckboxChange={handleCheckboxChange}
+            selectedObjects={selectedVendors}
+          />
+          
+          {/* <VendorDataGrid
             tableData={vendors}
             handleCheckAll={handleCheckAll}
             selectAll={selectAll}
             handleCheckboxChange={handleCheckboxChange}
             selectedAdmins={selectedVendors}
             metaObject={meta}
-          />
+          /> */}
           <Pagination
             onPage={(pg: string) => setPaginationPage(pg)}
             itemsPerPage={recordsPerPage}

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
 import Pagination from "./Pagination";
 import { useAuth } from "../contexts/AuthProvider";
+import AdminsResponsiveTable from "./AdminsResponsiveTable";
 
 const DataGrid = ({
   tableData,
@@ -75,12 +76,12 @@ const DataGrid = ({
       ),
     },
     {
-      label: "Admin ID",
+      label: <p className="text-[8px] lg:text-lg">{"Admin ID"}</p>,
       renderCell: (item) => <div className="py-5">{item.id}</div>,
       sort: { sortKey: "id" },
     },
     {
-      label: "Name",
+      label: <p className="text-[8px] lg:text-lg">{"Name"}</p>,
       renderCell: (item) =>
         auth.permissions.find((per) => per === "admin-show") ? (
           <Link to={`/accounts/Admins/${item.id}`} className="py-5 text-lg">
@@ -144,7 +145,10 @@ const DataGrid = ({
 
   return (
     <>
-      <CompactTable columns={COLUMNS} data={data} theme={theme} sort={sort} />
+    <div className="">
+      {/* <CompactTable columns={COLUMNS} data={data} theme={theme} sort={sort} /> */}
+      <AdminsResponsiveTable data={tableData} />
+    </div>
     </>
   );
 };

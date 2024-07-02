@@ -84,9 +84,9 @@ const useCustomers = ({
 
     if (status) {
       if (status === "Active") {
-        params.append("status", "0");
-      } else {
         params.append("status", "1");
+      } else {
+        params.append("status", "0");
       }
     }
 
