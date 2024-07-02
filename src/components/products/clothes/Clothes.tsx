@@ -8,14 +8,57 @@ import { IoAdd } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
+import apiClient from "../../../services/api-client";
+import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 const Clothes = () => {
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setFile(event.target.files[0]);
+    }
+  };
+
+  useEffect(() => {
+    if (file !== null) {
+      handleUpload();
+    }
+  }, [file]);
+
+  const handleUpload = async () => {
+    if (!file) {
+      alert("Please select a file first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      await apiClient.post("/products/bulk/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success("File uploaded successfully");
+      setFile(null)
+    } catch (error) {
+      toast.error("Failed to upload file");
+      setFile(null)
+    }
+  };
   return (
     <div className="flex flex-col ">
+      <ToastContainer />
       <div className="flex items-center gap-8 justify-end mb-8">
-        <button className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg">
+        <Link
+          to={"cloths-sub-category"}
+          className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
+        >
           Sub Category
-        </button>
+        </Link>
         <Link
           to={"/products/clothes/new-product"}
           className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
@@ -23,9 +66,20 @@ const Clothes = () => {
           <IoAdd className="text-white text-2xl hover:text-black" /> Add New
           Product
         </Link>
-        <button className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg">
+        <label
+          htmlFor="excel"
+          // onClick={handleUpload}
+          className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
+        >
           <BiUpload /> Bulk Upload
-        </button>
+          <input
+            id="excel"
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleFileChange}
+            hidden
+          />
+        </label>
       </div>
       <div className="flex items-center gap-8 justify-end mb-6">
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
@@ -34,9 +88,12 @@ const Clothes = () => {
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
           <FaFileExport className="text-2xl " /> Export
         </button>
-        <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
+        <Link
+          to={"product-description"}
+          className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg"
+        >
           <img src="/assets/clothes/description.svg" /> Description
-        </button>
+        </Link>
       </div>
       <div className="flex gap-8 mb-8">
         <label className="input input-bordered flex items-center gap-2 max-w-xs">

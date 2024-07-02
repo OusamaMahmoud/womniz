@@ -24,6 +24,9 @@ import RequiredAuth from "./components/RequiredAuth";
 import usePermissions from "./hooks/usePremissions";
 import { useEffect } from "react";
 import AllProducts from "./components/products/AllProducts";
+import ClothsSubCategory from "./components/products/clothes/ClothsSubCategory";
+import ProductDescription from "./components/products/ProductDescription";
+import ProductDetails from "./components/products/ProductDetails";
 
 function App() {
   const { permissions } = usePermissions();
@@ -86,6 +89,9 @@ function App() {
           element={<BrandProfile />}
         />
         <Route path="financial-reports" element={<FinancialReport />} />
+        <Route path="products/clothes/cloths-sub-category" element={<ClothsSubCategory />} />
+        <Route path="products/clothes/product-description" element={<ProductDetails />} />
+        <Route path="products/clothes/product-details" element={<ProductDetails />} />
         <Route path="*" element={<MissingPage />} />
       </Route>
     </Routes>

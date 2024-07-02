@@ -10,16 +10,17 @@ import Dropzone from "../../../components/vendors/DropZone";
 import ProductDropZone from "../ProductDropZone";
 import useSizes from "../../../hooks/useSizes";
 import ClothsDynamicForm from "./ClothsDynamicForm";
-
+import cardPrev from "../../../../public/assets/products/cardPreview.jpg";
+import TextEditor from "../TextEditor";
 const NewClothesProduct = () => {
   const { sizes } = useSizes();
-  const [subClothes, setSubClothes] = useState();
+  const [subClothes, setSubClothes] = useState("cloths");
   const [shoes, setShoes] = useState(false);
 
-  const [activeTab, setActiveTab] = useState("clothes");
+  const [activeTab, setActiveTab] = useState("productInfo");
 
   return (
-    <div className="shadow-2xl rounded-xl p-10">
+    <div className="container mx-auto px-8 shadow-2xl rounded-xl p-10">
       <div className="flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Adding New Product</h1>
         <button className="btn btn-outline">
@@ -229,18 +230,12 @@ const NewClothesProduct = () => {
             <h1 className="text-xl font-bold">Description</h1>
             <div className="flex justify-around items-center gap-20 mt-4">
               <div className="grow flex flex-col">
-                <h1>Description (Arabic)</h1>
-                <textarea
-                  className="grow border rounded-md p-4 mt-2 h-48"
-                  placeholder="Write your description here...."
-                ></textarea>
+                <h1 className="mb-2">Description (Arabic)</h1>
+                <TextEditor />
               </div>
               <div className="grow flex flex-col">
-                <h1>Description (English)</h1>
-                <textarea
-                  className="border rounded-md p-4 mt-2 h-48"
-                  placeholder="Write your description here...."
-                ></textarea>
+                <h1 className="mb-2">Description (English)</h1>
+                <TextEditor />
               </div>
             </div>
             <div className="mt-10">
@@ -273,7 +268,7 @@ const NewClothesProduct = () => {
               onClick={() => setActiveTab("arPreview")}
               className="btn mt-10 self-end px-20   text-xl hover:bg-[#87ae85] mr-32"
             >
-             <FaDraft2Digital /> Save Draft
+              <FaDraft2Digital /> Save Draft
             </button>
             <button
               onClick={() => setActiveTab("arPreview")}
@@ -287,8 +282,154 @@ const NewClothesProduct = () => {
 
       {activeTab === "arPreview" && (
         <div className="flex flex-col mt-8">
-          {/* AR Preview tab content */}
-          <h1 className="text-2xl font-bold">AR Preview</h1>
+          <div className="flex justify-between items-center">
+            {/* {right part} */}
+            <div>
+              <div className="max-w-[600px] shadow-xl p-6 rounded-md">
+                <h1 className="text-2xl font-bold mb-4">Product Information</h1>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl text-[#00000066]">Product Name</span>
+                  <span>T-shirt</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl text-[#00000066]">Category</span>
+                  <span>Clothes</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl text-[#00000066]">Sub Category</span>
+                  <span>Tops</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl text-[#00000066]">Brand</span>
+                  <span>Zara</span>
+                </div>
+              </div>
+              <div className="max-w-[600px]  mt-8 shadow-xl p-6 rounded-md">
+                <h1 className="text-2xl font-bold mb-4">Product Description</h1>
+                <p className="text-xl text-[#00000066]">
+                  White shirt with sleeves with unique design for sleeves which
+                  make your look very awesome
+                </p>
+              </div>
+              <div className="max-w-[600px] mt-8 shadow-xl p-6 rounded-md">
+                <h1 className="text-2xl font-bold mb-4">Pricing Details</h1>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl text-[#00000066]">Product Name</span>
+                  <span>200 $</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl text-[#00000066]">Category</span>
+                  <span>5%</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl text-[#00000066]">Sub Category</span>
+                  <span>10%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* {left part} */}
+            <div className=" p-4 bg-white shadow-md rounded-lg w-[650px] h-[1050px]">
+              <h1 className="text-2xl font-bold my-2">Card preview</h1>
+              <div className="relative flex justify-center items-center h-[950px] w-full">
+                <div className="absolute h-full w-full rounded-lg">
+                  <img
+                    src={cardPrev}
+                    className="object-cover h-full w-full rounded-lg"
+                  />
+                </div>
+                <div className="bg-[#F6EFE9] relative top-[100px] my-10 max-w-[600px] rounded-md">
+                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10 border mb-10 ">
+                    <input type="radio" name="my-accordion-3" defaultChecked />
+                    <div className="collapse-title text-xl font-bold flex justify-between items-center">
+                      <span className="text-2xl font-bold">
+                        White sleeve top
+                      </span>
+                      <span className="text-2xl font-bold">127 Usd</span>
+                    </div>
+                    <div className="collapse-content flex flex-col justify-between">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-[#BFBFBF] max-w-80">
+                          White shirt with sleeves with unique design for
+                          sleeves which make your look very awesome
+                        </p>
+                        <p className="text-[#BFBFBF] flex flex-col gap-2 items-center">
+                          <span className="line-through">158 Usd</span>
+                          <span className="border p-1 rounded-md">
+                            Save 20%
+                          </span>
+                        </p>
+                      </div>
+                      <div className="flex  justify-between items-center my-4">
+                        <p className="font-extrabold text-2xl">Size</p>
+                        <p className="font-extrabold text-2xl flex flex-col gap-2 items-center">
+                          Quantity
+                        </p>
+                      </div>
+                      <div className="flex  justify-between items-center mb-2">
+                        <p className=" flex gap-4">
+                          <span className="w-fit border p-2">XS</span>
+                          <span className="w-fit border p-2">S</span>
+                          <span className="w-fit border p-2">M</span>
+                          <span className="w-fit border p-2">L</span>
+                          <span className="w-fit border p-2">XL</span>
+                          <span className="w-fit border p-2">XXL</span>
+                        </p>
+                        <p className="text-[#BFBFBF] flex  gap-2 items-center">
+                          <span className="border rounded-lg px-4 py-1 text-xl text-white bg-[#577656]">
+                            +
+                          </span>
+                          <span className="font-extrabold">1</span>
+                          <span className="border rounded-lg px-4 py-1 text-xl ">
+                            -
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10 border mb-6 ">
+                    <input type="radio" name="my-accordion-3" defaultChecked />
+                    <div className="collapse-title text-xl font-bold">
+                      Fit & Size
+                    </div>
+                    <div className="collapse-content">
+                      <p className="text-[#BFBFBF]">
+                        We operate traceability programs to ensure compliance
+                        with our social, environmental, safety and health
+                        standards. To ensure compliance, we have developed an
+                        audit program and plans for continuous improvement.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10  border mb-6 ">
+                    <input type="radio" name="my-accordion-2" defaultChecked />
+                    <div className="collapse-title text-xl font-bold">
+                      Return Order
+                    </div>
+                    <div className="collapse-content">
+                      <p className="text-[#BFBFBF]">
+                        30 days starting from buying date
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10 border mb-6 ">
+                    <input type="radio" name="my-accordion-2" defaultChecked />
+                    <div className="collapse-title text-xl font-bold">
+                      Shipping information
+                    </div>
+                    <div className="collapse-content">
+                      <p className="text-[#BFBFBF]">
+                        We operate traceability programs to ensure compliance
+                        with our social, environmental, safety and health
+                        standards. To ensure compliance, we have developed an
+                        audit program and plans for continuous improvement.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           {/* Your content here */}
           <button
             onClick={() => setActiveTab("productInfo")}
