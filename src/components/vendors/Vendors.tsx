@@ -15,7 +15,6 @@ import * as XLSX from "xlsx";
 import useCategories from "../../hooks/useCategories";
 import { saveAs } from "file-saver";
 import Pagination from "../Pagination";
-import VendorDataGrid from "./VendorDataGrid";
 import useVendors from "../../hooks/useVendors";
 import useAllVendors from "../../hooks/useAllVendors";
 import DropZone from "./DropZone";
@@ -352,12 +351,12 @@ const Vendors = () => {
       <ToastContainer />
 
       {/* ACTION BUTTONS */}
-      <div className="flex justify-between items-center mb-5">
+      <div className="justify-between items-center lg:flex mb-5">
         {isAllVendorsError && (
           <p className="text-red-600 text-lg p-2">{isAllVendorsError}</p>
         )}
-        <h1 className="font-medium text-4xl capitalize">Vendors Details</h1>
-        <div className="flex items-center gap-2">
+        <h1 className="font-medium xl:text-4xl text-xl capitalize mb-3 lg:mb-0">Vendors Details</h1>
+        <div className="flex items-center flex-wrap gap-2">
           {auth?.permissions.find((per) => per === "vendor-create") && (
             <button
               className="btn bg-[#577656] text-[white]"
@@ -383,7 +382,7 @@ const Vendors = () => {
         </div>
       </div>
       {/* Handle Filters */}
-      <div className="my-6 flex items-center gap-3">
+      <div className="my-6 flex items-center flex-wrap gap-3">
         {/* Search Bar */}
         <div className="form-control">
           <label className="input input-bordered grow flex items-center gap-2">
@@ -509,7 +508,7 @@ const Vendors = () => {
             )}
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="shadow-xl p-8">
-              <div className="py-4 grid grid-cols-2 gap-8 ">
+              <div className="py-4 grid grid-cols-1 lg:grid-cols-2 gap-8 ">
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Vendor Name</span>
@@ -808,7 +807,7 @@ const Vendors = () => {
                     <input
                       type="text"
                       id="bankName"
-                      className={`input input-bordered grow ${
+                      className={`input input-bordered max-sm:w-10  grow ${
                         errors.bankName && "border-[red]"
                       }`}
                       {...register("bankName")}
@@ -826,7 +825,7 @@ const Vendors = () => {
                     </p>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="form-control">
                     <label className="label">
                       <span className="label-text">Bank account name</span>
@@ -835,7 +834,7 @@ const Vendors = () => {
                       <input
                         type="text"
                         id="BankAccountName"
-                        className={`input input-bordered grow ${
+                        className={`input input-bordered max-sm:w-10  grow ${
                           errors.email && "border-[red]"
                         }`}
                         {...register("bankAccountName")}
@@ -861,7 +860,7 @@ const Vendors = () => {
                       <input
                         type="text"
                         id="accountNumber"
-                        className={`input input-bordered grow ${
+                        className={`input input-bordered max-sm:w-10  grow ${
                           errors.accountNumber && "border-[red]"
                         }`}
                         {...register("accountNumber")}
@@ -887,7 +886,7 @@ const Vendors = () => {
                       <input
                         type="text"
                         id="ibanNumber"
-                        className={`input input-bordered grow ${
+                        className={`input input-bordered max-sm:w-10  grow ${
                           errors.ibanNumber && "border-[red]"
                         }`}
                         {...register("ibanNumber")}
@@ -913,7 +912,7 @@ const Vendors = () => {
                       <input
                         type="text"
                         id="swiftNumber"
-                        className={`input input-bordered grow ${
+                        className={`input input-bordered max-sm:w-10  grow ${
                           errors.email && "border-[red]"
                         }`}
                         {...register("swiftNumber")}
@@ -936,7 +935,7 @@ const Vendors = () => {
               <div className="modal-action flex justify-around items-center right-80 ">
                 <button
                   type="submit"
-                  className={`btn px-20 bg-[#577656] text-[white]`}
+                  className={`btn  px-10 lg:px-20 bg-[#577656] text-[white]`}
                 >
                   {isCreatingVendorLoading ? (
                     <span className="loading loading-spinner"></span>
@@ -945,7 +944,7 @@ const Vendors = () => {
                   )}
                 </button>
                 <button
-                  className={`btn bg-transparent px-20`}
+                  className={`btn bg-transparent  px-10 lg:px-20`}
                   onClick={closeModal}
                 >
                   Cancel

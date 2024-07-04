@@ -25,7 +25,7 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, []);
 
@@ -49,7 +49,7 @@ const Login = () => {
 
       setAuth(user);
       console.log(user);
-      navigate("/");
+      navigate("/dashboard");
       setLoading(false);
     } catch (err: any) {
       if (!err.response) {

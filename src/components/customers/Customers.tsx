@@ -239,15 +239,15 @@ const Customers: React.FC = () => {
       <ToastContainer />
 
       {/* ACTION BUTTONS */}
-      <div className="flex justify-between items-center mb-5">
+      <div className="justify-between items-center lg:flex mb-5">
         {isAllCustomersError && (
           <p className="text-red-600 text-lg p-2">{isAllCustomersError}</p>
         )}
-        <h1 className="font-medium text-4xl capitalize">Customers Details</h1>
-        <div className="flex items-center gap-2">
+        <h1 className="font-medium xl:text-4xl text-xl capitalize mb-3 lg:mb-0">Customers Details</h1>
+        <div className="flex items-center flex-wrap gap-2">
           {auth?.permissions.find((per) => per === "user-create") && (
             <button
-              className="btn bg-[#577656] text-[white]"
+              className="btn bg-[#577656] text-[white] text-[10px] lg:text-lg"
               onClick={openModal}
             >
               <BiPlusCircle className="text-xl" /> Add Customer Account
@@ -256,12 +256,12 @@ const Customers: React.FC = () => {
           {auth?.permissions.find((per) => per === "user-delete") && (
             <button
               onClick={handleDelete}
-              className={`btn btn-outline text-[#E20000B2] ${
+              className={`btn btn-outline text-[#E20000B2] text-[10px] lg:text-lg ${
                 !isDeleteEnabled && "cursor-not-allowed"
               }`}
               disabled={!isDeleteEnabled}
             >
-              <BiTrash className="text-lg text-[#E20000B2]" /> Delete
+              <BiTrash className="xl:text-lg text-[#E20000B2]" /> Delete
             </button>
           )}
           {auth?.permissions.find((per) => per === "user-export") && (
@@ -272,7 +272,7 @@ const Customers: React.FC = () => {
         </div>
       </div>
       {/* Handle Filters */}
-      <div className="my-6 flex items-center gap-3">
+      <div className="my-6 flex items-center flex-wrap gap-3">
         {/* Search Bar */}
         <div className="form-control">
           <label className="input input-bordered grow flex items-center gap-2">
@@ -378,7 +378,7 @@ const Customers: React.FC = () => {
             )}
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="py-4 grid grid-cols-2 gap-8 ">
+              <div className="py-4 grid grid-cols-1 lg:grid-cols-2 gap-8 ">
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Full Name</span>
@@ -539,7 +539,7 @@ const Customers: React.FC = () => {
                   )}
                 </div>
                 <label
-                  className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
+                  className={`absolute top-[160px] z-100 right-[140px] sm:right-[300px] lg:right-[330px] xl:right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
                 >
                   <span className="text-3xl">
                     <FaEdit />
@@ -558,7 +558,7 @@ const Customers: React.FC = () => {
                 <button
                   type="submit"
                   disabled={!isValid}
-                  className={`btn px-20 bg-[#577656] text-[white]`}
+                  className={`btn  bg-[#577656] text-[white] px-10 lg:px-20`}
                 >
                   {isSubmittinLoading ? (
                     <span className="loading loading-spinner"></span>
@@ -567,7 +567,7 @@ const Customers: React.FC = () => {
                   )}
                 </button>
                 <button
-                  className={`btn bg-transparent px-20`}
+                  className={`btn bg-transparent px-10 lg:px-20`}
                   onClick={closeModal}
                 >
                   Cancel

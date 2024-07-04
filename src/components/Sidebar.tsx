@@ -179,7 +179,19 @@ const Sidebar = () => {
                             isActive ? activeLink : normalLink
                           }
                         >
-                          <span className="capitalize ">Customers</span>
+                          <p className="capitalize">Customers</p>
+                        </NavLink>
+                      )}
+
+                      {auth?.permissions.find((per) => per === "user-list") && (
+                        <NavLink
+                          to={`/accounts/requests`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <p className="ml-2 -mt-5 pt-4 flex items-center justify-center">Restore Accounts</p>
                         </NavLink>
                       )}
 

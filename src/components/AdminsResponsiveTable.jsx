@@ -35,8 +35,8 @@ const AdminsResponsiveTable = ({
 
   const { auth } = useAuth();
   return (
-    <div className="overflow-x-auto overflow-y-auto">
-      <table className="min-w-full bg-white">
+    <div className="overflow-x-auto overflow-y-auto ">
+      <table className="min-w-full bg-white border">
         <thead >
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal ">
             <th className="py-3 px-6 text-left">
@@ -117,12 +117,12 @@ const AdminsResponsiveTable = ({
                 {auth.permissions.find((per) => per === "admin-show") ? (
                   <Link
                     to={`/accounts/Admins/${row.id}`}
-                    className="py-5 text-lg"
+                    className="py-5 text-lg capitalize"
                   >
                     {row.name}
                   </Link>
                 ) : (
-                  <p className="py-5 text-lg">{item.name}</p>
+                  <p className="py-5 text-lg">{row.name}</p>
                 )}
               </td>
               <td className="py-3 px-6 text-left">{row.email}</td>
@@ -133,11 +133,11 @@ const AdminsResponsiveTable = ({
               <td className="py-3 px-6 text-left">{row.category}</td>
               <td className="py-3 px-6 text-center">
                 {row.status === 1 ? (
-                  <p className="badge p-4 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
+                  <p className="badge p-3 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
                     <GoDotFill className="text-[#14BA6D] text-lg" /> Active
                   </p>
                 ) : (
-                  <p className="badge p-4 gap-2 rounded-md text-[#E20000] bg-[#F2F4F7]">
+                  <p className="badge p-3 gap-2 rounded-md text-[#E20000] bg-[#F2F4F7]">
                     <GoDotFill className="text-[#E2000099] text-xl" /> Inactive
                   </p>
                 )}

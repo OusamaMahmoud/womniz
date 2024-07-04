@@ -424,7 +424,7 @@ const Admins: React.FC = () => {
             )}
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="py-4 grid grid-cols-2 gap-8 ">
+              <div className="py-4 grid grid-cols-1 lg:grid-cols-2 gap-8 ">
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Full Name</span>
@@ -584,7 +584,7 @@ const Admins: React.FC = () => {
                 </div>
 
                 <label
-                  className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
+                  className={`absolute top-[160px] z-100 right-[140px] sm:right-[300px] lg:right-[330px] xl:right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
                 >
                   <span className="text-3xl">
                     <FaEdit />
@@ -662,7 +662,7 @@ const Admins: React.FC = () => {
                 <button
                   type="submit"
                   disabled={!isValid}
-                  className={`btn px-20 bg-[#577656] text-[white]`}
+                  className={`btn px-10 lg:px-20 bg-[#577656] text-[white]`}
                 >
                   {isSubmittinLoading ? (
                     <span className="loading loading-spinner"></span>
@@ -671,7 +671,7 @@ const Admins: React.FC = () => {
                   )}
                 </button>
                 <button
-                  className={`btn bg-transparent px-20`}
+                  className={`btn bg-transparent px-10 lg:px-20`}
                   onClick={closeModal}
                 >
                   Cancel

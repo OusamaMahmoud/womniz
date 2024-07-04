@@ -43,18 +43,18 @@ const Pagination = ({
   };
 
   return (
-    <nav className="xl:flex flex flex-col gap-4 justify-between items-center my-14">
+    <nav className="flex flex-col xl:flex-row gap-4 justify-between items-center my-14">
       <p className="text-[16px] flex items-center xl:text-2xl ml-4">
         1-{itemsPerPage} of {itemsPerPage * pageNumbers.length} items
       </p>
-      <ul className="flex items-center justify-end gap-10">
+      <ul className="flex items-center justify-end  gap-10">
         <button
           onClick={goToPrevPage}
           className={`bg-[#B6C9B5] text-white rounded-lg ${
             prev === null && "cursor-not-allowed "
           }`}
         >
-          <MdKeyboardArrowLeft className="xl:text-4xl" />
+          <MdKeyboardArrowLeft className="text-2xl xl:text-4xl " />
         </button>
         <div>
           <form
@@ -70,7 +70,7 @@ const Pagination = ({
             />
           </form>
         </div>
-        <p className="text-[10px] xl:text-xl flex items-center xl:block">
+        <p className="text-[14px] xl:text-xl flex items-center xl:block">
           {" "}
           of{" "}
           <span className="px-3 py-2 rounded-md font-bold">
@@ -85,7 +85,7 @@ const Pagination = ({
             next === null && "cursor-not-allowed "
           }`}
         >
-          <MdKeyboardArrowRight className="xl:text-4xl" />
+          <MdKeyboardArrowRight className="text-2xl xl:text-4xl" />
         </button>
       </ul>
     </nav>
