@@ -6,15 +6,16 @@ import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import { HiMiniCamera } from "react-icons/hi2";
 import { FaPlusCircle } from "react-icons/fa";
-import Dropzone from "../../../components/vendors/DropZone";
-import ProductDropZone from "../ProductDropZone";
+import Dropzone from "../../vendors/DropZone";
 import useSizes from "../../../hooks/useSizes";
-import ClothsDynamicForm from "./ClothsDynamicForm";
 import cardPrev from "../../../../public/assets/products/cardPreview.jpg";
 import TextEditor from "../TextEditor";
-const NewClothesProduct = () => {
+import ClothsDynamicForm from "../clothes/ClothsDynamicForm";
+import ProductDropZone from "../ProductDropZone";
+
+const NewJewelry = () => {
   const { sizes } = useSizes();
-  const [subClothes, setSubClothes] = useState("cloths");
+  const [subClothes, setSubClothes] = useState("Necklace");
   const [shoes, setShoes] = useState(false);
 
   const [activeTab, setActiveTab] = useState("productInfo");
@@ -22,7 +23,7 @@ const NewClothesProduct = () => {
   return (
     <div className="container mx-auto px-8 shadow-2xl rounded-xl p-10">
       <div className="flex justify-between items-center p-4">
-        <h1 className="text-2xl font-bold">Adding New Product</h1>
+        <h1 className="text-2xl font-bold">Adding New Jewelry</h1>
         <button className="btn btn-outline">
           <MdCancel /> Cancel
         </button>
@@ -32,11 +33,11 @@ const NewClothesProduct = () => {
           onChange={(e) => setSubClothes(e.currentTarget.value)}
           className={`select select-bordered text-xl text-[#577656] mr-10`}
         >
-          <option value={"cloths"}>
-            Cloths <BiArrowToBottom />
+          <option value={"Necklace"}>
+            Necklace <BiArrowToBottom />
           </option>
-          <option value={"shoes"}>Shoes</option>
-          <option value={"pages"}>Pages</option>
+          <option value={"Earring"}>Earring</option>
+          <option value={"Bracelet"}>Bracelet</option>
         </select>
 
         <button
@@ -85,9 +86,9 @@ const NewClothesProduct = () => {
           <div>
             <h1 className="text-2xl font-bold mb-8">Thumbnail Image</h1>
             <ProductDropZone
-            onSubmit={(files) => console.log(files)}
-            className="relative flex flex-col  gap-2 border-4 border-dashed border-[#BFBFBF]   w-[160px] h-40 items-center justify-center "
-          />
+              onSubmit={(files) => console.log(files)}
+              className="relative flex flex-col  gap-2 border-4 border-dashed border-[#BFBFBF]   w-[160px] h-40 items-center justify-center "
+            />
           </div>
           <div className="my-6">
             <h1 className="text-2xl font-bold mb-8">Image</h1>
@@ -149,24 +150,8 @@ const NewClothesProduct = () => {
                 </select>
               </div>
             </div>
-            {subClothes === "shoes" ? (
-              <div className="flex gap-40 mt-10">
-                <div>
-                  <div>
-                    <h1 className="text-xl font-semibold">Size</h1>
-                    <p className="text-[#47546780]">Pick available sizes</p>
-                  </div>
-                </div>
-                <div>
-                  <ClothsDynamicForm
-                    onSelectedSizes={(selectedSizes) =>
-                      console.log(selectedSizes)
-                    }
-                  />
-                </div>
-              </div>
-            ) : subClothes === "cloths" ? (
-              <div className="flex gap-40 items-center mt-10">
+            {subClothes === "Earring" ? (
+              <div className="flex flex-col mt-10">
                 <div className="flex gap-40 mt-10">
                   <div>
                     <div>
@@ -175,24 +160,79 @@ const NewClothesProduct = () => {
                     </div>
                   </div>
                   <div>
-                    <ClothsDynamicForm
-                      onSelectedSizes={(selectedSizes) =>
-                        console.log(selectedSizes)
-                      }
-                    />
+                    <h1>Length</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
+                  <div>
+                    <h1>Quantity</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-60 mt-10">
+                  <div>
+                    <h1 className="text-xl font-semibold">Material</h1>
+                  </div>
+                  <div>
+                    <h1>Material</h1>
+                    <input className="input input-bordered mt-2" />
                   </div>
                 </div>
               </div>
-            ) : subClothes === "pages" ? (
-              <div className="flex gap-40 mt-10">
-                <div>
-                  <h1 className="text-xl font-semibold">Size</h1>
-                  <p className="text-[#47546780]">Pick available sizes</p>
+            ) : subClothes === "Necklace" ? (
+              <div className="flex flex-col mt-10">
+                <div className="flex gap-40 mt-10">
+                  <div>
+                    <div>
+                      <h1 className="text-xl font-semibold">Size</h1>
+                      <p className="text-[#47546780]">Pick available sizes</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h1>Length</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
+                  <div>
+                    <h1>Quantity</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
                 </div>
-               <div>
-                <h1>Size</h1>
-                  <input type="text" className="input input-bordered mt-2" />
-               </div>
+                <div className="flex items-center gap-60 mt-10">
+                  <div>
+                    <h1 className="text-xl font-semibold">Material</h1>
+                  </div>
+                  <div>
+                    <h1>Material</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
+                </div>
+              </div>
+            ) : subClothes === "Bracelet" ? (
+              <div className="flex flex-col mt-10">
+                <div className="flex gap-40 mt-10">
+                  <div>
+                    <div>
+                      <h1 className="text-xl font-semibold">Size</h1>
+                      <p className="text-[#47546780]">Pick available sizes</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h1>Length</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
+                  <div>
+                    <h1>Quantity</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-60 mt-10">
+                  <div>
+                    <h1 className="text-xl font-semibold">Material</h1>
+                  </div>
+                  <div>
+                    <h1>Material</h1>
+                    <input className="input input-bordered mt-2" />
+                  </div>
+                </div>
               </div>
             ) : (
               ""
@@ -428,4 +468,4 @@ const NewClothesProduct = () => {
   );
 };
 
-export default NewClothesProduct;
+export default NewJewelry;

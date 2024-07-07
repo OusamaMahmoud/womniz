@@ -28,6 +28,12 @@ import ClothsSubCategory from "./components/products/clothes/ClothsSubCategory";
 import ProductDescription from "./components/products/ProductDescription";
 import ProductDetails from "./components/products/ProductDetails";
 import Requests from "./components/Requests";
+import Salons from "./components/salons/Salons";
+import SalonProfile from "./components/salons/SalonProfile";
+import Jewelry from "./components/products/jewelry/Jewelry";
+import NewJewelry from "./components/products/jewelry/NewJewelry";
+import Celebrities from "./components/products/celebrities/Celebrities";
+import NewCelebrity from "./components/products/celebrities/NewCelebrities";
 
 function App() {
   const { permissions } = usePermissions();
@@ -38,13 +44,12 @@ function App() {
   const SPIN_PERMISSIONS = permissions[3]?.permissions.map((_) => _.name);
   const USERS_PERMISSIONS = permissions[4]?.permissions.map((_) => _.name);
   const VENDORS_PERMISSIONS = permissions[5]?.permissions.map((_) => _.name);
-  useEffect(() => {
-    console.log("hi", SCRATCH_PERMISSIONS);
-  }, [permissions]);
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route path="unauthorized" element={<UnauthorizedPage />} />
+
         <Route element={<RequiredAuth allowedRoles={ROLES_PERMISSIONS} />}>
           <Route path="roles-permissions" element={<Roles />} />
         </Route>
@@ -91,9 +96,27 @@ function App() {
         />
         <Route path="financial-reports" element={<FinancialReport />} />
         <Route path="accounts/requests" element={<Requests />} />
-        <Route path="products/clothes/cloths-sub-category" element={<ClothsSubCategory />} />
-        <Route path="products/clothes/product-description" element={<ProductDetails />} />
-        <Route path="products/clothes/product-details" element={<ProductDetails />} />
+        <Route
+          path="products/clothes/cloths-sub-category"
+          element={<ClothsSubCategory />}
+        />
+        <Route
+          path="products/clothes/product-description"
+          element={<ProductDetails />}
+        />
+        <Route
+          path="products/clothes/product-details"
+          element={<ProductDetails />}
+        />
+        {/* Salons */}
+        <Route path="salons/salons-profiles" element={<Salons />} />
+        <Route path="salons/salons-profiles/:id" element={<SalonProfile />} />
+{/* Jewelry */}
+        <Route path="products/jewelry" element={<Jewelry />} />
+        <Route path="products/jewelry/new-jewelry" element={<NewJewelry />} />
+        
+        <Route path="products/celebrities" element={<Celebrities />} />
+        <Route path="products/celebrities/new-celebrity" element={<NewCelebrity />} />
         <Route path="*" element={<MissingPage />} />
       </Route>
     </Routes>

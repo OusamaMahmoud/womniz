@@ -5,7 +5,8 @@ import { ToastContainer, toast } from "react-toastify";
 interface Scratch {
   id: number;
   code: string;
-  discount: string;
+  todaysDiscount: string;
+  currentDiscount: string;
   date: string;
 }
 
@@ -15,7 +16,7 @@ const ScratchCoupon = () => {
   );
   const [error, setError] = useState("");
   const [newDiscont, setNewDiscont] = useState<string>(
-    scratchInformation?.discount
+    scratchInformation?.todaysDiscount
   );
 
   useEffect(() => {
@@ -31,11 +32,12 @@ const ScratchCoupon = () => {
         .post("/scratch/information/update", { scratch_discount: newDiscont })
         .then((res) => console.log(res))
         .catch((err) => setError(err));
-        toast.success('New Discount Percentage is set Successfully.')
-    }else{
-      setError('Please set a New Discount Value!!')
+      toast.success("New Discount Percentage is set Successfully.");
+    } else {
+      setError("Please set a New Discount Value!!");
     }
   };
+
   return (
     <div className="container mx-auto px-6 flex flex-col">
       {error && <p className="text-red-400 text-lg">{error}</p>}
@@ -70,10 +72,31 @@ const ScratchCoupon = () => {
           </h2>
           <div className="flex flex-col my-10 w-full">
             <label className="label text-[#475467] text-xl">
-              Select Discount percentage
+              Today’s Discount percentage
             </label>
             <input
-              defaultValue={scratchInformation?.discount}
+              value={scratchInformation?.todaysDiscount}
+              disabled
+              type="number"
+              className="input input-bordered xl:w-[500px] "
+            />
+          </div>
+          <div className="flex flex-col my-10 w-full mt-5">
+            <label className="label text-[#475467] text-xl">
+              Current Discount percentage
+            </label>
+            <input
+              value={scratchInformation?.currentDiscount}
+              disabled
+              type="number"
+              className="input input-bordered xl:w-[500px] "
+            />
+          </div>
+          <div className="flex flex-col my-10 w-full mt-5">
+            <label className="label text-[#475467] text-xl">
+              Tomorrow’s Discount percentage
+            </label>
+            <input
               onChange={(e) => {
                 setNewDiscont(e.currentTarget.value);
               }}

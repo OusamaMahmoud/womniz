@@ -92,7 +92,20 @@ const Sidebar = () => {
       },
     ],
   };
-
+  const salonsLinks = {
+    title: "Salons",
+    icon: <IoBagRemoveOutline />,
+    links: [
+      {
+        name: "Salon’s Profiles",
+        link: "/salons/salons-profiles",
+      },
+      {
+        name: "Professionals",
+        link: "/salons/professionals",
+      },
+    ],
+  };
   const activeLink =
     "flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-[#577656] hover:bg-[#BED3C4] hover:text-[#577656] text-md m-2";
   const normalLink =
@@ -191,7 +204,9 @@ const Sidebar = () => {
                             isActive ? activeLink : normalLink
                           }
                         >
-                          <p className="ml-2 -mt-5 pt-4 flex items-center justify-center">Restore Accounts</p>
+                          <p className="ml-2 -mt-5 pt-4 flex items-center justify-center">
+                            Restore Accounts
+                          </p>
                         </NavLink>
                       )}
 
@@ -221,6 +236,21 @@ const Sidebar = () => {
                           }
                         >
                           <span className="capitalize ">{pro.name}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                  {item.title === "Salons" && (
+                    <div className="collapse-content">
+                      {salonsLinks.links.map((sa) => (
+                        <NavLink
+                          to={`${sa.link}`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">{sa.name}</span>
                         </NavLink>
                       ))}
                     </div>

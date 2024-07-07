@@ -1,6 +1,6 @@
 import { RiAccountCircleLine } from "react-icons/ri";
 import { IoBagRemoveOutline } from "react-icons/io5";
-import { PiCodesandboxLogoThin } from "react-icons/pi";
+import { PiCodesandboxLogoThin, PiHairDryer } from "react-icons/pi";
 
 export const links = [
   {
@@ -62,18 +62,20 @@ export const links = [
   //     },
   //   ],
   // },
-  // {
-  //   title: "Salons",
-  //   icon: <PiHairDryer />,
-  //   links: [
-  //     {
-  //       name: "Salon’s Profiles",
-  //     },
-  //     {
-  //       name: "Professionals",
-  //     },
-  //   ],
-  // },
+  {
+    title: "Salons",
+    icon: <PiHairDryer />,
+    links: [
+      {
+        name: "Salon’s Profiles",
+        link: "/salons/salon's-profiles",
+      },
+      {
+        name: "Professionals",
+        link: "/salons/professionals",
+      },
+    ],
+  },
   {
     title: "Games",
     icon: <PiCodesandboxLogoThin />,
