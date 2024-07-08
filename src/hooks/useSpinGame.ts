@@ -15,7 +15,6 @@ const useSpinGame = () => {
         signal: controller.signal,
       })
       .then((res) => {
-        console.log(res.data.data);
         setSpinGameInform(res.data.data);
         setLoading(false);
       })

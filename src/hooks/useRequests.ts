@@ -19,10 +19,8 @@ const useRequests = ({ date, search }: RequestFilter) => {
     const request = apiClient.get(buildUrl(), {
       signal: controller.signal,
     });
-    console.log(buildUrl());
     request
       .then((res) => {
-         console.log(res.data.data.data);
          setRequests(res.data.data.data);
         setLoading(false);
       })

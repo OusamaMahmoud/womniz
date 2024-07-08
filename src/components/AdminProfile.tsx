@@ -126,9 +126,7 @@ const AdminProfile = () => {
       const res = apiClient.post(`/admins/${targetAdmin.id}/switchstatus`, {
         status: newStatus,
       });
-      console.log(res);
     } catch (err: any) {
-      console.log(err);
     }
   };
 
@@ -216,10 +214,6 @@ const AdminProfile = () => {
       }
     }
   };
-  useEffect(() => {
-    console.log(targetAdmin.image);
-  }, [targetAdmin]);
-
   return (
     <>
       {/* MODAL OF UPDATE ADMIN. */}

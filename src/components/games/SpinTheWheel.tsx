@@ -43,7 +43,6 @@ const SpinTheWheel: React.FC = () => {
 
 
   const onSubmit = async (data: FieldValues) => {
-    console.log(data);
     const formData = new FormData();
     Object.entries(data).forEach(([key, value], idx) => {
       const digitKey = `digit_${numberToWord(idx + 1)}` as keyof Spin;
@@ -67,7 +66,6 @@ const SpinTheWheel: React.FC = () => {
     });
 
     const res = await apiClient.post("/spin/information/update", formData);
-    console.log(res);
   };
 
   return (

@@ -157,9 +157,7 @@ const CustomerProfile = () => {
       const res = apiClient.get(`/users/${targetCustomer.id}/switchstatus`, {
         params: { status: newStatus },
       });
-      console.log(res);
     } catch (err: any) {
-      console.log(err);
     }
   };
 
@@ -200,7 +198,6 @@ const CustomerProfile = () => {
     useState(false);
   const handleAddingOrderToCustomer = () => {
     setIsProductsComponentExist(true);
-    console.log(isProductsComponentExist);
   };
 
   const {
@@ -231,7 +228,6 @@ const CustomerProfile = () => {
     try {
       setSubmitinLoading(true);
       const res = await apiClient.post(`/users/${params.id}`, formData);
-      console.log(res);
       if (res.status === 200) {
         setTargetCustomer((prev) => ({
           ...prev,

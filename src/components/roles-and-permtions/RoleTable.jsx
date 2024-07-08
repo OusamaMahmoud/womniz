@@ -23,17 +23,11 @@ const RoleTable = ({ onEditRole, roles, setRoles, onDeleteRole }) => {
     }
   );
 
-  function onSortChange(action, state) {
-    // console.log(action, state);
-  }
-
   const handleEdit = (role) => {
-    console.log(`Edit role: ${role.name}`);
     onEditRole(role);
   };
 
   const handleDelete = (role) => {
-    console.log(`delete role: ${role.id}`);
     const formData = new FormData();
     formData.append("_method", "delete");
     const orignalRoles = [...roles];
@@ -41,9 +35,7 @@ const RoleTable = ({ onEditRole, roles, setRoles, onDeleteRole }) => {
       // setLoading(true);
       setRoles(roles.filter((r) => r.id !== role.id));
       const res = apiClient.post(`/roles/${role.id}`, formData);
-      console.log(res);
     } catch (error) {
-      console.log("error while deleting role!!", error);
     }
   };
 

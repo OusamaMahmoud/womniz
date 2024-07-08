@@ -26,7 +26,6 @@ const usePermissions = () => {
           };
         });
         setPermissions(formattedPermissions);
-        console.log(formattedPermissions)
         setLoading(false);
       })
       .catch((err) => {

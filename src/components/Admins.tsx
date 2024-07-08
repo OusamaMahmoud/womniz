@@ -22,6 +22,7 @@ import useAllAdmins from "../hooks/useAllAdmins";
 import useRoles from "../hooks/useRoles";
 import { useAuth } from "../contexts/AuthProvider";
 import AdminsResponsiveTable from "./AdminsResponsiveTable";
+
 // ZOD SCHEMA
 const schema = z.object({
   name: z
@@ -69,6 +70,7 @@ export type OptionType = { label: string; value: string };
 const Admins: React.FC = () => {
   const { auth } = useAuth();
   const { roles } = useRoles();
+  
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -89,7 +91,7 @@ const Admins: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
-  // const [recordsPerPage] = useState(10);
+
   const { categories } = useCategories();
   const options: OptionType[] = categories.map((item) => ({
     label: item.title,
@@ -151,7 +153,6 @@ const Admins: React.FC = () => {
     const defaultImageFileName = "default-image.png";
     try {
       const response = await fetch(defaultImageUrl);
-      console.log(response);
       const blob = await response.blob();
       return new File([blob], defaultImageFileName, { type: "image/png" });
     } catch (error: any) {
@@ -205,7 +206,6 @@ const Admins: React.FC = () => {
 
   // Handle Submit
   const onSubmit = async (data: FormData) => {
-    console.log(data);
     const formData = new FormData();
 
     formData.append(`address`, data.address);
@@ -232,8 +232,6 @@ const Admins: React.FC = () => {
       }
     } else {
       formData.append(`image`, imageFile);
-      console.log(imageFile);
-      console.log(photoPreview);
     }
 
     try {

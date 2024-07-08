@@ -76,14 +76,11 @@ const Roles: React.FC = () => {
         .filter((permission) => permission.checked)
         .map((permission) => permission.name)
     );
-    console.log("DATA:", data);
-    console.log("Selected Permissions:", selectedPermissions);
 
     const formData = new FormData();
     formData.append("name", data.ro);
     selectedPermissions.map((per, idx) => {
       formData.append(`permissions[${idx}]`, per);
-      console.log(`permissions[${idx}]`, per);
     });
 
     // Send `selectedPermissions` to the API
@@ -92,7 +89,6 @@ const Roles: React.FC = () => {
       toast.success(`${data.ro} Role is Successfully Created.`);
       setCreatingRolePageShow(false);
     } catch (error) {
-      console.log("error of create a Role =>", error);
     }
   };
   const { auth } = useAuth();

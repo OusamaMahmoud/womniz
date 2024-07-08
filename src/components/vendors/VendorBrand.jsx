@@ -25,7 +25,6 @@ const VendorBrand = () => {
   const { register, handleSubmit, formState = { errors } } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("image", imageFile);

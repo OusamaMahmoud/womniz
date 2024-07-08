@@ -48,7 +48,6 @@ const Login = () => {
       localStorage.setItem("authToken", user.token);
 
       setAuth(user);
-      console.log(user);
       navigate("/dashboard");
       setLoading(false);
     } catch (err: any) {

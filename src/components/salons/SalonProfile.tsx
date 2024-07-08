@@ -13,7 +13,7 @@ import { FaEdit } from "react-icons/fa";
 import customerService from "../../services/customer-service";
 import { useAuth } from "../../contexts/AuthProvider";
 import chart from "../../../public/assets/salons/salonPofile/chart.svg";
-import { LinkIcon } from "@heroicons/react/24/solid";
+import { LinkIcon, PlusCircleIcon } from "@heroicons/react/24/solid";
 
 const schema = z.object({
   name: z
@@ -196,9 +196,7 @@ const SalonProfile = () => {
       const res = apiClient.get(`/vendors/${targetAdmin.id}/switchstatus`, {
         params: { status: newStatus },
       });
-      console.log(res);
     } catch (err: any) {
-      console.log(err);
     }
   };
 
@@ -219,8 +217,6 @@ const SalonProfile = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-
     const formData = new FormData();
 
     formData.append(`email`, data.email);
@@ -238,13 +234,11 @@ const SalonProfile = () => {
     try {
       setSubmitinLoading(true);
       const res = await customerService.create<any>(formData);
-      console.log(res);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
       setTrigerFetch(!trigerFetch);
     } catch (error: any) {
-      console.log(error);
       setCreatingCustomerError(error.response.data.data.error);
       setSubmitinLoading(false);
     }
@@ -623,7 +617,9 @@ const SalonProfile = () => {
           <div className="flex flex-col gap-10 w-full">
             <div className="flex justify-between">
               <span className="text-xl font-bold">Branches Appointment</span>
-              <span className="link flex items-center gap-2">View Details <LinkIcon width={20} /></span>
+              <span className="link flex items-center gap-2">
+                View Details <LinkIcon width={20} />
+              </span>
             </div>
             <div className="flex justify-center items-center">
               <img src={chart} alt="chart" />
@@ -635,6 +631,77 @@ const SalonProfile = () => {
             </div>
           </div>
         </div>
+        <div className="mt-6 p-8 shadow-xl flex flex-col justify-center gap-8 rounded-md lg:max-w-[500px]">
+          <div className="flex flex-col gap-4 shadow-lg p-4">
+            <h1 className="text-xl font-semibold">Service</h1>
+            <p className="badge gap-2 bg-gray-400 p-4">
+              <PlusCircleIcon width={20} /> add Services
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 shadow-lg p-4">
+            <h1 className="text-xl font-semibold">Branches</h1>
+            <p className="badge gap-2 bg-gray-400 p-4">
+              <PlusCircleIcon width={20} /> add Branches
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 shadow-lg p-4">
+            <h1 className="text-xl font-semibold">Professionals</h1>
+            <p className="badge gap-2 bg-gray-400 p-4">
+              <PlusCircleIcon width={20} /> add Professionals
+            </p>
+          </div>
+        </div>
+        {/* <button
+          className="btn"
+          onClick={() => document.getElementById("my_modal_1").showModal()}
+        >
+          open modal
+        </button> */}
+        <dialog id="my_modal_1" className="modal ">
+          <div className="modal-box w-11/12 max-w-5xl">
+            <h1 className="text-2xl mb-8 font-bold ml-4">Add salon service</h1>
+            <div className="grid grid-cols-2 gap-8 justify-items-center items-center ">
+              <div>
+                <h3 className="font-bold text-lg">Service category (Arabic)</h3>
+                <input type="text" className="input input-bordered mt-2" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">
+                  Service category (English)
+                </h3>
+                <input type="text" className="input input-bordered mt-2" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">Service name </h3>
+                <input type="text" className="input input-bordered mt-2" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">Service Price </h3>
+                <input type="text" className="input input-bordered mt-2" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">Sales percentage</h3>
+                <select className="input input-bordered mt-2">
+                <option>Ok</option>
+                </select>
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">
+                  Time taken of this service
+                </h3>
+                <select className="input input-bordered mt-2 grow">
+                  <option>Ok</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-action">
+              <form method="dialog">
+                {/* if there is a button in form, it will close the modal */}
+                <button className="btn">Close</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
       </div>
     </>
   );

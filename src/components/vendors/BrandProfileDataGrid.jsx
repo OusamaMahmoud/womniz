@@ -31,10 +31,6 @@ const BrandProfileDataGrid = () => {
     }
   );
 
-  function onSortChange(action, state) {
-    console.log(action, state);
-  }
-
   const COLUMNS = [
     {
       label: (

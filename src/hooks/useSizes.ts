@@ -15,7 +15,6 @@ const useSizes = () => {
         signal: controller.signal,
       })
       .then((res) => {
-        console.log("sizes", res);
         setSizes(res.data.data);
         setLoading(false);
       })

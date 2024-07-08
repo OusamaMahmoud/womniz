@@ -30,7 +30,6 @@ const ScratchCoupon = () => {
     if (newDiscont) {
       apiClient
         .post("/scratch/information/update", { scratch_discount: newDiscont })
-        .then((res) => console.log(res))
         .catch((err) => setError(err));
       toast.success("New Discount Percentage is set Successfully.");
     } else {

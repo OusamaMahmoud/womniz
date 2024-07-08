@@ -306,7 +306,6 @@ const Vendors = () => {
     try {
       setCreatingVendorLoading(true);
       const res = await vendorsService.create<any>(formData);
-      console.log(res);
       setCreatingVendorLoading(false);
       setIsModalOpen(false);
       toast.success("Create Vendor Account Successfully!");

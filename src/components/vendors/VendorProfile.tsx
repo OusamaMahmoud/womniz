@@ -195,9 +195,7 @@ const VendorProfile = () => {
       const res = apiClient.get(`/vendors/${targetAdmin.id}/switchstatus`, {
         params: { status: newStatus },
       });
-      console.log(res);
     } catch (err: any) {
-      console.log(err);
     }
   };
 
@@ -218,7 +216,6 @@ const VendorProfile = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
 
     const formData = new FormData();
 
@@ -237,13 +234,11 @@ const VendorProfile = () => {
     try {
       setSubmitinLoading(true);
       const res = await customerService.create<any>(formData);
-      console.log(res);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
       setTrigerFetch(!trigerFetch);
     } catch (error: any) {
-      console.log(error);
       setCreatingCustomerError(error.response.data.data.error);
       setSubmitinLoading(false);
     }

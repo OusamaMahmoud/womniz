@@ -52,9 +52,6 @@ const VendorDataGrid = ({
     }
   );
 
-  function onSortChange(action, state) {
-    // console.log(action, state);
-  }
 
   const COLUMNS = [
     {

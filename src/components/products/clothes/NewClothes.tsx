@@ -12,7 +12,19 @@ import useSizes from "../../../hooks/useSizes";
 import ClothsDynamicForm from "./ClothsDynamicForm";
 import cardPrev from "../../../../public/assets/products/cardPreview.jpg";
 import TextEditor from "../TextEditor";
-const NewClothesProduct = () => {
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  name: z.string(),
+});
+
+type FormData = z.infer<typeof schema>;
+
+const NewClothes = () => {
+  const {handleSubmit} = useForm<FormData>({ resolver: zodResolver(schema) });
+
   const { sizes } = useSizes();
   const [subClothes, setSubClothes] = useState("cloths");
   const [shoes, setShoes] = useState(false);
@@ -85,14 +97,14 @@ const NewClothesProduct = () => {
           <div>
             <h1 className="text-2xl font-bold mb-8">Thumbnail Image</h1>
             <ProductDropZone
-            onSubmit={(files) => console.log(files)}
-            className="relative flex flex-col  gap-2 border-4 border-dashed border-[#BFBFBF]   w-[160px] h-40 items-center justify-center "
-          />
+              onSubmit={(files: any) => console.log(files)}
+              className="relative flex flex-col  gap-2 border-4 border-dashed border-[#BFBFBF]   w-[160px] h-40 items-center justify-center "
+            />
           </div>
           <div className="my-6">
             <h1 className="text-2xl font-bold mb-8">Image</h1>
             <ProductDropZone
-              onSubmit={(files) => console.log(files)}
+              onSubmit={(files: any) => console.log(files)}
               className="relative flex flex-col  gap-2 border-4 border-dashed border-[#BFBFBF]   w-[160px] h-40 items-center justify-center "
             />
           </div>
@@ -159,7 +171,7 @@ const NewClothesProduct = () => {
                 </div>
                 <div>
                   <ClothsDynamicForm
-                    onSelectedSizes={(selectedSizes) =>
+                    onSelectedSizes={(selectedSizes: any) =>
                       console.log(selectedSizes)
                     }
                   />
@@ -176,7 +188,7 @@ const NewClothesProduct = () => {
                   </div>
                   <div>
                     <ClothsDynamicForm
-                      onSelectedSizes={(selectedSizes) =>
+                      onSelectedSizes={(selectedSizes: any) =>
                         console.log(selectedSizes)
                       }
                     />
@@ -189,10 +201,10 @@ const NewClothesProduct = () => {
                   <h1 className="text-xl font-semibold">Size</h1>
                   <p className="text-[#47546780]">Pick available sizes</p>
                 </div>
-               <div>
-                <h1>Size</h1>
+                <div>
+                  <h1>Size</h1>
                   <input type="text" className="input input-bordered mt-2" />
-               </div>
+                </div>
               </div>
             ) : (
               ""
@@ -428,4 +440,4 @@ const NewClothesProduct = () => {
   );
 };
 
-export default NewClothesProduct;
+export default NewClothes;

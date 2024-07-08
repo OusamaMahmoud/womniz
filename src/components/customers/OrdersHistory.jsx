@@ -50,10 +50,6 @@ const OrdersHistory = ({
     }
   );
 
-  function onSortChange(action, state) {
-    // console.log(action, state);
-  }
-
   const COLUMNS = [
     {
       label: <span className="text-xl py-2 mr-2">Date</span>,

@@ -164,7 +164,6 @@ const Customers: React.FC = () => {
       });
       try {
         const response = await apiClient.post("/users/delete", data);
-        console.log(response);
         toast.success("Customers deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
@@ -178,7 +177,6 @@ const Customers: React.FC = () => {
 
   // Handle Submit
   const onSubmit = async (data: FormData) => {
-    console.log(data);
 
     const formData = new FormData();
 
@@ -197,13 +195,11 @@ const Customers: React.FC = () => {
     try {
       setSubmitinLoading(true);
       const res = await customerService.create<any>(formData);
-      console.log(res);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();
       setTrigerFetch(!trigerFetch);
     } catch (error: any) {
-      console.log(error);
       setCreatingCustomerError(error.response.data.data.error);
       setSubmitinLoading(false);
     }
