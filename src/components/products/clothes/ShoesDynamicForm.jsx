@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ClothsDynamicForm = ({ onSelectedSizes }) => {
+const ShoesDynamicForm = ({ onSelectedSizes }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
-    const savedFields = localStorage.getItem("formFields");
+    const savedFields = localStorage.getItem("shoesFormFields");
     if (savedFields) {
       setFields(JSON.parse(savedFields));
     }
@@ -17,14 +17,14 @@ const ClothsDynamicForm = ({ onSelectedSizes }) => {
     values[index][event.target.name] = event.target.value;
     setFields(values);
     onSelectedSizes(values);
-    localStorage.setItem("formFields", JSON.stringify(values));
+    localStorage.setItem("shoesFormFields", JSON.stringify(values));
   };
 
   // Function to add new fields when "Add" button is clicked
   const addField = () => {
     const newFields = [...fields, { size: "", quantity: "", sku: "" }];
     setFields(newFields);
-    localStorage.setItem("formFields", JSON.stringify(newFields));
+    localStorage.setItem("shoesFormFields", JSON.stringify(newFields));
   };
 
   // Function to handle removing a field
@@ -34,7 +34,7 @@ const ClothsDynamicForm = ({ onSelectedSizes }) => {
       values.splice(index, 1);
       setFields(values);
       onSelectedSizes(values);
-      localStorage.setItem("formFields", JSON.stringify(values));
+      localStorage.setItem("shoesFormFields", JSON.stringify(values));
     }
   };
 
@@ -94,4 +94,4 @@ const ClothsDynamicForm = ({ onSelectedSizes }) => {
   );
 };
 
-export default ClothsDynamicForm;
+export default ShoesDynamicForm;

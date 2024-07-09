@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { MdDelete } from "react-icons/md";
 import { HiMiniCamera } from "react-icons/hi2";
 
-const ProductDropZone = ({ className, onSubmit }) => {
+const ProductThumbDropZone = ({ className, onSubmit }) => {
   const maxSize = 50 * 1024 * 1024; // 50MB
 
   const [files, setFiles] = useState([]);
@@ -11,7 +11,7 @@ const ProductDropZone = ({ className, onSubmit }) => {
 
   useEffect(() => {
     // Load saved files from localStorage
-    const savedFiles = localStorage.getItem("savedFiles");
+    const savedFiles = localStorage.getItem("ThumbnailImg");
     if (savedFiles) {
       const parsedFiles = JSON.parse(savedFiles);
       const updatedFiles = parsedFiles.map((file) => {
@@ -27,7 +27,7 @@ const ProductDropZone = ({ className, onSubmit }) => {
   useEffect(() => {
     // Save files to localStorage
     if (files.length > 0) {
-      localStorage.setItem("savedFiles", JSON.stringify(files));
+      localStorage.setItem("ThumbnailImg", JSON.stringify(files));
     }
   }, [files, onSubmit]);
 
@@ -170,4 +170,4 @@ const ProductDropZone = ({ className, onSubmit }) => {
   );
 };
 
-export default ProductDropZone;
+export default ProductThumbDropZone;
