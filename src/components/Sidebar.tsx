@@ -226,8 +226,9 @@ const Sidebar = () => {
                   )}
                   {item.title === "Products" && (
                     <div className="collapse-content">
-                      {productsLinks.links.map((pro) => (
+                      {productsLinks.links.map((pro, idx) => (
                         <NavLink
+                          key={idx}
                           to={`${pro.link}`}
                           onClick={handleCloseSideBar}
                           className={({ isActive }) =>
@@ -241,8 +242,9 @@ const Sidebar = () => {
                   )}
                   {item.title === "Salons" && (
                     <div className="collapse-content">
-                      {salonsLinks.links.map((sa) => (
+                      {salonsLinks.links.map((sa, idx) => (
                         <NavLink
+                          key={idx}
                           to={`${sa.link}`}
                           onClick={handleCloseSideBar}
                           className={({ isActive }) =>

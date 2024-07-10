@@ -1,22 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { BiArrowToBottom, BiArrowToRight, BiCircle } from "react-icons/bi";
-import { FaArrowDownWideShort } from "react-icons/fa6";
+import React, { useState } from "react";
+import { BiArrowToBottom } from "react-icons/bi";
 import { MdCancel, MdDelete } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
-import { HiMiniCamera } from "react-icons/hi2";
-import { FaPlusCircle } from "react-icons/fa";
-import Dropzone from "../../../components/vendors/DropZone";
-import ProductDropZone from "../ProductDropZone";
 import useSizes from "../../../hooks/useSizes";
 import ClothsDynamicForm from "./ClothsDynamicForm";
-import cardPrev from "../../../../public/assets/products/cardPreview.jpg";
-import TextEditor from "../TextEditor";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ShoesDynamicForm from "./ShoesDynamicForm";
 import { CameraIcon } from "@heroicons/react/24/solid";
+import Todo from "../../text-editor/NotePicker";
 
 const schema = z.object({
   nameEn: z.string(),
@@ -29,7 +23,6 @@ const schema = z.object({
   proSKU: z.string(),
   bagQuantity: z.string().optional(),
   salePercent: z.string(),
-  vatValue: z.string(),
   price: z.string(),
 });
 
@@ -50,7 +43,6 @@ const NewClothes = () => {
   const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
   const [productImages, setProductImages] = useState<Image[]>();
 
-  const [vat, setVat] = useState<number>(0);
   const [proPrice, setPrice] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
   const [proName, setProName] = useState<string>("");
@@ -63,6 +55,8 @@ const NewClothes = () => {
 
   const [prodDescripAr, setProdDescripAr] = useState("");
   const [prodDescripEn, setProdDescripEn] = useState("");
+  const [fitSizeEn, setFitSizeEn] = useState("");
+  const [fitSizeAr, setFitSizeAr] = useState("");
 
   const { sizes } = useSizes();
   const [subClothes, setSubClothes] = useState("cloths");
@@ -390,33 +384,37 @@ const NewClothes = () => {
             )}
           </div>
           <button
-            // onClick={() => setActiveTab("descriptionPrice")}
-            type="submit"
+            onClick={() => setActiveTab("descriptionPrice")}
             className="btn mt-10 self-end px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
           >
             Next
           </button>
         </div>
       )}
-
       {activeTab === "descriptionPrice" && (
         <div className="flex flex-col mt-8">
           {/* Product Information tab content */}
-          <h1 className="text-2xl font-bold">Product Information</h1>
           <div>
             <h1 className="text-xl font-bold">Description</h1>
             <div className="flex justify-around items-center gap-20 mt-4">
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (Arabic)</h1>
-                <TextEditor
-                  onEditorContent={(text: string) => setProdDescripAr(text)}
-                />
+                <Todo onEditorContent={(data) => console.log(data)} />
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (English)</h1>
-                <TextEditor
-                  onEditorContent={(text: string) => setProdDescripEn(text)}
-                />
+                <Todo onEditorContent={(data) => console.log(data)} />
+              </div>
+            </div>
+            <h1 className="text-xl font-bold mt-6">Fit & Size</h1>
+            <div className="flex justify-around items-center gap-20 mt-4">
+              <div className="grow flex flex-col">
+                <h1 className="mb-2">Fit & Size (Arabic)</h1>
+                <Todo onEditorContent={(data) => console.log(data)} />
+              </div>
+              <div className="grow flex flex-col">
+                <h1 className="mb-2">Fit & Size (English)</h1>
+                <Todo onEditorContent={(data) => console.log(data)} />
               </div>
             </div>
             <div className="mt-10">
@@ -430,20 +428,6 @@ const NewClothes = () => {
                 />
               </div>
               <div className="flex gap-40 items-center  mt-10">
-                <div className=" flex flex-col  gap-2">
-                  <label>Vat</label>
-                  <select
-                    {...register("vatValue")}
-                    onChange={(e) => setVat(Number(e.currentTarget.value))}
-                    className="select select-bordered"
-                  >
-                    <option selected disabled>
-                      Select Vat
-                    </option>
-                    <option value={"20"}>20 %</option>
-                    <option value={"30"}>30 %</option>
-                  </select>
-                </div>
                 <div className=" flex flex-col gap-2 ">
                   <label>Sale percentage</label>
                   <input
@@ -556,10 +540,6 @@ const NewClothes = () => {
                   </span>
                 </div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xl text-[#00000066]">Vat</span>
-                  <span className="capitalize font-bold text-lg">{vat}%</span>
-                </div>
-                <div className="flex justify-between items-center mb-2">
                   <span className="text-xl text-[#00000066]">Womniz Sale</span>
                   <span className="capitalize font-bold text-lg">
                     {percentage}%
@@ -599,9 +579,7 @@ const NewClothes = () => {
                           sleeves which make your look very awesome
                         </p>
                         <p className="text-[#BFBFBF] flex flex-col gap-2 items-center">
-                          <span className="line-through">
-                            {proPrice + vat} Usd
-                          </span>
+                          <span className="line-through">{proPrice} Usd</span>
                           <span className="border p-1 rounded-md">
                             Save {percentage}%
                           </span>
