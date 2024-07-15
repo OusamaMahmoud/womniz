@@ -9,9 +9,9 @@ import { FaPlusCircle } from "react-icons/fa";
 import Dropzone from "../../vendors/DropZone";
 import useSizes from "../../../hooks/useSizes";
 import cardPrev from "../../../../public/assets/products/cardPreview.jpg";
-import TextEditor from "../TextEditor";
 import ClothsDynamicForm from "../clothes/ClothsDynamicForm";
 import ProductDropZone from "../ProductDropZone";
+import Todo from "../../text-editor/NotePicker";
 
 const NewJewelry = () => {
   const { sizes } = useSizes();
@@ -256,11 +256,11 @@ const NewJewelry = () => {
             <div className="flex justify-around items-center gap-20 mt-4">
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (Arabic)</h1>
-                <TextEditor />
+                <Todo />
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (English)</h1>
-                <TextEditor />
+                <Todo />
               </div>
             </div>
             <div className="mt-10">

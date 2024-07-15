@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiArrowToBottom } from "react-icons/bi";
 import { MdCancel, MdDelete } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
@@ -11,6 +11,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import ShoesDynamicForm from "./ShoesDynamicForm";
 import { CameraIcon } from "@heroicons/react/24/solid";
 import Todo from "../../text-editor/NotePicker";
+import useCategories from "../../../hooks/useCategories";
+import useVendorCategories from "../../../hooks/useVendorCategories";
+import { Brand } from "../../../services/vendor-category-sevice";
 
 const schema = z.object({
   nameEn: z.string(),
@@ -20,8 +23,9 @@ const schema = z.object({
   brand: z.string().min(1),
   brandSubCategory: z.string().min(1),
 
-  proSKU: z.string(),
-  bagQuantity: z.string().optional(),
+  proBagSKU: z.string(),
+  proBagQuantity: z.string(),
+
   salePercent: z.string(),
   price: z.string(),
 });
@@ -41,32 +45,138 @@ const NewClothes = () => {
   });
 
   const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
-  const [productImages, setProductImages] = useState<Image[]>();
+  const [productImages, setProductImages] = useState<Image[] | null>();
+  const [productFiles, setProductFiles] = useState<File[]>();
+  const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
+    {} as Brand
+  );
 
   const [proPrice, setPrice] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
-  const [proName, setProName] = useState<string>("");
+  const [proNameEn, setProNameEn] = useState<string>("");
+  const [proNameAr, setProNameAr] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [subCategory, setSubCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
 
-  const [clothesSizes, setClothesSizes] = useState();
-  const [shoesSizes, setShoesSizes] = useState();
+  const [clothesSizes, setClothesSizes] = useState<
+    {
+      size: string;
+      quantity: string;
+      sku: string;
+    }[]
+  >([]);
+
+  const [shoesSizes, setShoesSizes] = useState<
+    {
+      size: string;
+      quantity: string;
+      sku: string;
+    }[]
+  >([]);
 
   const [prodDescripAr, setProdDescripAr] = useState("");
   const [prodDescripEn, setProdDescripEn] = useState("");
   const [fitSizeEn, setFitSizeEn] = useState("");
   const [fitSizeAr, setFitSizeAr] = useState("");
 
+  const [proBagSkuValue, setProBagSkuValue] = useState("");
+  const [proBagQuantityValue, setProBagQuantityValue] = useState("");
+
   const { sizes } = useSizes();
-  const [subClothes, setSubClothes] = useState("cloths");
   const [shoes, setShoes] = useState(false);
 
   const [activeTab, setActiveTab] = useState("productInfo");
+  const [subClothes, setSubClothes] = useState("cloths");
+
+  //CATEGORIES
+  const { vendorCategories } = useVendorCategories();
+
+  const childs = vendorCategories.map((i) => ({ childs: i.childs, id: i.id }));
+  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
+  const brandCategories = clothesCategory?.brands.map((b) => ({
+    id: b.id,
+    categories: b.categories,
+  }));
+
+  useEffect(() => {
+    if (brandCategories) {
+      const selectedItem = brandCategories?.find((b) => b.id === Number(brand));
+      if (selectedItem) {
+        setSelectedBrand(selectedItem);
+      }
+    }
+  }, [brand]);
+
+  // ERRORS STATES
+  const [thumbnailImgError, setThumbnailImgError] = useState(false);
+  const [productFilesError, setProductFilesError] = useState(false);
 
   const onSubmit = (data: FormData) => {
     console.log(data);
+
+    const formData = new FormData();
+    // PRODUCT TYPE
+    formData.append("product_type", "clothes");
+    formData.append("product_sub_type", subClothes);
+
+    // THUMBNAIL
+    if (thumbnailImg) {
+      formData.append("thumbnail", thumbnailImg);
+    } else {
+      setThumbnailImgError(true);
+    }
+    // PRODUCTS IMAGES
+    if (productFiles) {
+      productFiles.map((img, idx) => {
+        formData.append(`images[${idx}]`, img);
+      });
+    } else {
+      setProductFilesError(true);
+    }
+
+    // NAMES IN ENGLISH & ARABIC
+    formData.append("name_en", data.nameEn);
+    formData.append("name_ar", data.nameAr);
+
+    // SUB CATEGORY & BRAND
+    formData.append("brand_id", data.brand);
+    formData.append("categories[0][id]", data.appSubCategory);
+    formData.append("categories[1][id]", data.brandSubCategory);
+
+    // CLOTHES SIZE
+    if (clothesSizes) {
+      clothesSizes.map((obj, idx) => {
+        formData.append(`variants[${idx}][sku]`, obj.sku);
+        formData.append(`variants[${idx}][size_id]`, obj.size);
+        formData.append(`variants[${idx}][stock]`, obj.quantity);
+      });
+    }
+    // CLOTHES SIZE
+    if (shoesSizes) {
+      shoesSizes.map((obj, idx) => {
+        formData.append(`variants[${idx}][sku]`, obj.sku);
+        formData.append(`variants[${idx}][size_id]`, obj.size);
+        formData.append(`variants[${idx}][stock]`, obj.quantity);
+      });
+    }
+    // CLOTHES SIZE
+    if (data.proBagSKU || data.proBagQuantity) {
+      formData.append(`variants[0][sku]`, data.proBagSKU);
+      formData.append(`variants[0][stock]`, data.proBagQuantity);
+    }
+
+    // TEXT EDITOR
+    formData.append(`desc_en`, prodDescripEn);
+    formData.append(`desc_ar`, prodDescripAr);
+    formData.append(`fit_size_desc_en`, fitSizeEn);
+    formData.append(`fit_size_desc_ar`, fitSizeAr);
+
+    // PRICE
+    formData.append(`price`, proPrice.toString());
+    formData.append(`discount`, percentage.toString());
   };
+
   const removeFile = (image: Image) => {
     setProductImages((prev) =>
       prev?.filter((item) => item.name !== image.name)
@@ -83,6 +193,7 @@ const NewClothes = () => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (e.target.files) {
+      setProductFiles(Array.from(e.target.files));
       const filesArray = Array.from(e.target.files).map((file) => ({
         preview: URL.createObjectURL(file),
         name: file.name,
@@ -91,11 +202,100 @@ const NewClothes = () => {
     }
   };
 
+  // CHANGE SUB_CLOTHS STATE
+
+  const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
+
+  useEffect(() => {
+    if (bagObject.sku !== "") {
+      localStorage.setItem("bagFormFields", JSON.stringify(bagObject));
+    }
+  }, [bagObject]);
+
+  //PAST
+  const [pastSubClothes, setPastSubClothes] = useState("");
+
+  //NEXT
+  const [nextSubCloths, setNextSubCloths] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("bagFormFields")) {
+      setPastSubClothes("bags");
+    } else if (localStorage.getItem("shoesFormFields")) {
+      setPastSubClothes("shoes");
+    } else {
+      setPastSubClothes("cloths");
+    }
+  }, [subClothes]);
+
+
+  useEffect(() => {
+    setThumbnailImg(null)
+    setProductImages(null)
+    setProNameAr("");
+    setProNameEn("");
+    setCategory('')
+    setBrand('')
+  }, [subClothes]);
+  const ignoreChanges = () => {
+    setSubClothes(nextSubCloths);
+    if (nextSubCloths === "cloths") {
+      localStorage.removeItem("shoesFormFields");
+      setBagObject({ sku: "", quantity: "" });
+      localStorage.removeItem("bagFormFields");
+      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
+      if (modal) {
+        modal.close();
+      }
+    } else if (nextSubCloths === "shoes") {
+      localStorage.removeItem("formFields");
+      setBagObject({ sku: "", quantity: "" });
+      localStorage.removeItem("bagFormFields");
+      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
+      if (modal) {
+        modal.close();
+      }
+    } else {
+      localStorage.removeItem("formFields");
+      localStorage.removeItem("shoesFormFields");
+      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
+      if (modal) {
+        modal.close();
+      }
+    }
+  };
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="container mx-auto px-8 shadow-2xl rounded-xl p-10"
     >
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box">
+          <p className="py-4 text-lg">All changes will be lost</p>
+          <button
+            onClick={ignoreChanges}
+            className="p-4 bg-red-500 rounded-md text-white font-bold text-xl"
+          >
+            ok , I'm Sure!
+          </button>
+          <div className="modal-action">
+            <button
+              onClick={() => {
+                setSubClothes(pastSubClothes);
+                const modal = document.getElementById(
+                  "my_modal_3"
+                ) as HTMLDialogElement;
+                if (modal) {
+                  modal.close();
+                }
+              }}
+              className="btn"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </dialog>
       <div className="flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Adding New Product</h1>
         <button className="btn btn-outline">
@@ -104,7 +304,16 @@ const NewClothes = () => {
       </div>
       <div className="flex items-center">
         <select
-          onChange={(e) => setSubClothes(e.currentTarget.value)}
+          value={subClothes}
+          onChange={(e) => {
+            const modal = document.getElementById(
+              "my_modal_3"
+            ) as HTMLDialogElement;
+            if (modal) {
+              modal.showModal();
+            }
+            setNextSubCloths(e.currentTarget.value);
+          }}
           className={`select select-bordered text-xl text-[#577656] mr-10`}
         >
           <option value={"cloths"}>
@@ -129,18 +338,78 @@ const NewClothes = () => {
         </button>
 
         <IoIosArrowForward className="mx-3" />
+        {subClothes === "cloths" && clothesSizes && (
+          <button
+            disabled={
+              !thumbnailImg ||
+              !productFiles ||
+              !proNameAr ||
+              !proNameEn ||
+              !category ||
+              !brand ||
+              !clothesSizes[0]?.sku ||
+              !clothesSizes[0]?.quantity ||
+              !clothesSizes[0]?.size
+            }
+            onClick={() => setActiveTab("descriptionPrice")}
+            className={`btn btn-outline text-xl ${
+              activeTab === "descriptionPrice"
+                ? "text-[#577656]"
+                : "text-[#1B1B1B80]"
+            }`}
+          >
+            <span className="rounded-full w-4 h-4 bg-[#1B1B1B80]"></span>{" "}
+            Description & Price
+          </button>
+        )}
+        {subClothes === "shoes" && (
+          <button
+            disabled={
+              !thumbnailImg ||
+              !productFiles ||
+              !proNameAr ||
+              !proNameEn ||
+              !category ||
+              !brand ||
+              !shoesSizes[0]?.sku ||
+              !shoesSizes[0]?.size ||
+              !shoesSizes[0]?.quantity
+            }
+            onClick={() => setActiveTab("descriptionPrice")}
+            className={`btn btn-outline text-xl ${
+              activeTab === "descriptionPrice"
+                ? "text-[#577656]"
+                : "text-[#1B1B1B80]"
+            }`}
+          >
+            <span className="rounded-full w-4 h-4 bg-[#1B1B1B80]"></span>{" "}
+            Description & Price
+          </button>
+        )}
 
-        <button
-          onClick={() => setActiveTab("descriptionPrice")}
-          className={`btn btn-outline text-xl ${
-            activeTab === "descriptionPrice"
-              ? "text-[#577656]"
-              : "text-[#1B1B1B80]"
-          }`}
-        >
-          <span className="rounded-full w-4 h-4 bg-[#1B1B1B80]"></span>{" "}
-          Description & Price
-        </button>
+        {subClothes === "bags" && (
+          <button
+            disabled={
+              !thumbnailImg ||
+              !productFiles ||
+              !proNameAr ||
+              !proNameEn ||
+              !category ||
+              !brand ||
+              !bagObject.sku ||
+              !bagObject.quantity
+            }
+            onClick={() => setActiveTab("descriptionPrice")}
+            className={`btn btn-outline text-xl ${
+              activeTab === "descriptionPrice"
+                ? "text-[#577656]"
+                : "text-[#1B1B1B80]"
+            }`}
+          >
+            <span className="rounded-full w-4 h-4 bg-[#1B1B1B80]"></span>{" "}
+            Description & Price
+          </button>
+        )}
 
         <IoIosArrowForward className="mx-3" />
 
@@ -231,8 +500,9 @@ const NewClothes = () => {
                 <label className="text-xl">Product Name (English)</label>
                 <input
                   {...register("nameEn")}
+                  value={proNameEn}
                   className="input input-bordered"
-                  onChange={(e) => setProName(e.currentTarget.value)}
+                  onChange={(e) => setProNameEn(e.currentTarget.value)}
                 />
                 {errors.nameEn && (
                   <p className="text-xl underline text-red-600">
@@ -244,7 +514,9 @@ const NewClothes = () => {
                 <label className="text-xl">Product Name (Arabic)</label>
                 <input
                   {...register("nameAr")}
+                  value={proNameAr}
                   className="input input-bordered"
+                  onChange={(e) => setProNameAr(e.currentTarget.value)}
                 />
                 {errors.nameAr && (
                   <p className="text-xl underline text-red-600">
@@ -261,14 +533,18 @@ const NewClothes = () => {
                   <label className="text-xl">Select App sub categories</label>
                   <select
                     {...register("appSubCategory")}
+                    value={category}
                     className="select select-bordered w-full grow"
                     onChange={(e) => setCategory(e.currentTarget.value)}
                   >
                     <option value="" disabled selected>
                       Select App Sub Category
                     </option>
-                    <option value="category1">Category 1</option>
-                    <option value="category2">Category 2</option>
+                    {childs.map((i, idx) => (
+                      <option value={`${i.childs[idx].id}`}>
+                        {i.childs[idx].name}
+                      </option>
+                    ))}
                   </select>
                   {errors.appSubCategory && (
                     <p className="text-red-600">
@@ -280,14 +556,16 @@ const NewClothes = () => {
                   <label className="text-xl">Brand</label>
                   <select
                     {...register("brand")}
+                    value={brand}
                     className="select select-bordered w-full  grow"
                     onChange={(e) => setBrand(e.currentTarget.value)}
                   >
                     <option value="" disabled selected>
                       Select Brand
                     </option>
-                    <option value="brand1">Brand 1</option>
-                    <option value="brand2">Brand 2</option>
+                    {clothesCategory?.brands.map((b) => (
+                      <option value={b.id}>{b.name_en}</option>
+                    ))}
                   </select>
                   {errors.brand && (
                     <p className="text-red-600">{errors.brand.message}</p>
@@ -297,14 +575,17 @@ const NewClothes = () => {
                   <label className="text-xl">Select Brand sub categories</label>
                   <select
                     {...register("brandSubCategory")}
+                    value={subCategory}
                     onChange={(e) => setSubCategory(e.currentTarget.value)}
                     className="select select-bordered w-full grow"
+                    disabled={brand ? false : true}
                   >
                     <option value="" disabled selected>
                       Select Brand Sub Category
                     </option>
-                    <option value="subcategory1">Sub Category 1</option>
-                    <option value="subcategory2">Sub Category 2</option>
+                    {selectedBrand.categories?.map((i) => (
+                      <option>{i.name}</option>
+                    ))}
                   </select>
                   {errors.brandSubCategory && (
                     <p className="text-red-600">
@@ -315,23 +596,7 @@ const NewClothes = () => {
               </div>
             </div>
             {subClothes === "shoes" ? (
-              <div className="flex gap-40 mt-10">
-                <div>
-                  <div>
-                    <h1 className="text-xl font-semibold">Size</h1>
-                    <p className="text-[#47546780]">Pick available sizes</p>
-                  </div>
-                </div>
-                <div>
-                  <ShoesDynamicForm
-                    onSelectedSizes={(selectedSizes: any) =>
-                      setShoesSizes(selectedSizes)
-                    }
-                  />
-                </div>
-              </div>
-            ) : subClothes === "cloths" ? (
-              <div className="flex gap-40 items-center mt-10">
+              <>
                 <div className="flex gap-40 mt-10">
                   <div>
                     <div>
@@ -340,55 +605,141 @@ const NewClothes = () => {
                     </div>
                   </div>
                   <div>
-                    <ClothsDynamicForm
+                    <ShoesDynamicForm
                       onSelectedSizes={(selectedSizes: any) =>
-                        setClothesSizes(selectedSizes)
+                        setShoesSizes(selectedSizes)
                       }
                     />
                   </div>
                 </div>
-              </div>
+                <div className="flex justify-end mt-5">
+                  <button
+                    disabled={
+                      !thumbnailImg ||
+                      !productFiles ||
+                      !proNameAr ||
+                      !proNameEn ||
+                      !category ||
+                      !brand ||
+                      !shoesSizes[0]?.sku ||
+                      !shoesSizes[0]?.size ||
+                      !shoesSizes[0]?.quantity
+                    }
+                    onClick={() => setActiveTab("descriptionPrice")}
+                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : subClothes === "cloths" ? (
+              <>
+                <div className="flex gap-40 items-center mt-10">
+                  <div className="flex gap-40 mt-10">
+                    <div>
+                      <div>
+                        <h1 className="text-xl font-semibold">Size</h1>
+                        <p className="text-[#47546780]">Pick available sizes</p>
+                      </div>
+                    </div>
+                    <div>
+                      <ClothsDynamicForm
+                        onSelectedSizes={(selectedSizes: any) =>
+                          setClothesSizes(selectedSizes)
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end mt-5">
+                  <button
+                    disabled={
+                      !thumbnailImg ||
+                      !productFiles ||
+                      !proNameAr ||
+                      !proNameEn ||
+                      !category ||
+                      !brand ||
+                      !clothesSizes[0]?.sku ||
+                      !clothesSizes[0]?.quantity ||
+                      !clothesSizes[0]?.size
+                    }
+                    onClick={() => setActiveTab("descriptionPrice")}
+                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
             ) : subClothes === "bags" ? (
-              <div className="flex items-center gap-32 mt-10">
-                <div>
-                  <h1 className="text-xl font-semibold">Size</h1>
-                  <p className="text-[#47546780]">Pick available sizes</p>
+              <>
+                <div className="flex items-center gap-32 mt-10">
+                  <div>
+                    <h1 className="text-xl font-semibold">Size</h1>
+                    <p className="text-[#47546780]">Pick available sizes</p>
+                  </div>
+                  <div className="flex flex-col gap-4 flex-1">
+                    <label className="text-xl">SKU</label>
+                    <input
+                      {...register("proBagSKU")}
+                      name="sku"
+                      value={bagObject.sku}
+                      className="input input-bordered"
+                      onChange={(e) => {
+                        setBagObject({
+                          ...bagObject,
+                          sku: e.currentTarget.value,
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <h1>Size</h1>
+                    <input
+                      type="text"
+                      value="Standard Size"
+                      className="input input-bordered mt-2"
+                    />
+                  </div>
+                  <div>
+                    <h1>Quantity</h1>
+                    <input
+                      {...register("proBagQuantity")}
+                      value={bagObject.quantity}
+                      type="text"
+                      className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setBagObject({
+                          ...bagObject,
+                          quantity: e.currentTarget.value,
+                        });
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-4 flex-1">
-                  <label className="text-xl">SKU</label>
-                  <input
-                    {...register("proSKU")}
-                    name="sku"
-                    className="input input-bordered"
-                  />
+                <div className="flex justify-end mt-5">
+                  <button
+                    disabled={
+                      !thumbnailImg ||
+                      !productFiles ||
+                      !proNameAr ||
+                      !proNameEn ||
+                      !category ||
+                      !brand ||
+                      !bagObject.sku ||
+                      !bagObject.quantity
+                    }
+                    onClick={() => setActiveTab("descriptionPrice")}
+                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
+                  >
+                    Next
+                  </button>
                 </div>
-                <div>
-                  <h1>Size</h1>
-                  <input
-                    type="text"
-                    value="Standard Size"
-                    className="input input-bordered mt-2"
-                  />
-                </div>
-                <div>
-                  <h1>Quantity 5</h1>
-                  <input
-                    {...register("bagQuantity")}
-                    type="text"
-                    className="input input-bordered mt-2"
-                  />
-                </div>
-              </div>
+              </>
             ) : (
               ""
             )}
           </div>
-          <button
-            onClick={() => setActiveTab("descriptionPrice")}
-            className="btn mt-10 self-end px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
-          >
-            Next
-          </button>
         </div>
       )}
       {activeTab === "descriptionPrice" && (
@@ -399,22 +750,22 @@ const NewClothes = () => {
             <div className="flex justify-around items-center gap-20 mt-4">
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (Arabic)</h1>
-                <Todo onEditorContent={(data) => console.log(data)} />
+                <Todo onEditorContent={(data) => setProdDescripAr(data)} />
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (English)</h1>
-                <Todo onEditorContent={(data) => console.log(data)} />
+                <Todo onEditorContent={(data) => setProdDescripEn(data)} />
               </div>
             </div>
             <h1 className="text-xl font-bold mt-6">Fit & Size</h1>
             <div className="flex justify-around items-center gap-20 mt-4">
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Fit & Size (Arabic)</h1>
-                <Todo onEditorContent={(data) => console.log(data)} />
+                <Todo onEditorContent={(data) => setFitSizeAr(data)} />
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Fit & Size (English)</h1>
-                <Todo onEditorContent={(data) => console.log(data)} />
+                <Todo onEditorContent={(data) => setFitSizeEn(data)} />
               </div>
             </div>
             <div className="mt-10">
@@ -483,7 +834,7 @@ const NewClothes = () => {
                       Product Name
                     </span>
                     <span className="capitalize font-bold text-lg">
-                      {proName}
+                      {proNameEn}
                     </span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
