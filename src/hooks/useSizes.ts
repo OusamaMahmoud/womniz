@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Size } from "../services/size-service";
 
-const useSizes = () => {
+const useSizes = ({ productType }: { productType: string }) => {
   const [sizes, setSizes] = useState<Size[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
@@ -11,11 +11,12 @@ const useSizes = () => {
     setLoading(true);
     const controller = new AbortController();
     apiClient
-      .get("/sizes", {
+      .get(`/sizes?product_sub_type=${productType}`, {
         signal: controller.signal,
       })
       .then((res) => {
         setSizes(res.data.data);
+        console.log(res.data.data)
         setLoading(false);
       })
       .catch((err) => {
@@ -24,7 +25,7 @@ const useSizes = () => {
         setLoading(false);
       });
     return () => controller.abort();
-  }, []);
+  }, [productType]);
 
   return {
     sizes,

@@ -44,7 +44,7 @@ const Sidebar = () => {
   const handleLogOutButton = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.post("/logout");
+      await apiClient.post("/logout");
       localStorage.removeItem("authToken"); // Adjust based on your storage method
       setAuth(null);
 

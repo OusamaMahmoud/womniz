@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import avatar from "../../../public/assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
-// import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
 import apiClient from "../../services/api-client";
 import vendorsService from "../../services/vendors-service";
@@ -18,8 +17,6 @@ import Pagination from "../Pagination";
 import useVendors from "../../hooks/useVendors";
 import useAllVendors from "../../hooks/useAllVendors";
 import { useAuth } from "../../contexts/AuthProvider";
-import VendorsResponsiveTable from "../vendors/VendorsResponsiveTable";
-import DynamicForm from "../vendors/DynamicForm";
 import Dropzone from "../../components/vendors/DropZone";
 import SalonsResponsiveTable from "./SalonsResponsiveTable";
 
@@ -123,7 +120,7 @@ const Salons = () => {
     useState<FileList>();
   const [vatCertificate, setVATCertificate] = useState<FileList>();
 
-  const [dynamicCategories, setDynamicCategories] = useState<
+  const [dynamicCategories,] = useState<
     { category: string; id: number }[]
   >([]);
 
@@ -218,7 +215,7 @@ const Salons = () => {
   const [commercialRegistrationError, setCommercialRegistrationError] =
     useState(false);
   const [vatCertificateError, setVatCertificateError] = useState(false);
-  const [DynamicCategoriesError, setDynamicCategoriesError] = useState(false);
+  const [, setDynamicCategoriesError] = useState(false);
 
   useEffect(() => {
     if (!isEmptyObject(imageFile)) {
@@ -306,7 +303,7 @@ const Salons = () => {
 
     try {
       setCreatingVendorLoading(true);
-      const res = await vendorsService.create<any>(formData);
+      await vendorsService.create<any>(formData);
       setCreatingVendorLoading(false);
       setIsModalOpen(false);
       toast.success("Create Vendor Account Successfully!");

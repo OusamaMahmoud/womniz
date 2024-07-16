@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ShoesDynamicForm = ({ onSelectedSizes }) => {
+const ShoesDynamicForm = ({ onSelectedSizes ,sizes }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
@@ -56,12 +56,18 @@ const ShoesDynamicForm = ({ onSelectedSizes }) => {
               <label className="label">
                 <span className="label-text">Size</span>
               </label>
-              <input
+              <select
                 name="size"
-                value={field.size}
                 onChange={(event) => handleChange(index, event)}
-                className="input input-bordered w-[100%]"
-              />
+                className="select select-bordered"
+              >
+                <option disabled selected>
+                  Select Size
+                </option>
+                {sizes.map((s) => (
+                  <option  key={s.id} value={s.id}>{s.title}</option>
+                ))}
+              </select>
             </div>
             <div className="flex-1">
               <label className="label">

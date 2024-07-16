@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BiEdit, BiTrash } from "react-icons/bi";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { Vendor } from "../../services/vendors-service";
 import { toast } from "react-toastify";
@@ -193,7 +193,7 @@ const SalonProfile = () => {
     setStatus(e.target.value);
     const newStatus = parseInt(e.target.value);
     try {
-      const res = apiClient.get(`/vendors/${targetAdmin.id}/switchstatus`, {
+      apiClient.get(`/vendors/${targetAdmin.id}/switchstatus`, {
         params: { status: newStatus },
       });
     } catch (err: any) {
@@ -233,7 +233,7 @@ const SalonProfile = () => {
 
     try {
       setSubmitinLoading(true);
-      const res = await customerService.create<any>(formData);
+       await customerService.create<any>(formData);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();

@@ -154,7 +154,7 @@ const CustomerProfile = () => {
     setStatus(e.target.value);
     const newStatus = parseInt(e.target.value);
     try {
-      const res = apiClient.get(`/users/${targetCustomer.id}/switchstatus`, {
+      apiClient.get(`/users/${targetCustomer.id}/switchstatus`, {
         params: { status: newStatus },
       });
     } catch (err: any) {
@@ -194,7 +194,7 @@ const CustomerProfile = () => {
   };
 
   const notify = () => toast.success("Create Admin Successfully!");
-  const [isProductsComponentExist, setIsProductsComponentExist] =
+  const [, setIsProductsComponentExist] =
     useState(false);
   const handleAddingOrderToCustomer = () => {
     setIsProductsComponentExist(true);

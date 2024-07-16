@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ClothsDynamicForm = ({ onSelectedSizes }) => {
+const ClothsDynamicForm = ({ onSelectedSizes, sizes }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
@@ -29,7 +29,8 @@ const ClothsDynamicForm = ({ onSelectedSizes }) => {
 
   // Function to handle removing a field
   const handleRemove = (index) => {
-    if (index > 0) {  // Ensure the first form cannot be deleted
+    if (index > 0) {
+      // Ensure the first form cannot be deleted
       const values = [...fields];
       values.splice(index, 1);
       setFields(values);
@@ -41,7 +42,10 @@ const ClothsDynamicForm = ({ onSelectedSizes }) => {
   return (
     <div className="w-[100%]">
       {fields.map((field, index) => (
-        <div key={index} className="flex flex-col gap-4 xl:max-w-[800px] mb-4 border-b pb-4">
+        <div
+          key={index}
+          className="flex flex-col gap-4 xl:max-w-[800px] mb-4 border-b pb-4"
+        >
           <div className="flex justify-between items-center gap-4">
             <div className="flex flex-col gap-4 flex-1">
               <label className="text-xl">SKU</label>
@@ -56,12 +60,18 @@ const ClothsDynamicForm = ({ onSelectedSizes }) => {
               <label className="label">
                 <span className="label-text">Size</span>
               </label>
-              <input
+              <select
                 name="size"
-                value={field.size}
                 onChange={(event) => handleChange(index, event)}
-                className="input input-bordered w-[100%]"
-              />
+                className="select select-bordered"
+              >
+                <option disabled selected>
+                  Select Size
+                </option>
+                {sizes.map((s) => (
+                  <option key={s.id} value={s.id}>{s.title}</option>
+                ))}
+              </select>
             </div>
             <div className="flex-1">
               <label className="label">

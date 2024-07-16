@@ -62,7 +62,7 @@ type FormData = z.infer<typeof schema>;
 
 const AdminProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [photoPreview, setPhotoPreview] = useState<string | null | undefined>(
+  const [, setPhotoPreview] = useState<string | null | undefined>(
     null
   );
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
@@ -123,7 +123,7 @@ const AdminProfile = () => {
     setStatus(e.target.value);
     const newStatus = parseInt(e.target.value);
     try {
-      const res = apiClient.post(`/admins/${targetAdmin.id}/switchstatus`, {
+        apiClient.post(`/admins/${targetAdmin.id}/switchstatus`, {
         status: newStatus,
       });
     } catch (err: any) {

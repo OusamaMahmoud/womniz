@@ -44,7 +44,7 @@ const SpinTheWheel: React.FC = () => {
 
   const onSubmit = async (data: FieldValues) => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value], idx) => {
+    Object.entries(data).forEach(([, value], idx) => {
       const digitKey = `digit_${numberToWord(idx + 1)}` as keyof Spin;
       const inputName = `spinInput_${idx}`; // Get the input name
       // Check if the inputName is in isGameSpinAgain and if it is checked
@@ -65,7 +65,7 @@ const SpinTheWheel: React.FC = () => {
       );
     });
 
-    const res = await apiClient.post("/spin/information/update", formData);
+    await apiClient.post("/spin/information/update", formData);
   };
 
   return (

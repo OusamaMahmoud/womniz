@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect,  } from "react";
 import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import avatar from "../../../public/assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
@@ -305,7 +305,7 @@ const Vendors = () => {
 
     try {
       setCreatingVendorLoading(true);
-      const res = await vendorsService.create<any>(formData);
+       await vendorsService.create<any>(formData);
       setCreatingVendorLoading(false);
       setIsModalOpen(false);
       toast.success("Create Vendor Account Successfully!");

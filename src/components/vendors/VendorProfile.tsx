@@ -192,7 +192,7 @@ const VendorProfile = () => {
     setStatus(e.target.value);
     const newStatus = parseInt(e.target.value);
     try {
-      const res = apiClient.get(`/vendors/${targetAdmin.id}/switchstatus`, {
+      apiClient.get(`/vendors/${targetAdmin.id}/switchstatus`, {
         params: { status: newStatus },
       });
     } catch (err: any) {
@@ -233,7 +233,7 @@ const VendorProfile = () => {
 
     try {
       setSubmitinLoading(true);
-      const res = await customerService.create<any>(formData);
+       await customerService.create<any>(formData);
       setSubmitinLoading(false);
       setIsModalOpen(false);
       notify();

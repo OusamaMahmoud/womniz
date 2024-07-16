@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import usePermissions from "../../hooks/usePremissions";
-import useRoles from "../../hooks/useRoles";
 import { Role } from "../../services/role-service";
 import { PermissionCategory } from "../../services/permission-service";
 import apiClient from "../../services/api-client";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const EditRole = ({
   targetRole,
@@ -23,8 +21,6 @@ const EditRole = ({
   const { handleSubmit, register } = useForm();
   //   const { permissions, setPermissions } = usePermissions();
   //   const { roles } = useRoles();
-  const [targetRolePermissionsState, setTargetRolePermissionsState] =
-    useState<string[]>();
 
   // Update permissions whenever targetRole or roles change
   useEffect(() => {
