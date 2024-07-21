@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ClothsDynamicForm = ({ onSelectedSizes, sizes }) => {
+const ClothsDynamicForm = ({ onSelectedSizes, sizes, cancelTriggered }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
@@ -10,6 +10,12 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes }) => {
       setFields(JSON.parse(savedFields));
     }
   }, []);
+
+  useEffect(() => {
+    if(cancelTriggered && cancelTriggered === true){
+      setFields([{ size: "", quantity: "", sku: "" }]);
+    }
+  }, [cancelTriggered]);
 
   // Function to handle the change in input fields
   const handleChange = (index, event) => {
@@ -69,7 +75,9 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes }) => {
                   Select Size
                 </option>
                 {sizes.map((s) => (
-                  <option key={s.id} value={s.id}>{s.title}</option>
+                  <option key={s.id} value={s.id}>
+                    {s.title}
+                  </option>
                 ))}
               </select>
             </div>

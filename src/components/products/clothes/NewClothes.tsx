@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BiArrowToBottom } from "react-icons/bi";
-import { MdCancel, MdDelete } from "react-icons/md";
+import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
@@ -15,6 +15,9 @@ import useVendorCategories from "../../../hooks/useVendorCategories";
 import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
+import NewOne from "../../NewOne";
+import { RiGitPrDraftFill } from "react-icons/ri";
+import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 
 const schema = z.object({
   nameEn: z.string(),
@@ -57,8 +60,6 @@ const NewClothes = () => {
   const [category, setCategory] = useState<string>("");
   const [subBrandCategory, setSubBrandCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
-  const [productCreatedSuccessfully, setProductCreatedSuccessfully] =
-    useState(false);
 
   const [clothesSizes, setClothesSizes] = useState<
     | {
@@ -80,8 +81,6 @@ const NewClothes = () => {
   const [prodDescripEn, setProdDescripEn] = useState("");
   const [fitSizeEn, setFitSizeEn] = useState("");
   const [fitSizeAr, setFitSizeAr] = useState("");
-
-
 
   const [activeTab, setActiveTab] = useState("productInfo");
   const [subClothes, setSubClothes] = useState("clothes");
@@ -108,8 +107,7 @@ const NewClothes = () => {
   // ERRORS STATES
   const [, setThumbnailImgError] = useState(false);
   const [, setProductFilesError] = useState(false);
-
-
+  const [isSetSubmitButton, setSubmitButton] = useState(false);
   const { sizes } = useSizes({ productType: subClothes });
 
   // USBMIT FUNCTION
@@ -179,22 +177,48 @@ const NewClothes = () => {
     formData.append(`discount`, percentage.toString());
 
     try {
-      const res = await apiClient.post("/products", formData);
-      if (res.status === 200) {
-        toast.success("The product has been created successfully.");
-        setActiveTab("productInfo");
-        setProductCreatedSuccessfully(true);
-        if (localStorage.getItem("formFields")) {
-          localStorage.removeItem("formFields");
-        }
-        if (localStorage.getItem("shoesFormFields")) {
-          localStorage.removeItem("shoesFormFields");
-        }
-        if (localStorage.getItem("bagFormFields")) {
-          localStorage.removeItem("bagFormFields");
-        }
+      setSubmitButton(true);
+      await apiClient.post("/products", formData);
+      toast.success("The product has been created successfully.");
+      setSubmitButton(false);
+      setThumbnailImg(null);
+      setProductImages([]);
+      setProNameAr("");
+      setProNameEn("");
+      setCategory("");
+      setBrand("");
+      setSubBrandCategory("");
+      setPrice(0);
+      setPercentage(0);
+
+      if (localStorage.getItem("formFields")) {
+        localStorage.removeItem("formFields");
+        setClothesSizes([]);
       }
+      if (localStorage.getItem("shoesFormFields")) {
+        localStorage.removeItem("shoesFormFields");
+        setShoesSizes([]);
+      }
+      if (localStorage.getItem("bagFormFields")) {
+        localStorage.removeItem("bagFormFields");
+        setBagObject({ sku: "", quantity: "" });
+      }
+
+      if (localStorage.getItem("prodDescripEn")) {
+        localStorage.removeItem("prodDescripEn");
+      }
+      if (localStorage.getItem("prodDescripAr")) {
+        localStorage.removeItem("prodDescripAr");
+      }
+      if (localStorage.getItem("fitSizeAr")) {
+        localStorage.removeItem("fitSizeAr");
+      }
+      if (localStorage.getItem("fitSizeEn")) {
+        localStorage.removeItem("fitSizeEn");
+      }
+      setActiveTab("productInfo");
     } catch (error: any) {
+      setSubmitButton(false);
       toast.error(error.response.data.data.error);
     }
   };
@@ -218,7 +242,7 @@ const NewClothes = () => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
 
-      setProductFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      setProductFiles(newFiles);
 
       const newFilesArray = newFiles.map((file) => ({
         preview: URL.createObjectURL(file),
@@ -245,6 +269,8 @@ const NewClothes = () => {
   //NEXT
   const [nextSubCloths, setNextSubCloths] = useState("");
 
+  const [cancelTriggered, setCancelTriggered] = useState(false);
+
   useEffect(() => {
     if (localStorage.getItem("bagFormFields")) {
       setPastSubClothes("bags");
@@ -265,16 +291,34 @@ const NewClothes = () => {
     setBrand("");
     setPrice(0);
     setPercentage(0);
-
-  }, [subClothes, productCreatedSuccessfully]);
+  }, [subClothes]);
 
   const ignoreChanges = () => {
+    localStorage.removeItem("prodDescripAr");
+    localStorage.removeItem("prodDescripEn");
+    localStorage.removeItem("fitSizeAr");
+    localStorage.removeItem("fitSizeEn");
+
+    setThumbnailImg(null);
+    setProductImages([]);
+    setProNameAr("");
+    setProNameEn("");
+    setCategory("");
+    setBrand("");
+    setPrice(0);
+    setPercentage(0);
+    setShoesSizes([]);
+    setClothesSizes([]);
+    setBagObject({ sku: "", quantity: "" });
+    setCancelTriggered(true);
+
     if (nextSubCloths) {
       setSubClothes(nextSubCloths);
     } else {
       setSubClothes("shoes");
       setActiveTab("productInfo");
     }
+
     if (nextSubCloths === "clothes") {
       localStorage.removeItem("shoesFormFields");
       setBagObject({ sku: "", quantity: "" });
@@ -299,6 +343,7 @@ const NewClothes = () => {
         modal.close();
       }
     }
+    setActiveTab("productInfo");
   };
 
   const cancelFunc = () => {
@@ -322,12 +367,14 @@ const NewClothes = () => {
 
           <div className="modal-action">
             <button
+              type="button"
               onClick={ignoreChanges}
               className="btn font-semibold text-lg hover:bg-red-500 hover:text-white"
             >
               Discard Changes
             </button>
             <button
+              type="button"
               onClick={() => {
                 setSubClothes(pastSubClothes);
                 const modal = document.getElementById(
@@ -347,7 +394,7 @@ const NewClothes = () => {
 
       <div className="flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Adding New Product</h1>
-        <button onClick={cancelFunc} className="btn btn-outline">
+        <button type="button" onClick={cancelFunc} className="btn btn-outline">
           <MdCancel /> Cancel
         </button>
       </div>
@@ -373,6 +420,7 @@ const NewClothes = () => {
         </select>
 
         <button
+          type="button"
           onClick={() => setActiveTab("productInfo")}
           className={`btn btn-outline text-xl ${
             activeTab === "productInfo" ? "text-[#577656]" : "text-[#1B1B1B80]"
@@ -389,6 +437,7 @@ const NewClothes = () => {
         <IoIosArrowForward className="mx-3" />
         {subClothes === "clothes" && clothesSizes && (
           <button
+            type="button"
             disabled={
               !thumbnailImg ||
               !productFiles ||
@@ -421,6 +470,7 @@ const NewClothes = () => {
         )}
         {subClothes === "shoes" && (
           <button
+            type="button"
             disabled={
               !thumbnailImg ||
               !productFiles ||
@@ -450,6 +500,7 @@ const NewClothes = () => {
 
         {subClothes === "bags" && (
           <button
+            type="button"
             disabled={
               !thumbnailImg ||
               !productFiles ||
@@ -475,6 +526,7 @@ const NewClothes = () => {
         <IoIosArrowForward className="mx-3" />
 
         <button
+          type="button"
           disabled={!proPrice || !percentage}
           onClick={() => setActiveTab("arPreview")}
           className={`btn btn-outline text-xl`}
@@ -564,14 +616,12 @@ const NewClothes = () => {
                   onChange={handleProductImagesChange}
                   hidden
                 />
-                {productImages.length < 1 && (
-                  <label
-                    className="relative cursor-pointer flex flex-wrap gap-8 border-4 border-dashed border-[#BFBFBF]   items-center justify-center "
-                    htmlFor="images"
-                  >
-                    <CameraIcon width={100} className="ml-8 mr-4 my-8" />
-                  </label>
-                )}
+                <label
+                  className="relative cursor-pointer flex flex-wrap gap-8 border-4 border-dashed border-[#BFBFBF]   items-center justify-center "
+                  htmlFor="images"
+                >
+                  <CameraIcon width={100} className="ml-8 mr-4 my-8" />
+                </label>
               </div>
             </div>
           </div>
@@ -583,7 +633,8 @@ const NewClothes = () => {
               <div className="flex flex-col gap-4">
                 <label className="text-xl">Product Name (English)</label>
                 <input
-                  {...register("nameEn")}
+                  // {...register("nameEn")}
+                  id="proNameEn"
                   value={proNameEn}
                   className="input input-bordered"
                   onChange={(e) => setProNameEn(e.currentTarget.value)}
@@ -597,8 +648,9 @@ const NewClothes = () => {
               <div className="flex flex-col gap-4">
                 <label className="text-xl">Product Name (Arabic)</label>
                 <input
-                  {...register("nameAr")}
+                  // {...register("nameAr")}
                   value={proNameAr}
+                  id="proNameAr"
                   className="input input-bordered"
                   onChange={(e) => setProNameAr(e.currentTarget.value)}
                 />
@@ -616,7 +668,8 @@ const NewClothes = () => {
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Select App sub categories</label>
                   <select
-                    {...register("appSubCategory")}
+                    // {...register("appSubCategory")}
+                    id="category"
                     value={category}
                     className="select select-bordered w-full grow"
                     onChange={(e) => setCategory(e.currentTarget.value)}
@@ -639,8 +692,9 @@ const NewClothes = () => {
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Brand</label>
                   <select
-                    {...register("brand")}
+                    // {...register("brand")}
                     value={brand}
+                    id="brand"
                     className="select select-bordered w-full  grow"
                     onChange={(e) => setBrand(e.currentTarget.value)}
                   >
@@ -660,6 +714,7 @@ const NewClothes = () => {
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Select Brand sub categories</label>
                   <select
+                    id="subBrandCategory"
                     value={subBrandCategory}
                     onChange={(e) => setSubBrandCategory(e.currentTarget.value)}
                     className="select select-bordered w-full grow"
@@ -688,6 +743,7 @@ const NewClothes = () => {
                   </div>
                   <div>
                     <ShoesDynamicForm
+                      cancelTriggered={cancelTriggered}
                       sizes={sizes}
                       onSelectedSizes={(selectedSizes: any) =>
                         setShoesSizes(selectedSizes)
@@ -697,6 +753,7 @@ const NewClothes = () => {
                 </div>
                 <div className="flex justify-end mt-5">
                   <button
+                    type="button"
                     disabled={
                       !thumbnailImg ||
                       !productFiles ||
@@ -727,6 +784,7 @@ const NewClothes = () => {
                     </div>
                     <div>
                       <ClothsDynamicForm
+                        cancelTriggered={cancelTriggered}
                         sizes={sizes}
                         onSelectedSizes={(selectedSizes: any) =>
                           setClothesSizes(selectedSizes)
@@ -737,6 +795,7 @@ const NewClothes = () => {
                 </div>
                 <div className="flex justify-end mt-5">
                   <button
+                    type="button"
                     disabled={
                       !thumbnailImg ||
                       !productFiles ||
@@ -803,6 +862,7 @@ const NewClothes = () => {
                 </div>
                 <div className="flex justify-end mt-5">
                   <button
+                    type="button"
                     disabled={
                       !thumbnailImg ||
                       !productFiles ||
@@ -834,22 +894,42 @@ const NewClothes = () => {
             <div className="flex justify-around items-center gap-20 mt-4">
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (Arabic)</h1>
-                <Todo onEditorContent={(data) => setProdDescripAr(data)} />
+                <TextEditor
+                  localKey={"prodDescripAr"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setProdDescripAr(htmlContent)
+                  }
+                />
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Description (English)</h1>
-                <Todo onEditorContent={(data) => setProdDescripEn(data)} />
+                <TextEditor
+                  localKey={"prodDescripEn"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setProdDescripEn(htmlContent)
+                  }
+                />
               </div>
             </div>
             <h1 className="text-xl font-bold mt-6">Fit & Size</h1>
             <div className="flex justify-around items-center gap-20 mt-4">
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Fit & Size (Arabic)</h1>
-                <Todo onEditorContent={(data) => setFitSizeAr(data)} />
+                <TextEditor
+                  localKey={"fitSizeAr"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setFitSizeAr(htmlContent)
+                  }
+                />
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">Fit & Size (English)</h1>
-                <Todo onEditorContent={(data) => setFitSizeEn(data)} />
+                <TextEditor
+                  localKey={"fitSizeEn"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setFitSizeEn(htmlContent)
+                  }
+                />
               </div>
             </div>
             <div className="mt-10">
@@ -857,7 +937,7 @@ const NewClothes = () => {
               <div className="mt-5 flex flex-col gap-4 max-w-72">
                 <label>Price</label>
                 <input
-                  {...register("price")}
+                  // {...register("price")}
                   value={proPrice}
                   onChange={(e) => setPrice(Number(e.currentTarget.value))}
                   className="input input-bordered"
@@ -868,7 +948,7 @@ const NewClothes = () => {
                   <label>Sale percentage</label>
                   <input
                     value={percentage}
-                    {...register("salePercent")}
+                    // {...register("salePercent")}
                     onChange={(e) =>
                       setPercentage(Number(e.currentTarget.value))
                     }
@@ -881,12 +961,15 @@ const NewClothes = () => {
           {/* Your content here */}
           <div className="flex items-center gap-5 justify-end">
             <button
+              type="button"
               onClick={() => setActiveTab("arPreview")}
               className="btn mt-10 self-end px-20   text-xl hover:bg-[#87ae85] mr-32"
             >
               <FaDraft2Digital /> Save Draft
             </button>
             <button
+              type="button"
+              disabled={!proPrice || !percentage}
               onClick={() => setActiveTab("arPreview")}
               className="btn mt-10 self-end px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
             >
@@ -897,209 +980,275 @@ const NewClothes = () => {
       )}
 
       {activeTab === "arPreview" && (
-        <div className="flex flex-col mt-8">
-          <div className="flex justify-between items-center">
-            {/* {right part} */}
+        <div className="flex flex-col justify-center mt-8">
+          <div className="flex justify-between items-center mt-8">
             <div>
-              <div className="max-w-[600px] shadow-xl p-6 rounded-md">
-                <div className="flex justify-between items-center mb-4 ">
-                  <h1 className="text-2xl font-bold mb-4">
-                    Product Information
-                  </h1>
-                  <p
-                    onClick={() => setActiveTab("productInfo")}
-                    className="border p-2 rounded-md cursor-pointer"
-                  >
-                    Edit
-                  </p>
-                </div>
-
-                <div className="xl:min-w-[500px]">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className=" text-xl text-[#00000066]">
-                      Product Name
-                    </span>
-                    <span className="capitalize font-bold text-lg">
-                      {proNameEn}
-                    </span>
+              <div>
+                <h1 className="text-2xl font-bold tracking-wider">
+                  Product Name
+                </h1>
+                <div className="mt-2 flex  gap-10">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Product Name (Arabic)
+                    </h1>
+                    <div className="border p-5 rounded-lg">{proNameAr}</div>
                   </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xl text-[#00000066]">Category</span>
-                    <span className="capitalize font-bold text-lg">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Product Name (English)
+                    </h1>
+                    <div className="border p-5 rounded-lg">{proNameEn}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-8">
+                <h1 className="text-2xl font-bold tracking-wider">
+                  Sub Category & Brand
+                </h1>
+                <div className="mt-2 flex flex-wrap gap-10 max-w-3xl">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      App sub categories
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-64">
                       {category}
-                    </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xl text-[#00000066]">
-                      Sub Category
-                    </span>
-                    <span className="capitalize font-bold text-lg">
-                      {subBrandCategory}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xl text-[#00000066]">Brand</span>
-                    <span className="capitalize font-bold text-lg">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Brand
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-64">
                       {brand}
-                    </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Brand sub categories
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-64">
+                      {subBrandCategory}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="max-w-[600px]  mt-8 shadow-xl p-6 rounded-md">
-                <div className="flex justify-between items-center mb-4">
-                  <h1 className="text-2xl font-bold ">Product Description</h1>
-                  <p
-                    onClick={() => setActiveTab("descriptionPrice")}
-                    className="border p-2 rounded-md cursor-pointer"
-                  >
-                    Edit
-                  </p>
-                </div>
-                <p className="text-xl text-[#00000066] capitalize font-bold">
-                  {prodDescripEn ||
-                    " White shirt with sleeves with unique design for sleeves which make your look very awesome"}
-                </p>
+              <div className="mt-8">
+                <h1 className="text-2xl font-bold tracking-wider">Size</h1>
+                {shoesSizes &&
+                  shoesSizes.map((i) => (
+                    <div className="mt-2 flex flex-wrap gap-10 ">
+                      <div className="flex flex-col gap-3">
+                        <h1 className="text-lg font-semibold tracking-wider">
+                          SKU
+                        </h1>
+                        <div className="border p-5 rounded-lg min-w-36">
+                          {i.sku}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <h1 className="text-lg font-semibold tracking-wider">
+                          Size
+                        </h1>
+                        <div className="border p-5 rounded-lg min-w-36">
+                          {i.size}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <h1 className="text-lg font-semibold tracking-wider">
+                          Quantity
+                        </h1>
+                        <div className="border p-5 rounded-lg min-w-36">
+                          {i.quantity}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                {clothesSizes &&
+                  clothesSizes.map((i) => (
+                    <div className="mt-2 flex flex-wrap gap-10 ">
+                      <div className="flex flex-col gap-3">
+                        <h1 className="text-lg font-semibold tracking-wider">
+                          SKU
+                        </h1>
+                        <div className="border p-5 rounded-lg min-w-36">
+                          {i.sku}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <h1 className="text-lg font-semibold tracking-wider">
+                          Size
+                        </h1>
+                        <div className="border p-5 rounded-lg min-w-36">
+                          {i.size}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <h1 className="text-lg font-semibold tracking-wider">
+                          Quantity
+                        </h1>
+                        <div className="border p-5 rounded-lg min-w-36">
+                          {i.quantity}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                {bagObject.sku && (
+                  <div className="mt-2 flex flex-wrap gap-10 ">
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-lg font-semibold tracking-wider">
+                        SKU
+                      </h1>
+                      <div className="border p-5 rounded-lg min-w-36">
+                        {bagObject.sku}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-lg font-semibold tracking-wider">
+                        Quantity
+                      </h1>
+                      <div className="border p-5 rounded-lg min-w-36">
+                        {bagObject.quantity}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="max-w-[600px] mt-8 shadow-xl p-6 rounded-md">
-                <div className="flex justify-between items-center  mb-4 ">
-                  <h1 className="text-2xl font-bold ">Pricing Details</h1>
-                  <p
-                    onClick={() => setActiveTab("descriptionPrice")}
-                    className="border p-2 rounded-md cursor-pointer"
-                  >
-                    Edit
-                  </p>
+              <div className="mt-8">
+                <h1 className="text-2xl font-bold tracking-wider">
+                  Description
+                </h1>
+                <div className="mt-2 flex flex-wrap gap-10 ">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Description (Arabic)
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-36">
+                      {localStorage.getItem("prodDescripAr")}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Description (English)
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-36">
+                      {localStorage.getItem("prodDescripEn")}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xl text-[#00000066]">Price</span>
-                  <span className="capitalize font-bold text-lg">
-                    {proPrice}$
-                  </span>
-                </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xl text-[#00000066]">Womniz Sale</span>
-                  <span className="capitalize font-bold text-lg">
-                    {percentage}%
-                  </span>
+              </div>
+              <div className="mt-8">
+                <h1 className="text-2xl font-bold tracking-wider">
+                  Fit & Size
+                </h1>
+                <div className="mt-2 flex flex-wrap gap-10 ">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Fit & Size (Arabic)
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-36">
+                      {localStorage.getItem("fitSizeAr")}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      Fit & Size (English)
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-36">
+                      {localStorage.getItem("fitSizeEn")}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* {left part} */}
-            <div className=" p-4 bg-white shadow-md rounded-lg w-[650px] h-[1050px]">
-              <h1 className="text-2xl font-bold my-2">Card preview</h1>
-              <div className="relative flex justify-center items-center h-[950px] w-full">
-                <div className="absolute h-full w-full rounded-lg">
-                  {thumbnailImg && (
+            <div className="max-w-2xl flex flex-col gap-4 ">
+              <div className="border p-4">
+                {thumbnailImg && (
+                  <div className="min-w-[400px]">
                     <img
                       src={URL.createObjectURL(thumbnailImg)}
-                      alt="Thumbnail Preview"
-                      className="object-cover h-full rounded-md"
+                      className="w-[100%] object-cover"
                     />
-                  )}
+                  </div>
+                )}
+                <div className="flex max-w-2xl mt-16 max-h-36">
+                  <div className="carousel w-full">
+                    {productImages &&
+                      productImages.map((image, idx) => (
+                        <div
+                          key={idx}
+                          id={`slide${idx + 1}`}
+                          className="carousel-item relative w-full"
+                        >
+                          <img
+                            src={image.preview}
+                            className="w-full object-cover"
+                          />
+                          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+                            <a
+                              href={`#slide${
+                                idx === 0 ? productImages.length : idx
+                              }`}
+                              className="btn btn-circle"
+                            >
+                              ❮
+                            </a>
+                            <a
+                              href={`#slide${
+                                idx === productImages.length - 1 ? 1 : idx + 2
+                              }`}
+                              className="btn btn-circle"
+                            >
+                              ❯
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                 </div>
-                <div className="bg-[#F6EFE9] relative top-[100px] my-10 max-w-[600px] rounded-md">
-                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10 border mb-10 ">
-                    <input type="radio" name="my-accordion-3" defaultChecked />
-                    <div className="collapse-title text-xl font-bold flex justify-between items-center">
-                      <span className="text-2xl font-bold">
-                        White sleeve top
-                      </span>
-                      <span className="text-2xl font-bold">
-                        {proPrice - proPrice * (1 / percentage)} Usd
-                      </span>
-                    </div>
-                    <div className="collapse-content flex flex-col justify-between">
-                      <div className="flex justify-between items-center mb-2">
-                        <p className="text-[#BFBFBF] max-w-80">
-                          White shirt with sleeves with unique design for
-                          sleeves which make your look very awesome
-                        </p>
-                        <p className="text-[#BFBFBF] flex flex-col gap-2 items-center">
-                          <span className="line-through">{proPrice} Usd</span>
-                          <span className="border p-1 rounded-md">
-                            Save {percentage}%
-                          </span>
-                        </p>
-                      </div>
-                      <div className="flex  justify-between items-center my-4">
-                        <p className="font-extrabold text-2xl">Size</p>
-                        <p className="font-extrabold text-2xl flex flex-col gap-2 items-center">
-                          Quantity
-                        </p>
-                      </div>
-                      <div className="flex  justify-between items-center mb-2">
-                        <p className=" flex gap-4">
-                          <span className="w-fit border p-2">XS</span>
-                          <span className="w-fit border p-2">S</span>
-                          <span className="w-fit border p-2">M</span>
-                          <span className="w-fit border p-2">L</span>
-                          <span className="w-fit border p-2">XL</span>
-                          <span className="w-fit border p-2">XXL</span>
-                        </p>
-                        <p className="text-[#BFBFBF] flex  gap-2 items-center">
-                          <span className="border rounded-lg px-4 py-1 text-xl text-white bg-[#577656]">
-                            +
-                          </span>
-                          <span className="font-extrabold border mx-2">0</span>
-
-                          <span className="border rounded-lg px-4 py-1 text-xl ">
-                            -
-                          </span>
-                        </p>
+              </div>
+              <div>
+                <div className="mt-8 min-w-[300px]">
+                  <h1 className="text-2xl font-bold tracking-wider">
+                    {" "}
+                    Pricing
+                  </h1>
+                  <div className="mt-2 flex flex-col flex-wrap gap-10 ">
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-lg font-semibold tracking-wider">
+                        Price
+                      </h1>
+                      <div className="border p-5 rounded-lg min-w-36">
+                        {proPrice}
                       </div>
                     </div>
-                  </div>
-                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10 border mb-6 ">
-                    <input type="radio" name="my-accordion-3" defaultChecked />
-                    <div className="collapse-title text-xl font-bold">
-                      Fit & Size
-                    </div>
-                    <div className="collapse-content">
-                      <p className="text-[#BFBFBF]">
-                        We operate traceability programs to ensure compliance
-                        with our social, environmental, safety and health
-                        standards. To ensure compliance, we have developed an
-                        audit program and plans for continuous improvement.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10  border mb-6 ">
-                    <input type="radio" name="my-accordion-2" defaultChecked />
-                    <div className="collapse-title text-xl font-bold">
-                      Return Order
-                    </div>
-                    <div className="collapse-content">
-                      <p className="text-[#BFBFBF]">
-                        30 days starting from buying date
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-[#F6EFE9] collapse collapse-arrow my-10 border mb-6 ">
-                    <input type="radio" name="my-accordion-2" defaultChecked />
-                    <div className="collapse-title text-xl font-bold">
-                      Shipping information
-                    </div>
-                    <div className="collapse-content">
-                      <p className="text-[#BFBFBF]">
-                        We operate traceability programs to ensure compliance
-                        with our social, environmental, safety and health
-                        standards. To ensure compliance, we have developed an
-                        audit program and plans for continuous improvement.
-                      </p>
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-lg font-semibold tracking-wider">
+                        Sale Percentage
+                      </h1>
+                      <div className="border p-5 rounded-lg min-w-36">
+                        {percentage}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          {/* Your content here */}
-          <button
-            type="submit"
-            className="btn mt-10 self-end px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
-          >
-            Finish
-          </button>
+          <div className="mt-10 flex justify-end items-center">
+            <button
+              type="button"
+              className="btn  self-end px-20 bg-[#BED3C4] mr-8 text-white text-xl "
+            >
+              <MdDrafts /> Save Draft
+            </button>
+            <button
+              type="submit"
+              className="btn  self-end px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
+            >
+              {isSetSubmitButton ? "Publishing..." : "Publish"}
+            </button>
+          </div>
         </div>
       )}
     </form>

@@ -2,13 +2,19 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Toolbar from "./Toolbar";
 import Underline from "@tiptap/extension-underline";
+import { useState } from "react";
 
 const Tiptap = ({ onChange, content }: any) => {
+  const [localContent, setLocalContent] = useState(() => {
+    return localStorage.getItem("") || "";
+  });
   const handleChange = (newContent: string) => {
     onChange(newContent);
   };
+
   const editor = useEditor({
     extensions: [StarterKit, Underline],
+    content: localContent,
     editorProps: {
       attributes: {
         class:
@@ -17,12 +23,15 @@ const Tiptap = ({ onChange, content }: any) => {
     },
     onUpdate: ({ editor }) => {
       handleChange(editor.getHTML());
+      localStorage.setItem('editorContent',editor.getHTML())
+      setLocalContent(editor.getHTML())
     },
+    
   });
 
   return (
     <div className="w-full px-4">
-      <Toolbar editor={editor} content={content}/>
+      <Toolbar editor={editor} content={content} />
       <EditorContent style={{ whiteSpace: "pre-line" }} editor={editor} />
     </div>
   );

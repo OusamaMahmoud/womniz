@@ -3,7 +3,6 @@ import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
 } from "react-icons/md";
-import ClothesDataGrid from "./ClothesDataGrid";
 import { IoAdd } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { BiUpload } from "react-icons/bi";
@@ -11,6 +10,7 @@ import { FaFileExport } from "react-icons/fa";
 import apiClient from "../../../services/api-client";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import ClothesTable from "./ClothesTable";
 
 const Clothes = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -43,12 +43,15 @@ const Clothes = () => {
         },
       });
       toast.success("File uploaded successfully");
-      setFile(null)
+      setFile(null);
     } catch (error) {
       toast.error("Failed to upload file");
-      setFile(null)
+      setFile(null);
     }
   };
+
+
+  
   return (
     <div className="flex flex-col ">
       <ToastContainer />
@@ -133,7 +136,7 @@ const Clothes = () => {
           <option>Greedo</option>
         </select>
       </div>
-      <ClothesDataGrid />
+      {/* <ClothesTable tableData={} /> */}
       <div className="mt-8">
         <nav className="flex justify-between items-center">
           <p className="text-2xl ml-4">1-15 of 20 items</p>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ShoesDynamicForm = ({ onSelectedSizes ,sizes }) => {
+const ShoesDynamicForm = ({ onSelectedSizes, sizes, cancelTriggered }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
@@ -10,7 +10,11 @@ const ShoesDynamicForm = ({ onSelectedSizes ,sizes }) => {
       setFields(JSON.parse(savedFields));
     }
   }, []);
-
+  useEffect(() => {
+    if (cancelTriggered && cancelTriggered === true) {
+      setFields([{ size: "", quantity: "", sku: "" }]);
+    }
+  }, [cancelTriggered]);
   // Function to handle the change in input fields
   const handleChange = (index, event) => {
     const values = [...fields];
@@ -29,7 +33,8 @@ const ShoesDynamicForm = ({ onSelectedSizes ,sizes }) => {
 
   // Function to handle removing a field
   const handleRemove = (index) => {
-    if (index > 0) {  // Ensure the first form cannot be deleted
+    if (index > 0) {
+      // Ensure the first form cannot be deleted
       const values = [...fields];
       values.splice(index, 1);
       setFields(values);
@@ -41,7 +46,10 @@ const ShoesDynamicForm = ({ onSelectedSizes ,sizes }) => {
   return (
     <div className="w-[100%]">
       {fields.map((field, index) => (
-        <div key={index} className="flex flex-col gap-4 xl:max-w-[800px] mb-4 border-b pb-4">
+        <div
+          key={index}
+          className="flex flex-col gap-4 xl:max-w-[800px] mb-4 border-b pb-4"
+        >
           <div className="flex justify-between items-center gap-4">
             <div className="flex flex-col gap-4 flex-1">
               <label className="text-xl">SKU</label>
@@ -65,7 +73,9 @@ const ShoesDynamicForm = ({ onSelectedSizes ,sizes }) => {
                   Select Size
                 </option>
                 {sizes.map((s) => (
-                  <option  key={s.id} value={s.id}>{s.title}</option>
+                  <option key={s.id} value={s.id}>
+                    {s.title}
+                  </option>
                 ))}
               </select>
             </div>
