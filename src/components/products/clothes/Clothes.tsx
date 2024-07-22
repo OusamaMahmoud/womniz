@@ -11,9 +11,49 @@ import apiClient from "../../../services/api-client";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import ClothesTable from "./ClothesTable";
+import useProducts from "../../../hooks/useProducts";
+import useVendorCategories from "../../../hooks/useVendorCategories";
+import { Brand } from "../../../services/vendor-category-sevice";
 
 const Clothes = () => {
   const [file, setFile] = useState<File | null>(null);
+  // NOTE tHAT
+  const [selectedProducts, setSelectedProducts] = useState<Set<number>>(
+    new Set()
+  );
+  const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [brand, setBrand] = useState<string>("");
+
+  //CATEGORIES
+  const { vendorCategories } = useVendorCategories();
+
+  const childs = vendorCategories.map((i) => ({ childs: i.childs, id: i.id }));
+  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
+  const brandCategories = clothesCategory?.brands.map((b) => ({
+    id: b.id,
+    categories: b.categories,
+  }));
+
+  const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
+    {} as Brand
+  );
+
+
+  useEffect(() => {
+    if (brandCategories) {
+      const selectedItem = brandCategories?.find((b) => b.id === Number(brand));
+      if (selectedItem) {
+        setSelectedBrand(selectedItem);
+      }
+    }
+  }, [brand]);
+
+  useEffect(() => {
+    setIsDeleteEnabled(selectedProducts.size > 0);
+  }, [selectedProducts]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -49,9 +89,42 @@ const Clothes = () => {
       setFile(null);
     }
   };
+  const { products } = useProducts({});
 
+  const handleCheckAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      const allProducts = products.map((product) => product.id);
+      setSelectedProducts(new Set(allProducts));
+    } else {
+      setSelectedProducts(new Set());
+    }
+  };
+  const handleCheckboxChange = (id: number) => {
+    const newSelectedProducts = new Set(selectedProducts);
+    if (newSelectedProducts.has(id)) {
+      newSelectedProducts.delete(id);
+    } else {
+      newSelectedProducts.add(id);
+    }
+    setSelectedProducts(newSelectedProducts);
+  };
+  const handleDelete = async () => {
+    if (selectedProducts.size > 0) {
+      const data = new FormData();
+      Array.from(selectedProducts).forEach((id, index) => {
+        data.append(`ids[${index}]`, id.toString());
+      });
+      try {
+        await apiClient.post("/products/delete", data);
+        toast.success("Products have been deleted successfully.");
+        setSelectAll(false);
+      } catch (error) {
+        toast.error("Failed to delete admins");
+      }
+    }
+  };
 
-  
   return (
     <div className="flex flex-col ">
       <ToastContainer />
@@ -85,18 +158,18 @@ const Clothes = () => {
         </label>
       </div>
       <div className="flex items-center gap-8 justify-end mb-6">
-        <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
+        <button
+          onClick={handleDelete}
+          className={`btn btn-outline text-[#E20000B2] text-[10px] lg:text-lg ${
+            !isDeleteEnabled && "cursor-not-allowed"
+          }`}
+          disabled={!isDeleteEnabled}
+        >
           <MdDelete className="text-2xl text-red-700 " /> Delete
         </button>
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
           <FaFileExport className="text-2xl " /> Export
         </button>
-        <Link
-          to={"product-description"}
-          className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg"
-        >
-          <img src="/assets/clothes/description.svg" /> Description
-        </Link>
       </div>
       <div className="flex gap-8 mb-8">
         <label className="input input-bordered flex items-center gap-2 max-w-xs">
@@ -114,19 +187,34 @@ const Clothes = () => {
             />
           </svg>
         </label>
-        <select className="select select-bordered w-full max-w-xs">
-          <option disabled selected>
+        <select
+          value={selectedCategory}
+          className="select select-bordered w-full grow"
+          onChange={(e) => setSelectedCategory(e.currentTarget.value)}
+        >
+          <option value="" disabled selected>
+            Select App Sub Category
+          </option>
+          {childs.map((i, idx) => (
+            <option key={idx} value={`${i.childs[idx].id}`}>
+              {i.childs[idx].name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={brand}
+          id="brand"
+          className="select select-bordered w-full  grow"
+          onChange={(e) => setBrand(e.currentTarget.value)}
+        >
+          <option value="" disabled selected>
             Select Brand
           </option>
-          <option>Han Solo</option>
-          <option>Greedo</option>
-        </select>
-        <select className="select select-bordered w-full max-w-xs">
-          <option disabled selected>
-            Select Sub Category
-          </option>
-          <option>Han Solo</option>
-          <option>Greedo</option>
+          {clothesCategory?.brands.map((b) => (
+            <option key={b.id} value={b.id}>
+              {b.name_en}
+            </option>
+          ))}
         </select>
         <select className="select select-bordered w-full max-w-xs">
           <option disabled selected>
@@ -136,7 +224,12 @@ const Clothes = () => {
           <option>Greedo</option>
         </select>
       </div>
-      {/* <ClothesTable tableData={} /> */}
+      <ClothesTable
+        handleCheckAll={handleCheckAll}
+        selectAll={selectAll}
+        handleCheckboxChange={handleCheckboxChange}
+        selectedObjects={selectedProducts}
+      />
       <div className="mt-8">
         <nav className="flex justify-between items-center">
           <p className="text-2xl ml-4">1-15 of 20 items</p>

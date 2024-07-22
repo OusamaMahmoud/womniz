@@ -24,7 +24,7 @@ import RequiredAuth from "./components/RequiredAuth";
 import usePermissions from "./hooks/usePremissions";
 import AllProducts from "./components/products/AllProducts";
 import ClothsSubCategory from "./components/products/clothes/ClothsSubCategory";
-import ProductDetails from "./components/products/ProductDetails";
+import ProductDetails from "./components/products/clothes/ProductDetails";
 import Requests from "./components/Requests";
 import Salons from "./components/salons/Salons";
 import SalonProfile from "./components/salons/SalonProfile";
@@ -32,6 +32,7 @@ import Jewelry from "./components/products/jewelry/Jewelry";
 import NewJewelry from "./components/products/jewelry/NewJewelry";
 import Celebrities from "./components/products/celebrities/Celebrities";
 import NewCelebrity from "./components/products/celebrities/NewCelebrities";
+import ProductDescription from "./components/products/clothes/ProductDescription";
 
 function App() {
   const { permissions } = usePermissions();
@@ -100,21 +101,24 @@ function App() {
         />
         <Route
           path="products/clothes/product-description"
-          element={<ProductDetails />}
+          element={<ProductDescription />}
         />
         <Route
-          path="products/clothes/product-details"
+          path="products/clothes/product-details/:id"
           element={<ProductDetails />}
         />
         {/* Salons */}
         <Route path="salons/salons-profiles" element={<Salons />} />
         <Route path="salons/salons-profiles/:id" element={<SalonProfile />} />
-{/* Jewelry */}
+        {/* Jewelry */}
         <Route path="products/jewelry" element={<Jewelry />} />
         <Route path="products/jewelry/new-jewelry" element={<NewJewelry />} />
-        
+
         <Route path="products/celebrities" element={<Celebrities />} />
-        <Route path="products/celebrities/new-celebrity" element={<NewCelebrity />} />
+        <Route
+          path="products/celebrities/new-celebrity"
+          element={<NewCelebrity />}
+        />
         <Route path="*" element={<MissingPage />} />
       </Route>
     </Routes>

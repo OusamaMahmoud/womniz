@@ -376,10 +376,10 @@ const Admins: React.FC = () => {
           <div className="skeleton xl:h-10 w-full"></div>
           <div className="skeleton xl:h-10 w-full"></div>
           <div className="skeleton xl:h-10 w-full"></div>
-          <div className="skeleton xl:h-10 w-full"></div>
         </div>
       ) : (
         <>
+        TODO:
           <AdminsResponsiveTable
             tableData={admins}
             handleCheckAll={handleCheckAll}

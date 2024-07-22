@@ -10,7 +10,6 @@ import { FaFileExport } from "react-icons/fa";
 import apiClient from "../../../services/api-client";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import ClothesDataGrid from "../clothes/ClothesDataGrid";
 
 const Jewelry = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -133,7 +132,6 @@ const Jewelry = () => {
           <option>Greedo</option>
         </select>
       </div>
-      <ClothesDataGrid />
       <div className="mt-8">
         <nav className="flex justify-between items-center">
           <p className="text-2xl ml-4">1-15 of 20 items</p>

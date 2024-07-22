@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { GoDotFill } from "react-icons/go"; // Assuming you're using react-icons for icons
+import { GoDotFill } from "react-icons/go";
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthProvider";
+import useProducts from "../../../hooks/useProducts";
 
-const ClothesTable = ({ tableData }) => {
-  const [data, setData] = useState(tableData);
+const ClothesTable = ({
+  selectAll,
+  handleCheckAll,
+  selectedObjects,
+  handleCheckboxChange,
+}) => {
+  const [data, setData] = useState([]);
   const [sortBy, setSortBy] = useState(null);
   const [sortDesc, setSortDesc] = useState(false);
+  const { products } = useProducts({});
+
+  useEffect(() => {
+    setData(products);
+  }, [products]);
 
   const handleSort = (key) => {
     if (key === sortBy) {
@@ -27,51 +37,60 @@ const ClothesTable = ({ tableData }) => {
     return 0;
   });
 
-  const { auth } = useAuth();
   return (
     <div className="overflow-x-auto overflow-y-auto ">
       <table className="min-w-full bg-white border">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal ">
+            <th className="py-3 px-6 text-left">
+              <label>
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={selectAll}
+                  onChange={handleCheckAll}
+                />
+              </label>
+            </th>
             <SortableHeader
-              label="Admin ID"
-              onClick={() => handleSort("adminId")}
-              sorted={sortBy === "adminId" ? !sortDesc : null}
+              label="SKU"
+              onClick={() => handleSort("sku")}
+              sorted={sortBy === "sku" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Name"
+              label="Product Name"
               onClick={() => handleSort("name")}
               sorted={sortBy === "name" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Email"
-              onClick={() => handleSort("email")}
-              sorted={sortBy === "email" ? !sortDesc : null}
+              label="Vendor"
+              onClick={() => handleSort("vendor")}
+              sorted={sortBy === "vendor" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Phone"
-              onClick={() => handleSort("phone")}
-              sorted={sortBy === "phone" ? !sortDesc : null}
+              label="Brand"
+              onClick={() => handleSort("brand")}
+              sorted={sortBy === "brand" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Age"
-              onClick={() => handleSort("dob")}
-              sorted={sortBy === "dob" ? !sortDesc : null}
+              label="Sub Category"
+              onClick={() => handleSort("sub")}
+              sorted={sortBy === "sub" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Location"
-              onClick={() => handleSort("location")}
-              sorted={sortBy === "location" ? !sortDesc : null}
+              label="Quantity"
+              onClick={() => handleSort("quantity")}
+              sorted={sortBy === "quantity" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Country"
-              onClick={() => handleSort("country")}
-              sorted={sortBy === "country" ? !sortDesc : null}
+              label="Price"
+              onClick={() => handleSort("price")}
+              sorted={sortBy === "price" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Category"
-              onClick={() => handleSort("category")}
-              sorted={sortBy === "category" ? !sortDesc : null}
+              label="Total Orders Num"
+              onClick={() => handleSort("OrdersNum")}
+              sorted={sortBy === "OrdersNum" ? !sortDesc : null}
             />
             <SortableHeader
               label="Status"
@@ -86,36 +105,27 @@ const ClothesTable = ({ tableData }) => {
               key={row.id}
               className="border-b border-gray-200 hover:bg-gray-100"
             >
-              <td className="py-3 px-6 text-left">{row.id}</td>
               <td className="py-3 px-6 text-left">
-                {auth.permissions.find((per) => per === "admin-show") ? (
-                  <Link
-                    to={`/accounts/Admins/${row.id}`}
-                    className="py-5 text-lg capitalize"
-                  >
-                    {row.name}
-                  </Link>
-                ) : (
-                  <p className="py-5 text-lg">{row.name}</p>
-                )}
+                <label>
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={selectedObjects.has(row.id)}
+                    onChange={() => handleCheckboxChange(row.id)}
+                  />
+                </label>
               </td>
-              <td className="py-3 px-6 text-left">{row.email}</td>
-              <td className="py-3 px-6 text-left">{row.phone}</td>
-              <td className="py-3 px-6 text-left">{row.age}</td>
-              <td className="py-3 px-6 text-left">{row.address}</td>
-              <td className="py-3 px-6 text-left">{row.country}</td>
-              <td className="py-3 px-6 text-left">{row.category}</td>
-              <td className="py-3 px-6 text-center">
-                {row.status === 1 ? (
-                  <p className="badge p-3 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
-                    <GoDotFill className="text-[#14BA6D] text-lg" /> Active
-                  </p>
-                ) : (
-                  <p className="badge p-3 gap-2 rounded-md text-[#E20000] bg-[#F2F4F7]">
-                    <GoDotFill className="text-[#E2000099] text-xl" /> Inactive
-                  </p>
-                )}
-              </td>
+              <td className="py-3 px-6 text-left">sku</td>
+              <Link to={`product-details/${row.id}`}>
+                <td className="py-3 px-6 text-left">{row.name}</td>
+              </Link>
+              <td className="py-3 px-6 text-left">Vendor</td>
+              <td className="py-3 px-6 text-left">{row.brand.name}</td>
+              <td className="py-3 px-6 text-left">{row.categories[0]?.name}</td>
+              <td className="py-3 px-6 text-left">Quantity</td>
+              <td className="py-3 px-6 text-left">{row.price}</td>
+              <td className="py-3 px-6 text-left">Orders</td>
+              <td className="py-3 px-6 text-left">Status</td>
             </tr>
           ))}
         </tbody>
