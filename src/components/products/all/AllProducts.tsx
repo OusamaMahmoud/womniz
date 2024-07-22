@@ -3,19 +3,18 @@ import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
 } from "react-icons/md";
-import { IoAdd } from "react-icons/io5";
-import { Link } from "react-router-dom";
 import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
 import apiClient from "../../../services/api-client";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import ClothesTable from "./ClothesTable";
 import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import { Brand } from "../../../services/vendor-category-sevice";
+import AllProductsTable from "./AllProductsTable";
 
-const Clothes = () => {
+const AllProducts = () => {
+    
   const [file, setFile] = useState<File | null>(null);
   // NOTE tHAT
   const [selectedProducts, setSelectedProducts] = useState<Set<number>>(
@@ -40,7 +39,6 @@ const Clothes = () => {
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
     {} as Brand
   );
-
 
   useEffect(() => {
     if (brandCategories) {
@@ -129,19 +127,6 @@ const Clothes = () => {
     <div className="flex flex-col ">
       <ToastContainer />
       <div className="flex items-center gap-8 justify-end mb-8">
-        <Link
-          to={"cloths-sub-category"}
-          className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
-        >
-          Sub Category
-        </Link>
-        <Link
-          to={"/products/clothes/new-product"}
-          className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
-        >
-          <IoAdd className="text-white text-2xl hover:text-black" /> Add New
-          Product
-        </Link>
         <label
           htmlFor="excel"
           // onClick={handleUpload}
@@ -189,7 +174,7 @@ const Clothes = () => {
         </label>
         <select
           value={selectedCategory}
-          className="select select-bordered"
+          className="select select-bordered  "
           onChange={(e) => setSelectedCategory(e.currentTarget.value)}
         >
           <option value="" disabled selected>
@@ -204,7 +189,7 @@ const Clothes = () => {
         <select
           value={brand}
           id="brand"
-          className="select select-bordered"
+          className="select select-bordered "
           onChange={(e) => setBrand(e.currentTarget.value)}
         >
           <option value="" disabled selected>
@@ -216,7 +201,7 @@ const Clothes = () => {
             </option>
           ))}
         </select>
-        <select className="select select-bordered  max-w-xs">
+        <select className="select select-bordered w-full max-w-xs">
           <option disabled selected>
             Select Status
           </option>
@@ -224,7 +209,7 @@ const Clothes = () => {
           <option>Greedo</option>
         </select>
       </div>
-      <ClothesTable
+      <AllProductsTable
         handleCheckAll={handleCheckAll}
         selectAll={selectAll}
         handleCheckboxChange={handleCheckboxChange}
@@ -263,4 +248,4 @@ const Clothes = () => {
   );
 };
 
-export default Clothes;
+export default AllProducts;

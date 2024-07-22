@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ClothsDynamicForm = ({ onSelectedSizes, sizes, cancelTriggered }) => {
+const ClothsDynamicForm = ({ onSelectedSizes, sizes }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
     const savedFields = localStorage.getItem("formFields");
     if (savedFields) {
       setFields(JSON.parse(savedFields));
+      console.log("in");
+    } else {
+      console.log("out");
     }
   }, []);
-
-  useEffect(() => {
-    if(cancelTriggered && cancelTriggered === true){
-      setFields([{ size: "", quantity: "", sku: "" }]);
-    }
-  }, [cancelTriggered]);
 
   // Function to handle the change in input fields
   const handleChange = (index, event) => {
@@ -44,7 +41,11 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes, cancelTriggered }) => {
       localStorage.setItem("formFields", JSON.stringify(values));
     }
   };
-
+  const handleKeyDown = (event) => {
+    if (event.key === "-" || event.key === "e") {
+      event.preventDefault();
+    }
+  };
   return (
     <div className="w-[100%]">
       {fields.map((field, index) => (
@@ -60,6 +61,8 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes, cancelTriggered }) => {
                 value={field.sku}
                 onChange={(event) => handleChange(index, event)}
                 className="input input-bordered"
+                min={0}
+                onKeyDown={handleKeyDown}
               />
             </div>
             <div className="flex-1">
@@ -68,10 +71,11 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes, cancelTriggered }) => {
               </label>
               <select
                 name="size"
+                value={field.size}
                 onChange={(event) => handleChange(index, event)}
                 className="select select-bordered"
               >
-                <option disabled selected>
+                <option value="" disabled selected>
                   Select Size
                 </option>
                 {sizes.map((s) => (
@@ -91,6 +95,8 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes, cancelTriggered }) => {
                 value={field.quantity}
                 onChange={(event) => handleChange(index, event)}
                 className="input input-bordered w-[100%]"
+                min={0}
+                onKeyDown={handleKeyDown}
               />
             </div>
             {index > 0 && (

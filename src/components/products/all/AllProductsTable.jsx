@@ -3,7 +3,7 @@ import { GoDotFill } from "react-icons/go";
 import { Link } from "react-router-dom";
 import useProducts from "../../../hooks/useProducts";
 
-const ClothesTable = ({
+const AllProductsTable = ({
   selectAll,
   handleCheckAll,
   selectedObjects,
@@ -12,7 +12,7 @@ const ClothesTable = ({
   const [data, setData] = useState([]);
   const [sortBy, setSortBy] = useState(null);
   const [sortDesc, setSortDesc] = useState(false);
-  const { products } = useProducts({ category: 7 });
+  const { products } = useProducts({ category: 8 });
 
   useEffect(() => {
     setData(products);
@@ -145,4 +145,4 @@ const SortableHeader = ({ label, onClick, sorted }) => (
   </th>
 );
 
-export default ClothesTable;
+export default AllProductsTable;

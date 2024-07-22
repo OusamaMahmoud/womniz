@@ -71,7 +71,7 @@ const Sidebar = () => {
     links: [
       {
         name: "All",
-        link: "/products/all-products",
+        link: "/products",
       },
       {
         name: "Clothes",

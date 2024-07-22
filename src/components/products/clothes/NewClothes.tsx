@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BiArrowToBottom } from "react-icons/bi";
 import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
@@ -35,19 +35,45 @@ interface Image {
   preview: string;
   name: string;
 }
+
+interface ProductImage {
+  file: File;
+  preview: string;
+}
+
 const NewClothes = () => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  } = useForm();
+
+  useEffect(() => {
+    setThumbnailImg(null);
+    setProductImages([]);
+    setProNameAr("");
+    setProNameEn("");
+    setCategory("");
+    setBrand("");
+    setSubBrandCategory("");
+    setShoesSizes([]);
+    setClothesSizes([]);
+    setBagObject({ quantity: "", sku: "" });
+    setPrice(0);
+    setPercentage(0);
+
+    localStorage.removeItem("formFields");
+    localStorage.removeItem("shoesFormFields");
+    localStorage.removeItem("bagFormFields");
+
+    localStorage.removeItem("prodDescripAr");
+    localStorage.removeItem("prodDescripEn");
+    localStorage.removeItem("fitSizeAr");
+    localStorage.removeItem("fitSizeEn");
+  }, []);
 
   // STATE VARIABLES
-  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
-  const [productImages, setProductImages] = useState<Image[]>([]);
   const [productFiles, setProductFiles] = useState<File[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
     {} as Brand
@@ -88,8 +114,8 @@ const NewClothes = () => {
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
 
-  const childs = vendorCategories.map((i) => ({ childs: i.childs, id: i.id }));
   const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
+  const clothesCategoryChields = clothesCategory?.childs;
   const brandCategories = clothesCategory?.brands.map((b) => ({
     id: b.id,
     categories: b.categories,
@@ -111,8 +137,9 @@ const NewClothes = () => {
   const { sizes } = useSizes({ productType: subClothes });
 
   // USBMIT FUNCTION
-  const onSubmit = async (data: FormData) => {
-    console.log(data);
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // FIELDS ERRORS
 
     const formData = new FormData();
     // PRODUCT TYPE
@@ -135,12 +162,12 @@ const NewClothes = () => {
     }
 
     // NAMES IN ENGLISH & ARABIC
-    formData.append("name_en", data.nameEn);
-    formData.append("name_ar", data.nameAr);
+    formData.append("name_en", proNameEn);
+    formData.append("name_ar", proNameAr);
 
     // SUB CATEGORY & BRAND
-    formData.append("brand_id", data.brand);
-    formData.append("categories[0][id]", data.appSubCategory);
+    formData.append("brand_id", brand);
+    formData.append("categories[0][id]", category);
     formData.append("categories[1][id]", subBrandCategory);
 
     // CLOTHES SIZE
@@ -179,6 +206,7 @@ const NewClothes = () => {
     try {
       setSubmitButton(true);
       await apiClient.post("/products", formData);
+
       toast.success("The product has been created successfully.");
       setSubmitButton(false);
       setThumbnailImg(null);
@@ -222,11 +250,24 @@ const NewClothes = () => {
       toast.error(error.response.data.data.error);
     }
   };
+  const [productImages, setProductImages] = useState<ProductImage[]>([]);
+  const filesInputRef = useRef<HTMLInputElement>(null);
 
-  const removeFile = (image: Image) => {
-    setProductImages((prev) =>
-      prev?.filter((item) => item.name !== image.name)
-    );
+  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRemoveImage = () => {
+    setThumbnailImg(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset the file input
+    }
+  };
+
+  const removeFile = (image: ProductImage) => {
+    setProductImages((prevImages) => prevImages.filter((img) => img !== image));
+    if (filesInputRef.current) {
+      filesInputRef.current.value = ""; // Reset the file input
+    }
   };
 
   // THUMBNAIL IMAGE
@@ -237,22 +278,37 @@ const NewClothes = () => {
   };
   // PRODUCT IMAGES
   const handleProductImagesChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-
-      setProductFiles(newFiles);
-
-      const newFilesArray = newFiles.map((file) => ({
+    if (event.target.files) {
+      const files = Array.from(event.target.files);
+      setProductFiles(files);
+      const newImages = files.map((file) => ({
+        file,
         preview: URL.createObjectURL(file),
-        name: file.name,
       }));
+      setProductImages((prevImages) => [...prevImages, ...newImages]);
 
-      setProductImages((prevImages) => [...prevImages, ...newFilesArray]);
+      // Clear the input value to allow re-adding the same image
+      if (filesInputRef.current) {
+        filesInputRef.current.value = "";
+      }
     }
   };
 
+  const handleNamesChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setValue: React.Dispatch<React.SetStateAction<string>>,
+    setError: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    const value = e.currentTarget.value.replace(/\s+/g, ""); // Remove all spaces
+    setValue(value); // Update the input value
+    if (!value.trim()) {
+      setError("Please fill out this field!");
+    } else {
+      setError("");
+    }
+  };
   // CHANGE SUB_CLOTHS STATE
 
   const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
@@ -268,8 +324,6 @@ const NewClothes = () => {
 
   //NEXT
   const [nextSubCloths, setNextSubCloths] = useState("");
-
-  const [cancelTriggered, setCancelTriggered] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("bagFormFields")) {
@@ -310,7 +364,6 @@ const NewClothes = () => {
     setShoesSizes([]);
     setClothesSizes([]);
     setBagObject({ sku: "", quantity: "" });
-    setCancelTriggered(true);
 
     if (nextSubCloths) {
       setSubClothes(nextSubCloths);
@@ -352,10 +405,18 @@ const NewClothes = () => {
       modal.showModal();
     }
   };
+  const [proNameArError, setProNameArError] = useState("");
+  const [proNameEnError, setProNameEnError] = useState("");
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "-" || event.key === "e") {
+      event.preventDefault();
+    }
+  };
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit}
       className="container mx-auto px-8 shadow-2xl rounded-xl p-10"
     >
       <ToastContainer />
@@ -544,9 +605,9 @@ const NewClothes = () => {
         <div className="flex flex-col mt-8">
           <div>
             <h1 className="text-2xl font-bold mb-8">Thumbnail Image</h1>
-            <div className="flex gap-4 items-center border w-fit p-4  my-6">
+            <div className="flex gap-4 items-center border w-fit p-4 my-6">
               {thumbnailImg && (
-                <div className="relative w-[300px] ">
+                <div className="relative w-[200px]">
                   <img
                     src={URL.createObjectURL(thumbnailImg)}
                     alt="Thumbnail Preview"
@@ -555,7 +616,7 @@ const NewClothes = () => {
                   <button
                     type="button"
                     className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
-                    onClick={() => setThumbnailImg(null)}
+                    onClick={handleRemoveImage}
                   >
                     <MdDelete className="text-5xl text-white" />
                   </button>
@@ -568,10 +629,11 @@ const NewClothes = () => {
                   onChange={handleThumbnailChange}
                   hidden
                   id="thumbnail"
+                  ref={fileInputRef}
                 />
                 {!thumbnailImg && (
                   <label
-                    className=" relative cursor-pointer flex flex-col  gap-2 border-4 border-dashed border-[#BFBFBF]   w-[160px] h-40 items-center justify-center "
+                    className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
                     htmlFor="thumbnail"
                   >
                     <CameraIcon
@@ -583,16 +645,16 @@ const NewClothes = () => {
               </div>
             </div>
           </div>
+
           {/* handle images */}
           <div>
             <h1 className="text-2xl font-bold mt-8">Images</h1>
-            <div className="flex border w-fit  my-6 p-4">
-              <div className="flex gap-4 flex-wrap items-center ">
+            <div className="flex border w-fit my-6 p-4">
+              <div className="flex gap-4 flex-wrap items-center">
                 {productImages &&
                   productImages.map((image, index) => (
-                    <div className="relative ">
+                    <div key={index} className="relative">
                       <img
-                        key={index}
                         src={image.preview}
                         alt={`Product Preview ${index}`}
                         className="max-w-xs max-h-40"
@@ -607,7 +669,7 @@ const NewClothes = () => {
                     </div>
                   ))}
               </div>
-              <div className="relative  ">
+              <div className="relative">
                 <input
                   id="images"
                   type="file"
@@ -615,9 +677,10 @@ const NewClothes = () => {
                   multiple
                   onChange={handleProductImagesChange}
                   hidden
+                  ref={filesInputRef}
                 />
                 <label
-                  className="relative cursor-pointer flex flex-wrap gap-8 border-4 border-dashed border-[#BFBFBF]   items-center justify-center "
+                  className="relative cursor-pointer flex flex-wrap gap-8 border-4 border-dashed border-[#BFBFBF] items-center justify-center"
                   htmlFor="images"
                 >
                   <CameraIcon width={100} className="ml-8 mr-4 my-8" />
@@ -635,13 +698,16 @@ const NewClothes = () => {
                 <input
                   // {...register("nameEn")}
                   id="proNameEn"
+                  type="text"
                   value={proNameEn}
                   className="input input-bordered"
-                  onChange={(e) => setProNameEn(e.currentTarget.value)}
+                  onChange={(e) =>
+                    handleNamesChange(e, setProNameEn, setProNameEnError)
+                  }
                 />
-                {errors.nameEn && (
+                {proNameEnError && (
                   <p className="text-xl underline text-red-600">
-                    {errors.nameEn.message}
+                    {proNameEnError}
                   </p>
                 )}
               </div>
@@ -652,11 +718,13 @@ const NewClothes = () => {
                   value={proNameAr}
                   id="proNameAr"
                   className="input input-bordered"
-                  onChange={(e) => setProNameAr(e.currentTarget.value)}
+                  onChange={(e) =>
+                    handleNamesChange(e, setProNameAr, setProNameArError)
+                  }
                 />
-                {errors.nameAr && (
+                {proNameArError && (
                   <p className="text-xl underline text-red-600">
-                    {errors.nameAr.message}
+                    {proNameArError}
                   </p>
                 )}
               </div>
@@ -672,22 +740,24 @@ const NewClothes = () => {
                     id="category"
                     value={category}
                     className="select select-bordered w-full grow"
-                    onChange={(e) => setCategory(e.currentTarget.value)}
+                    onChange={(e) => {
+                      setCategory(e.currentTarget.value);
+                    }}
                   >
                     <option value="" disabled selected>
                       Select App Sub Category
                     </option>
-                    {childs.map((i, idx) => (
-                      <option key={idx} value={`${i.childs[idx].id}`}>
-                        {i.childs[idx].name}
+                    {clothesCategoryChields?.map((i, idx) => (
+                      <option key={idx} value={`${i.id}`}>
+                        {i.name}
                       </option>
                     ))}
                   </select>
-                  {errors.appSubCategory && (
+                  {/* {errors.appSubCategory && (
                     <p className="text-red-600">
                       {errors.appSubCategory.message}
                     </p>
-                  )}
+                  )} */}
                 </div>
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Brand</label>
@@ -707,9 +777,9 @@ const NewClothes = () => {
                       </option>
                     ))}
                   </select>
-                  {errors.brand && (
+                  {/* {errors.brand && (
                     <p className="text-red-600">{errors.brand.message}</p>
-                  )}
+                  )} */}
                 </div>
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Select Brand sub categories</label>
@@ -743,7 +813,6 @@ const NewClothes = () => {
                   </div>
                   <div>
                     <ShoesDynamicForm
-                      cancelTriggered={cancelTriggered}
                       sizes={sizes}
                       onSelectedSizes={(selectedSizes: any) =>
                         setShoesSizes(selectedSizes)
@@ -784,7 +853,6 @@ const NewClothes = () => {
                     </div>
                     <div>
                       <ClothsDynamicForm
-                        cancelTriggered={cancelTriggered}
                         sizes={sizes}
                         onSelectedSizes={(selectedSizes: any) =>
                           setClothesSizes(selectedSizes)
@@ -834,6 +902,8 @@ const NewClothes = () => {
                           sku: e.currentTarget.value,
                         });
                       }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
                     />
                   </div>
                   <div>
@@ -857,6 +927,8 @@ const NewClothes = () => {
                           quantity: e.currentTarget.value,
                         });
                       }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
                     />
                   </div>
                 </div>
@@ -981,7 +1053,7 @@ const NewClothes = () => {
 
       {activeTab === "arPreview" && (
         <div className="flex flex-col justify-center mt-8">
-          <div className="flex justify-between items-center mt-8">
+          <div className="flex justify-between items-start mt-8">
             <div>
               <div>
                 <h1 className="text-2xl font-bold tracking-wider">
@@ -1036,63 +1108,68 @@ const NewClothes = () => {
               <div className="mt-8">
                 <h1 className="text-2xl font-bold tracking-wider">Size</h1>
                 {shoesSizes &&
-                  shoesSizes.map((i) => (
-                    <div className="mt-2 flex flex-wrap gap-10 ">
-                      <div className="flex flex-col gap-3">
-                        <h1 className="text-lg font-semibold tracking-wider">
-                          SKU
-                        </h1>
-                        <div className="border p-5 rounded-lg min-w-36">
-                          {i.sku}
+                  shoesSizes.map((i) => {
+                    return (
+                      <div className="mt-2 flex flex-wrap gap-10 ">
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-lg font-semibold tracking-wider">
+                            SKU
+                          </h1>
+                          <div className="border p-5 rounded-lg min-w-36">
+                            {i.sku}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-lg font-semibold tracking-wider">
+                            Size
+                          </h1>
+                          <div className="border p-5 rounded-lg min-w-36">
+                            {i.size}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-lg font-semibold tracking-wider">
+                            Quantity
+                          </h1>
+                          <div className="border p-5 rounded-lg min-w-36">
+                            {i.quantity}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-3">
-                        <h1 className="text-lg font-semibold tracking-wider">
-                          Size
-                        </h1>
-                        <div className="border p-5 rounded-lg min-w-36">
-                          {i.size}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <h1 className="text-lg font-semibold tracking-wider">
-                          Quantity
-                        </h1>
-                        <div className="border p-5 rounded-lg min-w-36">
-                          {i.quantity}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 {clothesSizes &&
-                  clothesSizes.map((i) => (
-                    <div className="mt-2 flex flex-wrap gap-10 ">
-                      <div className="flex flex-col gap-3">
-                        <h1 className="text-lg font-semibold tracking-wider">
-                          SKU
-                        </h1>
-                        <div className="border p-5 rounded-lg min-w-36">
-                          {i.sku}
+                  clothesSizes.map((i) => {
+                    const target = sizes.find((si) => si.id === Number(i.size));
+                    return (
+                      <div className="mt-2 flex flex-wrap gap-10 ">
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-lg font-semibold tracking-wider">
+                            SKU
+                          </h1>
+                          <div className="border p-5 rounded-lg min-w-36">
+                            {i.sku}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-lg font-semibold tracking-wider">
+                            Size
+                          </h1>
+                          <div className="border p-5 rounded-lg min-w-36">
+                            {target?.title}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-lg font-semibold tracking-wider">
+                            Quantity
+                          </h1>
+                          <div className="border p-5 rounded-lg min-w-36">
+                            {i.quantity}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-3">
-                        <h1 className="text-lg font-semibold tracking-wider">
-                          Size
-                        </h1>
-                        <div className="border p-5 rounded-lg min-w-36">
-                          {i.size}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <h1 className="text-lg font-semibold tracking-wider">
-                          Quantity
-                        </h1>
-                        <div className="border p-5 rounded-lg min-w-36">
-                          {i.quantity}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 {bagObject.sku && (
                   <div className="mt-2 flex flex-wrap gap-10 ">
                     <div className="flex flex-col gap-3">
@@ -1162,27 +1239,27 @@ const NewClothes = () => {
               </div>
             </div>
             <div className="max-w-2xl flex flex-col gap-4 ">
-              <div className="border p-4">
+              <div className="border p-4 rounded-xl">
                 {thumbnailImg && (
-                  <div className="min-w-[400px]">
+                  <div className="min-w-[400px] border rounded-xl">
                     <img
                       src={URL.createObjectURL(thumbnailImg)}
                       className="w-[100%] object-cover"
                     />
                   </div>
                 )}
-                <div className="flex max-w-2xl mt-16 max-h-36">
+                <div className="flex max-w-2xl mt-16 max-h-64 ">
                   <div className="carousel w-full">
                     {productImages &&
                       productImages.map((image, idx) => (
                         <div
                           key={idx}
                           id={`slide${idx + 1}`}
-                          className="carousel-item relative w-full"
+                          className="carousel-item relative w-full rounded-xl"
                         >
                           <img
                             src={image.preview}
-                            className="w-full object-cover"
+                            className="w-full object-cover rounded-xl"
                           />
                           <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
                             <a

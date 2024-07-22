@@ -4,13 +4,13 @@ import { Product } from "../services/clothes-service";
 import _ from "lodash";
 
 interface AdminsFilter {
-  categories?: string;
+  category?: string;
   status?: string;
   search?: string;
   brand?: string;
 }
 
-const useProducts = ({ categories, status, search, brand }: AdminsFilter) => {
+const useProducts = ({ category, status, search, brand }: AdminsFilter) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const useProducts = ({ categories, status, search, brand }: AdminsFilter) => {
       });
 
     return () => controller.abort();
-  }, [categories, status, search]);
+  }, [category, status, search]);
 
   // Debounce the fetchAdmins function
   const debouncedFetchProducts = useCallback(
@@ -52,20 +52,16 @@ const useProducts = ({ categories, status, search, brand }: AdminsFilter) => {
     const baseUrl = `/products`;
     const params = new URLSearchParams();
 
-    // if (categories) {
-    //   params.append(`category_id`, categories);
-    // }
+    if (category) {
+      params.append(`category_id`, category);
+    }
 
     if (brand) {
       params.append(`brand_id`, brand);
     }
 
     if (status) {
-      if (status === "Active") {
-        params.append("status", "0");
-      } else {
-        params.append("status", "1");
-      }
+      params.append("status", status);
     }
 
     if (search) {

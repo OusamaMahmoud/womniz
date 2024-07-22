@@ -22,7 +22,6 @@ import BrandProfile from "./components/vendors/BrandProfile";
 import FinancialReport from "./components/vendors/FinancialReport";
 import RequiredAuth from "./components/RequiredAuth";
 import usePermissions from "./hooks/usePremissions";
-import AllProducts from "./components/products/AllProducts";
 import ClothsSubCategory from "./components/products/clothes/ClothsSubCategory";
 import ProductDetails from "./components/products/clothes/ProductDetails";
 import Requests from "./components/Requests";
@@ -33,6 +32,7 @@ import NewJewelry from "./components/products/jewelry/NewJewelry";
 import Celebrities from "./components/products/celebrities/Celebrities";
 import NewCelebrity from "./components/products/celebrities/NewCelebrities";
 import ProductDescription from "./components/products/clothes/ProductDescription";
+import AllProducts from "./components/products/all/AllProducts";
 
 function App() {
   const { permissions } = usePermissions();
@@ -74,7 +74,6 @@ function App() {
 
         <Route path="login" element={<Login />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="products/all-products" element={<AllProducts />} />
         <Route path="products/clothes" element={<Clothes />} />
         <Route
           path="products/clothes/new-product"
@@ -118,6 +117,10 @@ function App() {
         <Route
           path="products/celebrities/new-celebrity"
           element={<NewCelebrity />}
+        />
+        <Route
+          path="products"
+          element={<AllProducts />}
         />
         <Route path="*" element={<MissingPage />} />
       </Route>
