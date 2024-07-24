@@ -17,7 +17,6 @@ const useVendorCategories = () => {
         signal: controller.signal,
       })
       .then((res) => {
-        console.log(res.data.data);
         setVendorCategories(res.data.data);
         setLoading(false);
       })

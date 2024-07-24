@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
-import { Brand } from "../../../services/vendor-category-sevice";
+// import { Brand } from "../../../services/vendor-category-sevice";
 import AllProductsTable from "./AllProductsTable";
 
 const AllProducts = () => {
@@ -31,23 +31,20 @@ const AllProducts = () => {
 
   const childs = vendorCategories.map((i) => ({ childs: i.childs, id: i.id }));
   const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  const brandCategories = clothesCategory?.brands.map((b) => ({
-    id: b.id,
-    categories: b.categories,
-  }));
 
-  const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
-    {} as Brand
-  );
 
-  useEffect(() => {
-    if (brandCategories) {
-      const selectedItem = brandCategories?.find((b) => b.id === Number(brand));
-      if (selectedItem) {
-        setSelectedBrand(selectedItem);
-      }
-    }
-  }, [brand]);
+  // const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
+  //   {} as Brand
+  // );
+
+  // useEffect(() => {
+  //   if (brandCategories) {
+  //     const selectedItem = brandCategories?.find((b) => b.id === Number(brand));
+  //     if (selectedItem) {
+  //       setSelectedBrand(selectedItem);
+  //     }
+  //   }
+  // }, [brand]);
 
   useEffect(() => {
     setIsDeleteEnabled(selectedProducts.size > 0);

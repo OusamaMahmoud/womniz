@@ -5,36 +5,20 @@ import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
 import ClothsDynamicForm from "./ClothsDynamicForm";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import ShoesDynamicForm from "./ShoesDynamicForm";
 import { CameraIcon } from "@heroicons/react/24/solid";
-import Todo from "../../text-editor/NotePicker";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
-import NewOne from "../../NewOne";
-import { RiGitPrDraftFill } from "react-icons/ri";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
+import ColorPicker from "./ColorPicker";
 
-const schema = z.object({
-  nameEn: z.string(),
-  nameAr: z.string(),
-
-  appSubCategory: z.string(),
-  brand: z.string(),
-
-  salePercent: z.string(),
-  price: z.string(),
-});
-
-type FormData = z.infer<typeof schema>;
-interface Image {
-  preview: string;
-  name: string;
-}
+// type FormData = z.infer<typeof schema>;
+// interface Image {
+//   preview: string;
+//   name: string;
+// }
 
 interface ProductImage {
   file: File;
@@ -43,11 +27,11 @@ interface ProductImage {
 
 const NewClothes = () => {
   // REACT HOOK FORM
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm();
+  // const {
+  //   handleSubmit,
+  //   register,
+  //   formState: { errors },
+  // } = useForm();
 
   useEffect(() => {
     setThumbnailImg(null);
@@ -398,6 +382,7 @@ const NewClothes = () => {
     }
     setActiveTab("productInfo");
   };
+  const [modalId, setModalId] = useState("");
 
   const cancelFunc = () => {
     const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
@@ -413,6 +398,14 @@ const NewClothes = () => {
       event.preventDefault();
     }
   };
+  const [selectedColor, setSelectedColor] = useState("#fff"); // Default color
+
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
+  };
+
+  const [colorAr, setColorAr] = useState("");
+  const [colorEn, setColorEn] = useState("");
 
   return (
     <form
@@ -690,7 +683,17 @@ const NewClothes = () => {
           </div>
           <div className="mt-10">
             <h1 className="text-2xl font-bold">General Information</h1>
-
+            <div className="flex items-center gap-52 mt-10">
+              <label className="text-xl font-bold">Model ID</label>
+              <input
+                name="modalId"
+                value={modalId}
+                onChange={(e) => setModalId(e.currentTarget.value)}
+                className="input input-bordered"
+                min={0}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
             <div className="flex gap-40 items-center mt-10">
               <p className="text-xl font-semibold">Product Name</p>
               <div className="flex flex-col gap-4">
@@ -799,6 +802,50 @@ const NewClothes = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-32 items-center">
+              <h1 className="text-xl font-bold mt-8">Model ID & Colors</h1>
+              <div className="flex items-center gap-24 justify-center mt-10">
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Color(English)</label>
+                  <input
+                    name="colorEn"
+                    value={colorEn}
+                    onChange={(e) => setColorEn(e.currentTarget.value)}
+                    className="input input-bordered"
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Color(Arabic)</label>
+                  <input
+                    name="colorAr"
+                    value={colorAr}
+                    onChange={(e) => setColorAr(e.currentTarget.value)}
+                    className="input input-bordered"
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Color</label>
+                  <div>
+                    <ColorPicker onChange={handleColorChange} />
+                    <div
+                      className="flex items-center gap-4"
+                      style={{ marginTop: "20px" }}
+                    >
+                      <p className="tetx-lg font-bold">Selected Color:</p>
+                      <div
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "50%",
+                          backgroundColor: selectedColor,
+                          border: "1px solid #ccc",
+                        }}
+                      ></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1108,9 +1155,9 @@ const NewClothes = () => {
               <div className="mt-8">
                 <h1 className="text-2xl font-bold tracking-wider">Size</h1>
                 {shoesSizes &&
-                  shoesSizes.map((i) => {
+                  shoesSizes.map((i, idx) => {
                     return (
-                      <div className="mt-2 flex flex-wrap gap-10 ">
+                      <div key={idx} className="mt-4 flex flex-wrap gap-10 ">
                         <div className="flex flex-col gap-3">
                           <h1 className="text-lg font-semibold tracking-wider">
                             SKU
@@ -1139,10 +1186,10 @@ const NewClothes = () => {
                     );
                   })}
                 {clothesSizes &&
-                  clothesSizes.map((i) => {
+                  clothesSizes.map((i, idx) => {
                     const target = sizes.find((si) => si.id === Number(i.size));
                     return (
-                      <div className="mt-2 flex flex-wrap gap-10 ">
+                      <div key={idx} className="mt-4 flex flex-wrap gap-10 ">
                         <div className="flex flex-col gap-3">
                           <h1 className="text-lg font-semibold tracking-wider">
                             SKU

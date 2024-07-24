@@ -91,22 +91,18 @@ const EditRole = ({
         .filter((permission) => permission.checked)
         .map((permission) => permission.name)
     );
-    console.log("DATA:", data);
-    console.log("Selected Permissions:", selectedPermissions);
     const formData = new FormData();
     formData.append("name", data.ro);
     formData.append("_method", 'put');
 
     selectedPermissions.map((per, idx) => {
       formData.append(`permissions[${idx}]`, per);
-      console.log(`permissions[${idx}]`, per);
     });
     try {
        apiClient.post(`/roles/${targetRole.id}`, formData);
        toast.success(`${data.ro} Role is Successfully Edited.`)
        onCloseThisPage(null)
     } catch (error) {
-      console.log("error of create a Role =>", error);
     }
   };
 

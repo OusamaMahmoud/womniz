@@ -379,7 +379,6 @@ const Admins: React.FC = () => {
         </div>
       ) : (
         <>
-        TODO:
           <AdminsResponsiveTable
             tableData={admins}
             handleCheckAll={handleCheckAll}

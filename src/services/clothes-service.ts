@@ -17,6 +17,8 @@ export interface Product {
   ship_information_desc: string;
   return_order_desc: string;
   discount: number;
+  model_id:number;
+  material:string;
 }
 
 export default create("/products");

@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
 import { Link } from "react-router-dom";
 import useProducts from "../../../hooks/useProducts";
+import { DotIcon } from "lucide-react";
 
 const ClothesTable = ({
   selectAll,
   handleCheckAll,
   selectedObjects,
   handleCheckboxChange,
+  products
 }) => {
   const [data, setData] = useState([]);
   const [sortBy, setSortBy] = useState(null);
   const [sortDesc, setSortDesc] = useState(false);
-  const { products } = useProducts({ category: 7 });
 
   useEffect(() => {
     setData(products);
@@ -29,14 +30,22 @@ const ClothesTable = ({
 
   const sortedData = [...data].sort((a, b) => {
     if (sortBy) {
-      const aValue = a[sortBy].toString().toLowerCase();
-      const bValue = b[sortBy].toString().toLowerCase();
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
+
+      // Handle different types
+      if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      } else if (aValue instanceof Date) {
+        return sortDesc ? bValue - aValue : aValue - bValue;
+      }
+
       if (aValue < bValue) return sortDesc ? 1 : -1;
       if (aValue > bValue) return sortDesc ? -1 : 1;
     }
     return 0;
   });
-
   return (
     <div className="overflow-x-auto overflow-y-auto ">
       <table className="min-w-full bg-white border">
@@ -53,9 +62,14 @@ const ClothesTable = ({
               </label>
             </th>
             <SortableHeader
-              label="SKU"
-              onClick={() => handleSort("sku")}
-              sorted={sortBy === "sku" ? !sortDesc : null}
+              label="ID"
+              onClick={() => handleSort("id")}
+              sorted={sortBy === "id" ? !sortDesc : null}
+            />
+            <SortableHeader
+              label="Model ID"
+              onClick={() => handleSort("model_id")}
+              sorted={sortBy === "model_id" ? !sortDesc : null}
             />
             <SortableHeader
               label="Product Name"
@@ -78,19 +92,9 @@ const ClothesTable = ({
               sorted={sortBy === "sub" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Quantity"
-              onClick={() => handleSort("quantity")}
-              sorted={sortBy === "quantity" ? !sortDesc : null}
-            />
-            <SortableHeader
               label="Price"
               onClick={() => handleSort("price")}
               sorted={sortBy === "price" ? !sortDesc : null}
-            />
-            <SortableHeader
-              label="Total Orders Num"
-              onClick={() => handleSort("OrdersNum")}
-              sorted={sortBy === "OrdersNum" ? !sortDesc : null}
             />
             <SortableHeader
               label="Status"
@@ -115,17 +119,48 @@ const ClothesTable = ({
                   />
                 </label>
               </td>
-              <td className="py-3 px-6 text-left">sku</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row.id}</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">
+                {row.model_id}
+              </td>
               <Link to={`product-details/${row.id}`}>
-                <td className="py-3 px-6 text-left">{row.name}</td>
+                <td className="py-3 px-6 text-left xl:text-lg capitalize">
+                  {row.name}
+                </td>
               </Link>
-              <td className="py-3 px-6 text-left">Vendor</td>
-              <td className="py-3 px-6 text-left">{row.brand.name}</td>
-              <td className="py-3 px-6 text-left">{row.categories[0]?.name}</td>
-              <td className="py-3 px-6 text-left">Quantity</td>
-              <td className="py-3 px-6 text-left">{row.price}</td>
-              <td className="py-3 px-6 text-left">Orders</td>
-              <td className="py-3 px-6 text-left">Status</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">Vendor</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">
+                {row.brand.name}
+              </td>
+              <td className="py-3 px-6 text-left xl:text-lg ">
+                {row.categories[0]?.name}
+              </td>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row.price}</td>
+              {row.status === "live" ? (
+                <td
+                  className={`badge bg-[#ECFDF3] py-3 px-6 text-left xl:text-lg `}
+                >
+                  <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row.status}
+                </td>
+              ) : row.status === "rejected" ? (
+                <td
+                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
+                >
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row.status}
+                </td>
+              ) : row.status === "deactivated" ? (
+                <td
+                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
+                >
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row.status}
+                </td>
+              ) : (
+                <td
+                  className={`badge bg-[#EDEDED] py-3 px-6 text-left xl:text-lg `}
+                >
+                  <GoDotFill className={`mr-1 text-[#636366]`} /> {row.status}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

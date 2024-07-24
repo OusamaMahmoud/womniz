@@ -8,9 +8,6 @@ const ShoesDynamicForm = ({ onSelectedSizes, sizes }) => {
     const savedFields = localStorage.getItem("shoesFormFields");
     if (savedFields) {
       setFields(JSON.parse(savedFields));
-      console.log("in")
-    }else{
-      console.log("out")
     }
   }, []);
 
@@ -43,6 +40,11 @@ const ShoesDynamicForm = ({ onSelectedSizes, sizes }) => {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "-" || event.key === "e") {
+      event.preventDefault();
+    }
+  };
   return (
     <div className="w-[100%]">
       {fields.map((field, index) => (

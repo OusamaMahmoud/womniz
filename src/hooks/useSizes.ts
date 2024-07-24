@@ -16,7 +16,6 @@ const useSizes = ({ productType }: { productType: string }) => {
       })
       .then((res) => {
         setSizes(res.data.data);
-        console.log(res.data.data)
         setLoading(false);
       })
       .catch((err) => {

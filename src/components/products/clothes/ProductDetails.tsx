@@ -7,7 +7,7 @@ import { useEffect } from "react";
 const ProductDetails = () => {
   const { id } = useParams();
 
-  const { products } = useProducts({})
+  const { products } = useProducts({});
 
   const targetProduct = products.find((item) => item.id === Number(id));
   useEffect(() => {
@@ -30,15 +30,12 @@ const ProductDetails = () => {
 
             <div className="flex justify-between items-center">
               <div>
-                <div>
+                <div className="max-w-[600px] border p-6 rounded-md mb-6"> 
                   <img src={orderSales} />
                 </div>
-                <div className="max-w-[600px] shadow-xl p-6 rounded-md">
+                <div className="max-w-[600px] border p-6 rounded-md">
                   <h1 className="text-2xl font-bold mb-4">Details</h1>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xl text-[#00000066]">SKU</span>
-                    <span>{targetProduct?.id}</span>
-                  </div>
+                 
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">
                       Product Name
@@ -61,70 +58,114 @@ const ProductDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className="max-w-2xl border flex flex-col items-center p-4 mt-20 h-fit">
-                <div className="mb-5">
+              <div className=" max-w-2xl border flex flex-col items-center p-4 mt-20 h-fit w-fit rounded-xl">
+                <div className="w-[50%] h-60 mb-2">
                   {targetProduct && (
-                    <div className="min-w-[400px]">
-                      <img
-                        src={targetProduct.thumbnail}
-                        className="w-[100%] object-cover"
-                      />
-                    </div>
+                    <img
+                      src={targetProduct.thumbnail}
+                      className="object-cover rounded-lg w-[100%] h-[100%]"
+                    />
                   )}
                 </div>
-                <div className="flex flex-wrap items-center justify-center gap-10  mt-16 ">
+                <div className="flex flex-wrap items-center justify-center gap-10  mt-6 rounded-lg ">
                   {targetProduct &&
                     targetProduct.images.map((item, idx) => (
                       <div key={idx} className="">
-                        <img src={item.image} className="w-32 h-32" />
+                        <img
+                          src={item.image}
+                          className="w-32 h-32 rounded-lg"
+                        />
                       </div>
                     ))}
                 </div>
               </div>
             </div>
-
-            <div className=" mt-8 shadow-xl p-6 rounded-md">
+            <div className="max-w-5xl mt-8 border p-6 rounded-md ">
+              <h1 className="text-2xl font-bold mb-4">Sizes</h1>
+              <table className="max-w-xl border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Model ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      SKU
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Size
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Quantity
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Color
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {targetProduct &&
+                    targetProduct.variants.map((item, idx) => (
+                      <tr key={idx}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {targetProduct.model_id}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.sku}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.size}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item.stock}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          yellow
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="max-w-5xl mt-8 border p-8 rounded-md ">
               <h1 className="text-2xl font-bold mb-4">Details</h1>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-xl text-[#00000066]">Description</span>
-                {targetProduct && (
-                  <span>{extractContent(targetProduct?.desc)}</span>
-                )}
-              </div>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-xl text-[#00000066]">Fit & Size</span>
-                {targetProduct && (
-                  <span>{extractContent(targetProduct?.fit_size_desc)}</span>
-                )}
-              </div>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-xl text-[#00000066]">
-                  Shipping Information
-                </span>
-                {targetProduct && (
-                  <span>
-                    {extractContent(targetProduct?.ship_information_desc)}
-                  </span>
-                )}
-              </div>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-xl text-[#00000066]">Return Orders</span>
-                {targetProduct && (
-                  <span>
-                    {extractContent(targetProduct?.ship_information_desc)}
-                  </span>
-                )}
+              <div className=" flex gap-36 ">
+                <div className="flex flex-col gap-4">
+                  <p className="text-xl text-[#00000066]">Description</p>
+                  <p className="text-xl text-[#00000066]">Fit & Size</p>
+                  <p className="text-xl text-[#00000066]">
+                    Shipping Information
+                  </p>
+                  <p className="text-xl text-[#00000066]">Return Orders</p>
+                </div>
+                <div className="flex flex-col gap-4">
+                  {targetProduct && (
+                    <p>{extractContent(targetProduct?.desc)}</p>
+                  )}
+                  {targetProduct && (
+                    <p>{extractContent(targetProduct?.fit_size_desc)}</p>
+                  )}
+                  {targetProduct && (
+                    <p>
+                      {extractContent(targetProduct?.ship_information_desc)}
+                    </p>
+                  )}
+                  {targetProduct && (
+                    <p>
+                      {extractContent(targetProduct?.ship_information_desc)}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="mt-8 shadow-xl p-6 rounded-md">
+            <div className="max-w-2xl mt-8 border p-6 rounded-md">
               <h1 className="text-2xl font-bold mb-4">Pricing Details</h1>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-xl text-[#00000066]">Price</span>
-                <span>{targetProduct?.price}</span>
+                <span className="font-bold">{targetProduct?.price}$</span>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-xl text-[#00000066]">Womniz Sale</span>
-                <span>{targetProduct?.discount}</span>
+                <span className="font-bold">{targetProduct?.discount}%</span>
               </div>
             </div>
           </div>

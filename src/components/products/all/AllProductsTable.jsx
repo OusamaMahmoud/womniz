@@ -29,8 +29,17 @@ const AllProductsTable = ({
 
   const sortedData = [...data].sort((a, b) => {
     if (sortBy) {
-      const aValue = a[sortBy].toString().toLowerCase();
-      const bValue = b[sortBy].toString().toLowerCase();
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
+      
+      // Handle different types
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      } else if (aValue instanceof Date) {
+        return sortDesc ? bValue - aValue : aValue - bValue;
+      }
+  
       if (aValue < bValue) return sortDesc ? 1 : -1;
       if (aValue > bValue) return sortDesc ? -1 : 1;
     }

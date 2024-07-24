@@ -13,9 +13,13 @@ import { ToastContainer, toast } from "react-toastify";
 import ClothesTable from "./ClothesTable";
 import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
-import { Brand } from "../../../services/vendor-category-sevice";
+// import { Brand } from "../../../services/vendor-category-sevice";
 
 const Clothes = () => {
+  // Filters
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchFilters, setSearchFilters] = useState("");
+
   const [file, setFile] = useState<File | null>(null);
   // NOTE tHAT
   const [selectedProducts, setSelectedProducts] = useState<Set<number>>(
@@ -30,26 +34,8 @@ const Clothes = () => {
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
 
-  const childs = vendorCategories.map((i) => ({ childs: i.childs, id: i.id }));
   const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  const brandCategories = clothesCategory?.brands.map((b) => ({
-    id: b.id,
-    categories: b.categories,
-  }));
-
-  const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
-    {} as Brand
-  );
-
-
-  useEffect(() => {
-    if (brandCategories) {
-      const selectedItem = brandCategories?.find((b) => b.id === Number(brand));
-      if (selectedItem) {
-        setSelectedBrand(selectedItem);
-      }
-    }
-  }, [brand]);
+  const clothesCategoryChields = clothesCategory?.childs;
 
   useEffect(() => {
     setIsDeleteEnabled(selectedProducts.size > 0);
@@ -89,7 +75,12 @@ const Clothes = () => {
       setFile(null);
     }
   };
-  const { products } = useProducts({});
+  const { products, setProducts } = useProducts({
+    category: "7",
+    brand,
+    search: searchFilters,
+    status: statusFilter,
+  });
 
   const handleCheckAll = () => {
     setSelectAll(!selectAll);
@@ -109,6 +100,8 @@ const Clothes = () => {
     }
     setSelectedProducts(newSelectedProducts);
   };
+  const [isProductsDeleted, setProductsDeleted] = useState(false);
+
   const handleDelete = async () => {
     if (selectedProducts.size > 0) {
       const data = new FormData();
@@ -116,11 +109,20 @@ const Clothes = () => {
         data.append(`ids[${index}]`, id.toString());
       });
       try {
+        setProductsDeleted(true);
         await apiClient.post("/products/delete", data);
         toast.success("Products have been deleted successfully.");
         setSelectAll(false);
+        // Update the local products list
+        const remainingProducts = products.filter(
+          (product) => !selectedProducts.has(product.id)
+        );
+        setProducts(remainingProducts);
+        setProductsDeleted(false);
       } catch (error) {
         toast.error("Failed to delete admins");
+        setProducts(products);
+        setProductsDeleted(false);
       }
     }
   };
@@ -165,7 +167,8 @@ const Clothes = () => {
           }`}
           disabled={!isDeleteEnabled}
         >
-          <MdDelete className="text-2xl text-red-700 " /> Delete
+          <MdDelete className="text-2xl text-red-700 " />{" "}
+          {isProductsDeleted ? "Deleting..." : "Delete"}
         </button>
         <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
           <FaFileExport className="text-2xl " /> Export
@@ -173,7 +176,15 @@ const Clothes = () => {
       </div>
       <div className="flex gap-8 mb-8">
         <label className="input input-bordered flex items-center gap-2 max-w-xs">
-          <input type="text" className="" placeholder="Search" />
+          <input
+            value={searchFilters}
+            onChange={(e) => {
+              setSearchFilters(e.currentTarget.value);
+            }}
+            type="text"
+            className=""
+            placeholder="Search"
+          />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -190,14 +201,16 @@ const Clothes = () => {
         <select
           value={selectedCategory}
           className="select select-bordered"
-          onChange={(e) => setSelectedCategory(e.currentTarget.value)}
+          onChange={(e) => {
+            setSelectedCategory(e.currentTarget.value);
+          }}
         >
           <option value="" disabled selected>
             Select App Sub Category
           </option>
-          {childs.map((i, idx) => (
-            <option key={idx} value={`${i.childs[idx].id}`}>
-              {i.childs[idx].name}
+          {clothesCategoryChields?.map((i, idx) => (
+            <option key={idx} value={`${i.id}`}>
+              {i.name}
             </option>
           ))}
         </select>
@@ -205,23 +218,33 @@ const Clothes = () => {
           value={brand}
           id="brand"
           className="select select-bordered"
-          onChange={(e) => setBrand(e.currentTarget.value)}
+          onChange={(e) => {
+            setBrand(e.currentTarget.value);
+          }}
         >
-          <option value="" disabled selected>
+          <option value="" selected>
             Select Brand
           </option>
-          {clothesCategory?.brands.map((b) => (
-            <option key={b.id} value={b.id}>
+          {clothesCategory?.brands.map((b, idx) => (
+            <option key={idx} value={b.id}>
               {b.name_en}
             </option>
           ))}
         </select>
-        <select className="select select-bordered  max-w-xs">
-          <option disabled selected>
+        <select
+          onChange={(e) => {
+            setStatusFilter(e.currentTarget.value);
+          }}
+          value={statusFilter}
+          className="select select-bordered  max-w-xs"
+        >
+          <option value={""} selected>
             Select Status
           </option>
-          <option>Han Solo</option>
-          <option>Greedo</option>
+          <option value={"live"}>Live</option>
+          <option value={"rejected"}>Rejected</option>
+          <option value={"deactivated"}>Deactivated</option>
+          <option value={"draft"}>Draft</option>
         </select>
       </div>
       <ClothesTable
@@ -229,6 +252,7 @@ const Clothes = () => {
         selectAll={selectAll}
         handleCheckboxChange={handleCheckboxChange}
         selectedObjects={selectedProducts}
+        products={products}
       />
       <div className="mt-8">
         <nav className="flex justify-between items-center">

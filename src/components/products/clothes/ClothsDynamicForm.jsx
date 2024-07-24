@@ -8,9 +8,6 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes }) => {
     const savedFields = localStorage.getItem("formFields");
     if (savedFields) {
       setFields(JSON.parse(savedFields));
-      console.log("in");
-    } else {
-      console.log("out");
     }
   }, []);
 

@@ -23,7 +23,6 @@ const useProducts = ({ category, status, search, brand }: AdminsFilter) => {
     });
     request
       .then((res) => {
-        console.log(res.data.data.data);
         setProducts(res.data.data.data);
         setLoading(false);
       })
@@ -34,7 +33,7 @@ const useProducts = ({ category, status, search, brand }: AdminsFilter) => {
       });
 
     return () => controller.abort();
-  }, [category, status, search]);
+  }, [category, status, search, brand]);
 
   // Debounce the fetchAdmins function
   const debouncedFetchProducts = useCallback(
