@@ -1,10 +1,10 @@
 import {
   MdDelete,
-  MdKeyboardArrowLeft,
-  MdKeyboardArrowRight,
 } from "react-icons/md";
 import { IoAdd } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
 import apiClient from "../../../services/api-client";
@@ -13,6 +13,8 @@ import { ToastContainer, toast } from "react-toastify";
 import ClothesTable from "./ClothesTable";
 import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
+import useAllProducts from "../../../hooks/useAllProducts";
+import Pagination from "../../Pagination";
 // import { Brand } from "../../../services/vendor-category-sevice";
 
 const Clothes = () => {
@@ -30,12 +32,41 @@ const Clothes = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
+  // Export products as excel sheet
+  const { allProducts } = useAllProducts();
+
+  const exportToExcel = () => {
+    // Create a new workbook and a sheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(allProducts);
+
+    // Append the sheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Products");
+
+    // Generate a binary string representation of the workbook
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
+
+    // Convert the binary string to an array buffer
+    const buf = new ArrayBuffer(wbout.length);
+    const view = new Uint8Array(buf);
+    for (let i = 0; i < wbout.length; i++) {
+      view[i] = wbout.charCodeAt(i) & 0xff;
+    }
+
+    // Create a Blob from the array buffer and trigger the download
+    saveAs(
+      new Blob([buf], { type: "application/octet-stream" }),
+      "products.xlsx"
+    );
+  };
 
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
-
+  useEffect(() => {
+    console.log(vendorCategories);
+  }, []);
   const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  const clothesCategoryChields = clothesCategory?.childs;
+  // const clothesCategoryChields = clothesCategory?.childs;
 
   useEffect(() => {
     setIsDeleteEnabled(selectedProducts.size > 0);
@@ -75,12 +106,19 @@ const Clothes = () => {
       setFile(null);
     }
   };
-  const { products, setProducts } = useProducts({
-    category: "7",
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [paginationPage, setPaginationPage] = useState<string>("1");
+
+  const { products, setProducts, meta, next, prev } = useProducts({
+    page: paginationPage,
     brand,
     search: searchFilters,
     status: statusFilter,
   });
+
+  const recordsPerPage = meta.per_page || 5;
+  const nPages = Math.ceil(products.length / recordsPerPage);
 
   const handleCheckAll = () => {
     setSelectAll(!selectAll);
@@ -124,6 +162,16 @@ const Clothes = () => {
         setProducts(products);
         setProductsDeleted(false);
       }
+    }
+  };
+  // Inside your component
+  const navigate = useNavigate();
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value;
+    setSelectedCategory(selectedValue);
+    if (selectedValue) {
+      navigate(`/products/${selectedValue}`);
     }
   };
 
@@ -170,7 +218,10 @@ const Clothes = () => {
           <MdDelete className="text-2xl text-red-700 " />{" "}
           {isProductsDeleted ? "Deleting..." : "Delete"}
         </button>
-        <button className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg">
+        <button
+          onClick={exportToExcel}
+          className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg"
+        >
           <FaFileExport className="text-2xl " /> Export
         </button>
       </div>
@@ -201,16 +252,14 @@ const Clothes = () => {
         <select
           value={selectedCategory}
           className="select select-bordered"
-          onChange={(e) => {
-            setSelectedCategory(e.currentTarget.value);
-          }}
+          onChange={handleCategoryChange}
         >
-          <option value="" disabled selected>
+          <option value="" disabled>
             Select App Sub Category
           </option>
-          {clothesCategoryChields?.map((i, idx) => (
-            <option key={idx} value={`${i.id}`}>
-              {i.name}
+          {vendorCategories?.map((category, idx) => (
+            <option key={idx} value={category.name}>
+              {category.name}
             </option>
           ))}
         </select>
@@ -255,33 +304,15 @@ const Clothes = () => {
         products={products}
       />
       <div className="mt-8">
-        <nav className="flex justify-between items-center">
-          <p className="text-2xl ml-4">1-15 of 20 items</p>
-          <ul className="flex items-center justify-end gap-10">
-            <button className={`bg-[#B6C9B5] text-white rounded-lg `}>
-              <MdKeyboardArrowLeft className="text-4xl" />
-            </button>
-            <div>
-              <form className="flex items-center gap-2 ml-4">
-                <input
-                  type="text"
-                  id="pageInput"
-                  className="border-2 border-gray-300 rounded-md px-2 py-1 text-center w-16"
-                />
-              </form>
-            </div>
-            <p className="text-xl">
-              {" "}
-              of <span className="px-3 py-2 rounded-md font-bold">
-                2
-              </span> Pages{" "}
-            </p>
-
-            <button className={`bg-[#B6C9B5] text-white rounded-lg`}>
-              <MdKeyboardArrowRight className="text-4xl" />
-            </button>
-          </ul>
-        </nav>
+        <Pagination
+          onPage={(pg: string) => setPaginationPage(pg)}
+          itemsPerPage={recordsPerPage}
+          nPages={nPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          next={next}
+          prev={prev}
+        />
       </div>
     </div>
   );

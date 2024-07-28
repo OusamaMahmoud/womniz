@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Pagination = ({
@@ -28,19 +28,21 @@ const Pagination = ({
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    if (value === "") {
-      setInputPage(value);
-    } else if (!isNaN(value) && value > 0 && value <= nPages) {
-      setInputPage(Number(value));
-    }
+    setCurrentPage(value);
+    console.log(value);
+    // if (value === "") {
+    //   setInputPage(value);
+    // } else if (isNaN(value) && value > 0 && value <= nPages) {
+    //   setInputPage(Number(value));
+    // }
   };
 
-  const handlePageSubmit = (e) => {
-    e.preventDefault();
-    if (inputPage > 0 && inputPage <= nPages) {
-      setCurrentPage(inputPage);
-    }
-  };
+  // const handlePageSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (inputPage > 0 && inputPage <= nPages) {
+  //     setCurrentPage(inputPage);
+  //   }
+  // };
 
   return (
     <nav className="flex flex-col xl:flex-row gap-4 justify-between items-center my-14">
@@ -57,18 +59,13 @@ const Pagination = ({
           <MdKeyboardArrowLeft className="text-2xl xl:text-4xl " />
         </button>
         <div>
-          <form
-            onSubmit={handlePageSubmit}
-            className="flex items-center gap-2 ml-4"
-          >
-            <input
-              type="text"
-              id="pageInput"
-              value={inputPage}
-              onChange={handleInputChange}
-              className="border-2 border-gray-300 rounded-md px-2 py-1 text-center w-16"
-            />
-          </form>
+          <input
+            type="text"
+            id="pageInput"
+            value={currentPage}
+            onChange={handleInputChange}
+            className="border-2 border-gray-300 rounded-md px-2 py-1 text-center w-16"
+          />
         </div>
         <p className="text-[14px] xl:text-xl flex items-center xl:block">
           {" "}

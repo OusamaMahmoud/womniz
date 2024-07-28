@@ -100,6 +100,9 @@ const ProductDetails = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Color
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Color
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -120,6 +123,9 @@ const ProductDetails = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           yellow
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          أصفر
                         </td>
                       </tr>
                     ))}

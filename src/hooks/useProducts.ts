@@ -2,29 +2,55 @@ import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Product } from "../services/clothes-service";
 import _ from "lodash";
-
+interface MetaObject {
+  current_page: number;
+  from: number;
+  per_page: number;
+  to: number;
+}
 interface AdminsFilter {
   category?: string;
   status?: string;
   search?: string;
   brand?: string;
+  page?: string;
 }
 
-const useProducts = ({ category, status, search, brand }: AdminsFilter) => {
+const useProducts = ({
+  category,
+  status,
+  search,
+  brand,
+  page,
+}: AdminsFilter) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
+  const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
+  const [next, setNext] = useState<string | null>("");
+  const [prev, setPrev] = useState<string | null>("");
 
   const fetchProducts = useCallback(() => {
     setLoading(true);
     const controller = new AbortController();
-    const request = apiClient.get(buildUrl(), {
+    const request = apiClient.get<{
+      data: {
+        data: Product[];
+        meta: MetaObject;
+        links: { next: string | null; prev: string | null };
+      };
+    }>(buildUrl(), {
       signal: controller.signal,
     });
     request
       .then((res) => {
         setProducts(res.data.data.data);
         setLoading(false);
+        setMeta(res.data.data.meta);
+        setNext(res.data.data.links.next);
+        setPrev(res.data.data.links.prev);
+        console.log(res.data.data.links);
+        console.log(res.data.data.links.prev);
       })
       .catch((err) => {
         if (err instanceof CanceledError) return;
@@ -33,7 +59,7 @@ const useProducts = ({ category, status, search, brand }: AdminsFilter) => {
       });
 
     return () => controller.abort();
-  }, [category, status, search, brand]);
+  }, [category, status, search, brand, page]);
 
   // Debounce the fetchAdmins function
   const debouncedFetchProducts = useCallback(
@@ -66,6 +92,9 @@ const useProducts = ({ category, status, search, brand }: AdminsFilter) => {
     if (search) {
       params.append("search", search);
     }
+    if (page) {
+      params.append("page", page);
+    }
 
     return `${baseUrl}?${params.toString()}`;
   };
@@ -76,6 +105,10 @@ const useProducts = ({ category, status, search, brand }: AdminsFilter) => {
     isLoading,
     setProducts,
     setError,
+    meta,
+    setMeta,
+    next,
+    prev,
   };
 };
 
