@@ -19,6 +19,8 @@ export interface Product {
   discount: number;
   model_id:number;
   material:string;
+  product_type:string;
+  product_sub_type:string;
 }
 
 export default create("/products");

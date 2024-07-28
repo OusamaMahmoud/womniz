@@ -78,8 +78,8 @@ const Sidebar = () => {
         link: "/products/clothes",
       },
       {
-        name: "Jewelry",
-        link: "/products/jewelry",
+        name: "Jewellery",
+        link: "/products/jewellery",
       },
       {
         name: "Cosmetics",

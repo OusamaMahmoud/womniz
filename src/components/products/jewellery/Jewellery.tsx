@@ -1,5 +1,6 @@
 import { MdDelete } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { IoAdd } from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { BiUpload } from "react-icons/bi";
@@ -11,9 +12,10 @@ import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import useAllProducts from "../../../hooks/useAllProducts";
 import Pagination from "../../Pagination";
-import AllProductsTable from "./AllProductsTable";
+import JewelleryTable from "./JewelleryTable";
+// import { Brand } from "../../../services/vendor-category-sevice";
 
-const AllProducts = () => {
+const Jewellery = () => {
   // Filters
   const [statusFilter, setStatusFilter] = useState("");
   const [searchFilters, setSearchFilters] = useState("");
@@ -58,9 +60,9 @@ const AllProducts = () => {
 
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
-
-  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  // const clothesCategoryChields = clothesCategory?.childs;
+  const jewelleryCategory = vendorCategories.find(
+    (i) => i.name.toLowerCase() === "Jewellery".toLowerCase()
+  );
 
   useEffect(() => {
     setIsDeleteEnabled(selectedProducts.size > 0);
@@ -110,9 +112,10 @@ const AllProducts = () => {
     meta,
     next,
     prev,
+    error: clothesServerError,
     isLoading,
-    error: productServerError,
   } = useProducts({
+    category: jewelleryCategory?.id.toString(),
     page: paginationPage,
     brand,
     search: searchFilters,
@@ -131,7 +134,6 @@ const AllProducts = () => {
       setSelectedProducts(new Set());
     }
   };
-
   const handleCheckboxChange = (id: number) => {
     const newSelectedProducts = new Set(selectedProducts);
     if (newSelectedProducts.has(id)) {
@@ -181,7 +183,7 @@ const AllProducts = () => {
   return (
     <div className="flex flex-col ">
       <ToastContainer />
-      {productServerError.includes("404") ? (
+      {clothesServerError.includes("404") ? (
         <div className="p-4">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             Oops! Page Not Found
@@ -192,21 +194,31 @@ const AllProducts = () => {
           <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-10">
             <li>The URL was mistyped</li>
             <li>The page has moved or no longer exists</li>
-            <li>
-              You found a broken link
-            </li>
+            <li>You found a broken link</li>
           </ul>
         </div>
       ) : (
         <p className="my-4 text-lg text-red-500 tracking-wider">
-          {productServerError}
+          {clothesServerError}
         </p>
       )}
-      
-      {!productServerError && (
+
+      {!clothesServerError && (
         <>
-          {" "}
           <div className="flex items-center gap-8 justify-end mb-8">
+            <Link
+              to={"jewellery-sub-category"}
+              className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
+            >
+              Sub Category
+            </Link>
+            <Link
+              to={"/products/jewellery/new-jewellery"}
+              className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
+            >
+              <IoAdd className="text-white text-2xl hover:text-black" /> Add New
+              Product
+            </Link>
             <label
               htmlFor="excel"
               // onClick={handleUpload}
@@ -289,7 +301,7 @@ const AllProducts = () => {
               <option value="" selected>
                 Select Brand
               </option>
-              {clothesCategory?.brands.map((b, idx) => (
+              {jewelleryCategory?.brands.map((b, idx) => (
                 <option key={idx} value={b.id}>
                   {b.name_en}
                 </option>
@@ -315,7 +327,7 @@ const AllProducts = () => {
       )}
 
       {!isLoading ? (
-        <AllProductsTable
+        <JewelleryTable
           handleCheckAll={handleCheckAll}
           selectAll={selectAll}
           handleCheckboxChange={handleCheckboxChange}
@@ -331,7 +343,7 @@ const AllProducts = () => {
         </div>
       )}
 
-      {!productServerError && (
+      {!clothesServerError && (
         <div className="mt-8">
           <Pagination
             onPage={(pg: string) => setPaginationPage(pg)}
@@ -348,4 +360,4 @@ const AllProducts = () => {
   );
 };
 
-export default AllProducts;
+export default Jewellery;

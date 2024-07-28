@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import useProducts from "../../../hooks/useProducts";
 import { DotIcon } from "lucide-react";
 
-const AllProductsTable = ({
+const JewelleryTable = ({
   selectAll,
   handleCheckAll,
   selectedObjects,
@@ -87,9 +87,9 @@ const AllProductsTable = ({
               sorted={sortBy === "brand" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Category"
-              onClick={() => handleSort("cat")}
-              sorted={sortBy === "cat" ? !sortDesc : null}
+              label="Sub Category"
+              onClick={() => handleSort("sub")}
+              sorted={sortBy === "sub" ? !sortDesc : null}
             />
             <SortableHeader
               label="Price"
@@ -133,7 +133,7 @@ const AllProductsTable = ({
                 {row.brand.name}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row.product_type}
+                {row.categories[0]?.name}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">{row.price}</td>
               {row.status === "live" ? (
@@ -180,4 +180,4 @@ const SortableHeader = ({ label, onClick, sorted }) => (
   </th>
 );
 
-export default AllProductsTable;
+export default JewelleryTable;

@@ -32,6 +32,7 @@ const useProducts = ({
 
   const fetchProducts = useCallback(() => {
     setLoading(true);
+    setError('');
     const controller = new AbortController();
     const request = apiClient.get<{
       data: {
@@ -49,13 +50,11 @@ const useProducts = ({
         setMeta(res.data.data.meta);
         setNext(res.data.data.links.next);
         setPrev(res.data.data.links.prev);
-        console.log(res.data.data.links);
-        console.log(res.data.data.links.prev);
       })
       .catch((err) => {
         if (err instanceof CanceledError) return;
-        setError(err.message);
         setLoading(false);
+        setError(err.message);
       });
 
     return () => controller.abort();
@@ -78,7 +77,8 @@ const useProducts = ({
     const params = new URLSearchParams();
 
     if (category) {
-      params.append(`category_id`, category);
+      params.append(`main_category_id`, category);
+      console.log("WHO ?",category)
     }
 
     if (brand) {

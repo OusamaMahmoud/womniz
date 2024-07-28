@@ -27,12 +27,13 @@ import ProductDetails from "./components/products/clothes/ProductDetails";
 import Requests from "./components/Requests";
 import Salons from "./components/salons/Salons";
 import SalonProfile from "./components/salons/SalonProfile";
-import Jewelry from "./components/products/jewelry/Jewelry";
-import NewJewelry from "./components/products/jewelry/NewJewelry";
 import Celebrities from "./components/products/celebrities/Celebrities";
 import NewCelebrity from "./components/products/celebrities/NewCelebrities";
 import ProductDescription from "./components/products/clothes/ProductDescription";
 import AllProducts from "./components/products/all/AllProducts";
+import Jewellery from "./components/products/jewellery/Jewellery";
+import NewJewellery from "./components/products/jewellery/NewJewellery";
+import JewellerySubCategory from "./components/products/jewellery/JewllerySubCategory";
 
 function App() {
   const { permissions } = usePermissions();
@@ -110,9 +111,14 @@ function App() {
         <Route path="salons/salons-profiles" element={<Salons />} />
         <Route path="salons/salons-profiles/:id" element={<SalonProfile />} />
         {/* Jewelry */}
-        <Route path="products/jewellery" element={<Jewelry />} />
-        <Route path="products/jewelry/new-jewelry" element={<NewJewelry />} />
-
+        <Route path="products/jewellery" element={<Jewellery />} />
+        <Route path="products/jewellery/new-jewellery" element={<NewJewellery />} />
+        <Route
+          path="products/jewellery/jewellery-sub-category"
+          element={<JewellerySubCategory />}
+        />
+       
+       
         <Route path="products/celebrities" element={<Celebrities />} />
         <Route
           path="products/celebrities/new-celebrity"
