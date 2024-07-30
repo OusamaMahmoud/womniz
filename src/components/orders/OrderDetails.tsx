@@ -1,6 +1,9 @@
 import useTargetOrder from "../../hooks/useTargetOrder";
 import { useParams } from "react-router-dom";
 import { GoDotFill } from "react-icons/go";
+import { useEffect, useState } from "react";
+import apiClient from "../../services/api-client";
+import { toast, ToastContainer } from "react-toastify";
 
 const OrdersDetails = () => {
   const { id } = useParams();
@@ -16,8 +19,40 @@ const OrdersDetails = () => {
     0
   );
 
+  const [selectStatus, setSelectStatus] = useState(targetOrder?.status);
+  const [changeStatusError, setChangeStatusError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setSelectStatus(targetOrder?.status);
+  }, [targetOrder]);
+
+  useEffect(() => {
+    const changeStatus = async () => {
+      if (selectStatus && targetOrder && targetOrder.id) {
+        try {
+          setChangeStatusError("");
+          setLoading(true);
+          await apiClient.get(`/orders/changeStatus/${targetOrder.id}/${selectStatus}`);
+          toast.success("Status has been changed successfully.");
+        } catch (error: any) {
+          setChangeStatusError(error.message);
+          setSelectStatus(targetOrder?.status)
+          toast.error("Oops! You can't change status for that order. Something went wrong!");
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    if (selectStatus && targetOrder?.status !== selectStatus) {
+      changeStatus();
+    }
+  }, [selectStatus, targetOrder]);
+
   return (
     <>
+      <ToastContainer />
       {error.includes("404") ? (
         <div className="p-4">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
@@ -35,13 +70,14 @@ const OrdersDetails = () => {
       ) : (
         <p className="my-4 text-lg text-red-500 tracking-wider">{error}</p>
       )}
+      {changeStatusError && <p>{changeStatusError}</p>}
       {!error && (
         <div className="container mx-auto px-10">
           {!isLoading ? (
             <div>
               <div className=" my-10">
                 <h1 className="text-3xl font-bold">Order Details</h1>
-                <div className="flex justify-around">
+                <div className="block xl:flex justify-around ">
                   <div className="shadow-xl mt-7 p-5 rounded-xl min-w-[600px]">
                     <h2 className="text-xl font-bold mb-6">Order Info:</h2>
                     <div className="flex justify-between items-center gap-2 mt-2">
@@ -58,56 +94,38 @@ const OrdersDetails = () => {
                     </div>
                     <div className="flex justify-between items-center gap-2 mt-2">
                       <span className="text-lg font-bold">Status</span>
-                      {targetOrder?.status === "pending" ? (
-                        <p
-                          className={`badge bg-[#ECFDF3] my-3 py-3 px-3 text-left xl:text-lg `}
-                        >
-                          <GoDotFill className={`mr-1 text-[#14BA6D]`} />{" "}
-                          {targetOrder?.status}
-                        </p>
-                      ) : targetOrder?.status === "canceled" ? (
-                        <p
-                          className={`badge bg-[#E2000029] my-3 py-3 px-3 text-left xl:text-lg `}
-                        >
-                          <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
-                          {targetOrder?.status}
-                        </p>
-                      ) : targetOrder?.status === "delivery_failed" ? (
-                        <p
-                          className={`badge bg-[#E2000029] my-3 py-3 px-3 text-left xl:text-lg `}
-                        >
-                          <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
-                          {targetOrder?.status}
-                        </p>
-                      ) : targetOrder?.status === "returned" ? (
-                        <p
-                          className={`badge bg-[#ECFDF3] text-[#F0CC4E] my-3 py-3 px-3 text-left xl:text-lg `}
-                        >
-                          <GoDotFill className={`mr-1 text-[#F0CC4E99]`} />{" "}
-                          {targetOrder?.status}
-                        </p>
-                      ) : targetOrder?.status === "delivered" ? (
-                        <p
-                          className={`badge bg-#ECFDF3] text-[#037847] my-3 py-3 px-3 text-left xl:text-lg `}
-                        >
-                          <GoDotFill className={`mr-1 text-[#14BA6D]`} />{" "}
-                          {targetOrder?.status}
-                        </p>
-                      ) : targetOrder?.status === "ready_to_ship" ? (
-                        <p
-                          className={`badge bg-[#7F9B8D29] text-[#7F9B8D] my-3 py-3 px-3 text-left xl:text-lg `}
-                        >
-                          <GoDotFill className={`mr-1 text-[#7F9B8D]`} />{" "}
-                          {targetOrder?.status}
-                        </p>
-                      ) : (
-                        <p
-                          className={`badge bg-#ECFDF3] text-[#037847] my-3 py-3 px-3 text-left xl:text-lg `}
-                        >
-                          <GoDotFill className={`mr-1 text-[#14BA6D]`} />{" "}
-                          {targetOrder?.status}
-                        </p>
-                      )}
+                      <select
+                        className={`select select-bordered
+                           ${
+                             targetOrder?.status === "pending"
+                               ? "bg-[#ECFDF3] text-[#14BA6D]"
+                               : targetOrder?.status === "canceled"
+                               ? "bg-[#E2000029] text-[#E2000099]"
+                               : targetOrder?.status === "delivery_failed"
+                               ? "bg-[#E2000029] text-[#29210499]"
+                               : targetOrder?.status === "returned"
+                               ? "bg-[#ECFDF3] text-[#14BA6D]"
+                               : targetOrder?.status === "delivered"
+                               ? "bg-[#ECFDF3] text-[#7F9B8D]"
+                               : targetOrder?.status === "ready_to_ship"
+                               ? "bg-[#7F9B8D29]"
+                               : "bg-[#ECFDF3] text-[#037847]"
+                           }`}
+                        onChange={(e) => {
+                          setSelectStatus(e.currentTarget.value);
+                        }}
+                        value={selectStatus}
+                      >
+                        <option value={`pending`}>pending</option>
+                        <option value={`returned`}>returned</option>
+                        <option value={`delivered`}>delivered</option>
+                        <option value={`delivery_failed`}>
+                          delivery_failed
+                        </option>
+                        <option value={`shipped`}>shipped</option>
+                        <option value={`canceled`}>canceled</option>
+                        <option value={`ready_to_ship`}>ready_to_ship</option>
+                      </select>
                     </div>
                     <div className="flex justify-between items-center gap-2 mt-2">
                       <span className="text-lg font-bold">Payment Status:</span>
@@ -139,46 +157,48 @@ const OrdersDetails = () => {
                   </div>
                 </div>
               </div>
-              <div>
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>SKU</th>
-                      <th>Product Name</th>
-                      <th>Vendor</th>
-                      <th>Brand</th>
-                      <th>Quantity</th>
-                      <th>Price</th>
-                      <th>Discount</th>
-                      <th>Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {targetOrder?.orderDetails?.map((order, idx) => (
-                      <tr key={idx}>
-                        <td>{order.product_information.id}</td>
-                        <td>{order.sku}</td>
-                        <td className=" flex gap-2 items-center text-sm">
-                          <img
-                            src={order?.product_information?.thumbnail}
-                            className="w-10 h-10 object-cover rounded-sm"
-                          />
-                          <span>{order.product_information.name}</span>
-                        </td>
-                        <td>vendor</td>
-                        <td>{order?.product_information?.brand.name}</td>
-                        <td>{order?.quantity}</td>
-                        <td>{order?.price}</td>
-                        <td>{order?.product_information.discount}</td>
-                        <td>
-                          {order?.quantity} * {order?.price}{" "}
-                        </td>
+              <div className="">
+                <div className="overflow-x-auto">
+                  <table className="table w-full ">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>SKU</th>
+                        <th>Product Name</th>
+                        <th>Vendor</th>
+                        <th>Brand</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Subtotal</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="grid grid-cols-2 gap-20  border p-10 rounded-lg shadow-xl mt-8">
+                    </thead>
+                    <tbody>
+                      {targetOrder?.orderDetails?.map((order, idx) => (
+                        <tr key={idx}>
+                          <td>{order.product_information.id}</td>
+                          <td>{order.sku}</td>
+                          <td className=" flex gap-2 items-center text-sm">
+                            <img
+                              src={order?.product_information?.thumbnail}
+                              className="w-10 h-10 object-cover rounded-sm"
+                            />
+                            <span>{order.product_information.name}</span>
+                          </td>
+                          <td>vendor</td>
+                          <td>{order?.product_information?.brand.name}</td>
+                          <td>{order?.quantity}</td>
+                          <td>{order?.price}</td>
+                          <td>{order?.product_information.discount}</td>
+                          <td>
+                            {order?.quantity} * {order?.price}{" "}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-20  border p-10 rounded-lg shadow-xl mt-8">
                   <div className="flex justify-between">
                     <div className="flex flex-col gap-4 ">
                       <span className="font-bold text-lg mb-2">Shipping</span>
