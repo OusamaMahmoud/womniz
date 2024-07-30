@@ -13,7 +13,6 @@ import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import useAllProducts from "../../../hooks/useAllProducts";
 import Pagination from "../../Pagination";
-// import { Brand } from "../../../services/vendor-category-sevice";
 
 const Clothes = () => {
   // Filters

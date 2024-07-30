@@ -5,7 +5,7 @@ const RingsDynamicForm = ({ onSelectedSizes, sizes }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
-    const savedFields = localStorage.getItem("formFields");
+    const savedFields = localStorage.getItem("rings");
     if (savedFields) {
       setFields(JSON.parse(savedFields));
     }
@@ -17,14 +17,14 @@ const RingsDynamicForm = ({ onSelectedSizes, sizes }) => {
     values[index][event.target.name] = event.target.value;
     setFields(values);
     onSelectedSizes(values);
-    localStorage.setItem("formFields", JSON.stringify(values));
+    localStorage.setItem("rings", JSON.stringify(values));
   };
 
   // Function to add new fields when "Add" button is clicked
   const addField = () => {
     const newFields = [...fields, { size: "", quantity: "", sku: "" }];
     setFields(newFields);
-    localStorage.setItem("formFields", JSON.stringify(newFields));
+    localStorage.setItem("rings", JSON.stringify(newFields));
   };
 
   // Function to handle removing a field
@@ -35,7 +35,7 @@ const RingsDynamicForm = ({ onSelectedSizes, sizes }) => {
       values.splice(index, 1);
       setFields(values);
       onSelectedSizes(values);
-      localStorage.setItem("formFields", JSON.stringify(values));
+      localStorage.setItem("rings", JSON.stringify(values));
     }
   };
   const handleKeyDown = (event) => {

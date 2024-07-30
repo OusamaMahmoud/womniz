@@ -124,9 +124,9 @@ const JewelleryTable = ({
                 {row.model_id}
               </td>
               <Link to={`product-details/${row.id}`}>
-                <td className="py-3 px-6 text-left xl:text-lg capitalize">
+                <p className="py-3 px-6 text-left xl:text-lg capitalize">
                   {row.name}
-                </td>
+                </p>
               </Link>
               <td className="py-3 px-6 text-left xl:text-lg ">Vendor</td>
               <td className="py-3 px-6 text-left xl:text-lg ">

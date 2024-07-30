@@ -15,55 +15,22 @@ import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import ColorPicker from "../clothes/ColorPicker";
 import RingsDynamicForm from "./RingsDynamicForm";
 
-// type FormData = z.infer<typeof schema>;
-// interface Image {
-//   preview: string;
-//   name: string;
-// }
-
 interface ProductImage {
   file: File;
   preview: string;
 }
 
 const NewJewellery = () => {
-  // REACT HOOK FORM
-  // const {
-  //   handleSubmit,
-  //   register,
-  //   formState: { errors },
-  // } = useForm();
 
-  useEffect(() => {
-    setThumbnailImg(null);
-    setProductImages([]);
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setSubBrandCategory("");
-    setShoesSizes([]);
-    setClothesSizes([]);
-    setBagObject({ quantity: "", sku: "" });
-    setPrice(0);
-    setPercentage(0);
+  // Images States
 
-    localStorage.removeItem("formFields");
-    localStorage.removeItem("shoesFormFields");
-    localStorage.removeItem("bagFormFields");
-
-    localStorage.removeItem("prodDescripAr");
-    localStorage.removeItem("prodDescripEn");
-    localStorage.removeItem("fitSizeAr");
-    localStorage.removeItem("fitSizeEn");
-  }, []);
-
-  // STATE VARIABLES
   const [productFiles, setProductFiles] = useState<File[]>([]);
+  const [productImages, setProductImages] = useState<ProductImage[]>([]);
+  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
+
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
     {} as Brand
   );
-
   const [proPrice, setPrice] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
   const [proNameEn, setProNameEn] = useState<string>("");
@@ -71,23 +38,16 @@ const NewJewellery = () => {
   const [category, setCategory] = useState<string>("");
   const [subBrandCategory, setSubBrandCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
+  const [prodDescripAr, setProdDescripAr] = useState("");
+  const [prodDescripEn, setProdDescripEn] = useState("");
+  const [fitSizeEn, setFitSizeEn] = useState("");
+  const [fitSizeAr, setFitSizeAr] = useState("");
+  const [modalId, setModalId] = useState("");
+  const [materialEn, setMaterialEn] = useState("");
+  const [materialAr, setMaterialAr] = useState("");
 
-  const [clothesSizes, setClothesSizes] = useState<
-    | {
-        size: string;
-        quantity: string;
-        sku: string;
-      }[]
-  >([]);
 
-  const [shoesSizes, setShoesSizes] = useState<
-    {
-      size: string;
-      quantity: string;
-      sku: string;
-    }[]
-  >([]);
-
+  // Rings Object
   const [ringsSizes, setRingsSizes] = useState<
     {
       size: string;
@@ -96,20 +56,69 @@ const NewJewellery = () => {
     }[]
   >([]);
 
-  const [prodDescripAr, setProdDescripAr] = useState("");
-  const [prodDescripEn, setProdDescripEn] = useState("");
-  const [fitSizeEn, setFitSizeEn] = useState("");
-  const [fitSizeAr, setFitSizeAr] = useState("");
+  // Necklace Object
+  const [necklaceObject, setNecklaceObject] = useState({
+    sku: "",
+    quantity: "",
+    neckLength: "",
+  });
 
+  // Earings Object
+  const [earingsObject, setEaringsObject] = useState({
+    sku: "",
+    quantity: "",
+    earingsLength: "",
+  });
+
+  // Bracelets Object
+  const [braceletsObject, setBraceletsObject] = useState({
+    sku: "",
+    quantity: "",
+    braceletsLength: "",
+  });
+
+
+  // FETCH Sizes of Rings.
+  const { sizes } = useSizes({ productType: "ring" });
+
+  // ERRORS STATES
+  const [thumbnailImgError, setThumbnailImgError] = useState(false);
+  const [productFilesError, setProductFilesError] = useState(false);
+
+  const [isSetSubmitButton, setSubmitButton] = useState(false);
+
+  const [proNameArError, setProNameArError] = useState("");
+  const [proNameEnError, setProNameEnError] = useState("");
+
+  // TAPS And SUB_TAPS
   const [activeTab, setActiveTab] = useState("productInfo");
-  const [subClothes, setSubClothes] = useState("rings");
+  const [subJewelry, setSubJewelry] = useState("rings");
 
-  //CATEGORIES
+  // TODO:
+
+  const [clothesSizes, setClothesSizes] = useState<
+    | {
+        size: string;
+        quantity: string;
+        sku: string;
+      }[]
+  >([]);
+  const [shoesSizes, setShoesSizes] = useState<
+    {
+      size: string;
+      quantity: string;
+      sku: string;
+    }[]
+  >([]);
+
+  // FETCH CATEGORIES
   const { vendorCategories } = useVendorCategories();
 
-  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  const clothesCategoryChields = clothesCategory?.childs;
-  const brandCategories = clothesCategory?.brands.map((b) => ({
+  const jewelleryCategory = vendorCategories.find(
+    (i) => i.name === "Jewellery"
+  );
+  const jewelleryCategoryChields = jewelleryCategory?.childs;
+  const brandCategories = jewelleryCategory?.brands.map((b) => ({
     id: b.id,
     categories: b.categories,
   }));
@@ -123,21 +132,39 @@ const NewJewellery = () => {
     }
   }, [brand]);
 
-  // ERRORS STATES
-  const [, setThumbnailImgError] = useState(false);
-  const [, setProductFilesError] = useState(false);
-  const [isSetSubmitButton, setSubmitButton] = useState(false);
-  const { sizes } = useSizes({ productType: subClothes });
+  // Cancel all Values when rendering.
+  useEffect(() => {
+    setThumbnailImg(null);
+    setProductImages([]);
+    setProNameAr("");
+    setProNameEn("");
+    setCategory("");
+    setBrand("");
+    setSubBrandCategory("");
+    setPrice(0);
+    setPercentage(0);
 
-  // USBMIT FUNCTION
+    setRingsSizes([{ sku: "", size: "", quantity: "" }]);
+    setNecklaceObject({ sku: "", neckLength: "", quantity: "" });
+
+    localStorage.removeItem("rings");
+    localStorage.removeItem("necklace");
+
+    localStorage.removeItem("prodDescripAr");
+    localStorage.removeItem("prodDescripEn");
+    localStorage.removeItem("fitSizeAr");
+    localStorage.removeItem("fitSizeEn");
+  }, []);
+
+  // SUBMIT FUNCTION
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // FIELDS ERRORS
 
     const formData = new FormData();
     // PRODUCT TYPE
     formData.append("product_type", "clothes");
-    formData.append("product_sub_type", subClothes);
+    formData.append("product_sub_type", subJewelry);
 
     // THUMBNAIL
     if (thumbnailImg) {
@@ -179,7 +206,7 @@ const NewJewellery = () => {
         formData.append(`variants[${idx}][stock]`, obj.quantity);
       });
     }
-    // // BAG SIZE
+    // BAG SIZE
     if (bagObject.sku || bagObject.quantity) {
       formData.append(`variants[0][sku]`, bagObject.sku);
       formData.append(`variants[0][size_id]`, "1");
@@ -212,9 +239,9 @@ const NewJewellery = () => {
       setPrice(0);
       setPercentage(0);
 
-      if (localStorage.getItem("formFields")) {
-        localStorage.removeItem("formFields");
-        setClothesSizes([]);
+      if (localStorage.getItem("rings")) {
+        localStorage.removeItem("rings");
+        setRingsSizes([]);
       }
       if (localStorage.getItem("shoesFormFields")) {
         localStorage.removeItem("shoesFormFields");
@@ -243,11 +270,11 @@ const NewJewellery = () => {
       toast.error(error.response.data.data.error);
     }
   };
-  const [productImages, setProductImages] = useState<ProductImage[]>([]);
-  const filesInputRef = useRef<HTMLInputElement>(null);
 
-  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
+  // Handle Product Images.
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const filesInputRef = useRef<HTMLInputElement>(null);
 
   const handleRemoveImage = () => {
     setThumbnailImg(null);
@@ -303,15 +330,29 @@ const NewJewellery = () => {
       setError("");
     }
   };
-  // CHANGE SUB_CLOTHS STATE
 
   const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
 
+  // Set Necklace in local_storage
   useEffect(() => {
-    if (bagObject.sku !== "") {
-      localStorage.setItem("bagFormFields", JSON.stringify(bagObject));
+    if (necklaceObject.sku !== "") {
+      localStorage.setItem("necklace", JSON.stringify(necklaceObject));
     }
-  }, [bagObject]);
+  }, [necklaceObject]);
+
+  // Set Earings in local_storage
+  useEffect(() => {
+    if (earingsObject.sku !== "") {
+      localStorage.setItem("earings", JSON.stringify(earingsObject));
+    }
+  }, [earingsObject]);
+
+  // Set Bracelets in local_storage
+  useEffect(() => {
+    if (braceletsObject.sku !== "") {
+      localStorage.setItem("bracelets", JSON.stringify(braceletsObject));
+    }
+  }, [braceletsObject]);
 
   //PAST
   const [pastSubClothes, setPastSubClothes] = useState("");
@@ -319,17 +360,7 @@ const NewJewellery = () => {
   //NEXT
   const [nextSubCloths, setNextSubCloths] = useState("");
 
-  // useEffect(() => {
-  //   if (localStorage.getItem("bagFormFields")) {
-  //     setPastSubClothes("bags");
-  //   } else if (localStorage.getItem("shoesFormFields")) {
-  //     setPastSubClothes("shoes");
-  //   } else {
-  //     setPastSubClothes("clothes");
-  //   }
-  // }, [subClothes]);
-
-  // CANCEL ALL CHANGES
+  // CANCEL ALL CHANGES IF SB_JEWELRY CHANGES
   useEffect(() => {
     setThumbnailImg(null);
     setProductImages([]);
@@ -341,8 +372,11 @@ const NewJewellery = () => {
     setPercentage(0);
     setSelectedColor("");
     setModalId("");
-  }, [subClothes]);
+    setMaterialAr("");
+    setMaterialEn("");
+  }, [subJewelry]);
 
+  // Handle Cancel Button.
   const ignoreChanges = () => {
     localStorage.removeItem("prodDescripAr");
     localStorage.removeItem("prodDescripEn");
@@ -364,7 +398,7 @@ const NewJewellery = () => {
     setBagObject({ sku: "", quantity: "" });
 
     if (nextSubCloths) {
-      setSubClothes(nextSubCloths);
+      setSubJewelry(nextSubCloths);
     } else {
       setActiveTab("productInfo");
     }
@@ -406,7 +440,6 @@ const NewJewellery = () => {
     }
     setActiveTab("productInfo");
   };
-  const [modalId, setModalId] = useState("");
 
   const cancelFunc = () => {
     const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
@@ -414,14 +447,14 @@ const NewJewellery = () => {
       modal.showModal();
     }
   };
-  const [proNameArError, setProNameArError] = useState("");
-  const [proNameEnError, setProNameEnError] = useState("");
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "-" || event.key === "e") {
       event.preventDefault();
     }
   };
+
+  // Handle Color Pick .
   const [selectedColor, setSelectedColor] = useState("#fff"); // Default color
 
   const handleColorChange = (color: string) => {
@@ -476,9 +509,11 @@ const NewJewellery = () => {
           <MdCancel /> Cancel
         </button>
       </div>
+
+      {/* Select Jewelry Type */}
       <div className="flex items-center">
         <select
-          value={subClothes}
+          value={subJewelry}
           onChange={(e) => {
             const modal = document.getElementById(
               "my_modal_3"
@@ -498,6 +533,7 @@ const NewJewellery = () => {
           <option value={"bracelets"}>Bracelets</option>
         </select>
 
+        {/* Product & Info Button */}
         <button
           type="button"
           onClick={() => setActiveTab("productInfo")}
@@ -513,18 +549,26 @@ const NewJewellery = () => {
           Product Information
         </button>
 
+        {/* ICON */}
         <IoIosArrowForward className="mx-3" />
-        {subClothes === "rings" && clothesSizes && (
+
+        {/* Description & Price Button */}
+        {subJewelry === "rings" && ringsSizes && (
           <button
             type="button"
             disabled={
               !thumbnailImg ||
-              !productFiles ||
+              !productImages[0]?.preview ||
               !proNameAr ||
               !proNameEn ||
               !category ||
               !brand ||
-              !ringsSizes
+              !modalId ||
+              !materialEn ||
+              !materialAr ||
+              !ringsSizes[0]?.quantity ||
+              !ringsSizes[0]?.sku ||
+              !ringsSizes[0]?.size
             }
             onClick={() => setActiveTab("descriptionPrice")}
             className={`btn btn-outline text-xl ${
@@ -545,16 +589,23 @@ const NewJewellery = () => {
             Description & Price
           </button>
         )}
-        {subClothes === "shoes" && (
+
+        {subJewelry === "necklace" && necklaceObject && (
           <button
             type="button"
             disabled={
               !thumbnailImg ||
-              !productFiles ||
+              !productImages[0]?.preview ||
               !proNameAr ||
               !proNameEn ||
               !category ||
-              !brand
+              !brand ||
+              !modalId ||
+              !materialEn ||
+              !materialAr ||
+              !necklaceObject.neckLength ||
+              !necklaceObject.quantity ||
+              !necklaceObject.sku
             }
             onClick={() => setActiveTab("descriptionPrice")}
             className={`btn btn-outline text-xl ${
@@ -572,16 +623,22 @@ const NewJewellery = () => {
           </button>
         )}
 
-        {subClothes === "bags" && (
+        {subJewelry === "earrings" && earingsObject && (
           <button
             type="button"
             disabled={
               !thumbnailImg ||
-              !productFiles ||
+              !productImages[0]?.preview ||
               !proNameAr ||
               !proNameEn ||
               !category ||
-              !brand
+              !brand ||
+              !modalId ||
+              !materialEn ||
+              !materialAr ||
+              !earingsObject.earingsLength ||
+              !earingsObject.quantity ||
+              !earingsObject.sku
             }
             onClick={() => setActiveTab("descriptionPrice")}
             className={`btn btn-outline text-xl`}
@@ -595,6 +652,36 @@ const NewJewellery = () => {
           </button>
         )}
 
+        {subJewelry === "bracelets" && braceletsObject && (
+          <button
+            type="button"
+            disabled={
+              !thumbnailImg ||
+              !productImages[0]?.preview ||
+              !proNameAr ||
+              !proNameEn ||
+              !category ||
+              !brand ||
+              !modalId ||
+              !materialEn ||
+              !materialAr ||
+              !braceletsObject.braceletsLength ||
+              !braceletsObject.quantity ||
+              !braceletsObject.sku
+            }
+            onClick={() => setActiveTab("descriptionPrice")}
+            className={`btn btn-outline text-xl`}
+          >
+            <span
+              className={`rounded-full w-4 h-4 bg-[#1B1B1B80]  ${
+                activeTab === "arPreview" ? "bg-[#577656]" : ""
+              } `}
+            ></span>{" "}
+            Description & Price
+          </button>
+        )}
+
+        {/* ICON */}
         <IoIosArrowForward className="mx-3" />
 
         <button
@@ -701,7 +788,7 @@ const NewJewellery = () => {
           </div>
           <div className="mt-10">
             <h1 className="text-2xl font-bold">General Information</h1>
-            <div className="flex items-center gap-52 mt-10">
+            <div className="flex items-center gap-[220px] mt-10">
               <label className="text-xl font-bold">Model ID</label>
               <input
                 name="modalId"
@@ -765,7 +852,7 @@ const NewJewellery = () => {
                     <option value="" disabled selected>
                       Select App Sub Category
                     </option>
-                    {clothesCategoryChields?.map((i, idx) => (
+                    {jewelleryCategoryChields?.map((i, idx) => (
                       <option key={idx} value={`${i.id}`}>
                         {i.name}
                       </option>
@@ -789,7 +876,7 @@ const NewJewellery = () => {
                     <option value="" disabled selected>
                       Select Brand
                     </option>
-                    {clothesCategory?.brands.map((b) => (
+                    {jewelleryCategory?.brands.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.name_en}
                       </option>
@@ -820,7 +907,7 @@ const NewJewellery = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-32 items-center">
+            <div className="flex gap-32 xl:gap-60 items-center mt-10">
               <h1 className="text-xl font-bold mt-8">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
@@ -864,8 +951,32 @@ const NewJewellery = () => {
                 </div>
               </div>
             </div>
+            <div className="flex  gap-32 xl:gap-60  items-center my-20">
+              <h1 className="text-xl font-semibold">Material</h1>
+              <div className="flex gap-24">
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Material (English)</label>
+                  <input
+                    id="materialEn"
+                    type="text"
+                    value={materialEn}
+                    className="input input-bordered"
+                    onChange={(e) => setMaterialEn(e.currentTarget.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Material (Arabic)</label>
+                  <input
+                    value={materialAr}
+                    id="materialAr"
+                    className="input input-bordered"
+                    onChange={(e) => setMaterialAr(e.currentTarget.value)}
+                  />
+                </div>
+              </div>
+            </div>
 
-            {subClothes === "rings" ? (
+            {subJewelry === "rings" ? (
               <>
                 <div className="flex gap-40 mt-10">
                   <div>
@@ -888,14 +999,17 @@ const NewJewellery = () => {
                     type="button"
                     disabled={
                       !thumbnailImg ||
-                      !productFiles ||
+                      !productImages[0]?.preview ||
                       !proNameAr ||
                       !proNameEn ||
                       !category ||
                       !brand ||
-                      !shoesSizes[0]?.sku ||
-                      !shoesSizes[0]?.size ||
-                      !shoesSizes[0]?.quantity
+                      !modalId ||
+                      !materialEn ||
+                      !materialAr ||
+                      !ringsSizes[0]?.quantity ||
+                      !ringsSizes[0]?.sku ||
+                      !ringsSizes[0]?.size
                     }
                     onClick={() => setActiveTab("descriptionPrice")}
                     className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
@@ -904,45 +1018,7 @@ const NewJewellery = () => {
                   </button>
                 </div>
               </>
-            ) : subClothes === "necklace" ? (
-              <>
-                <div className="flex gap-40 items-center mt-10">
-                  <div className="flex gap-40 mt-10">
-                    <div>
-                      <div>
-                        <h1 className="text-xl font-semibold">Size</h1>
-                        <p className="text-[#47546780]">Pick available sizes</p>
-                      </div>
-                    </div>
-                    <div>
-                      <ClothsDynamicForm
-                        sizes={sizes}
-                        onSelectedSizes={(selectedSizes: any) =>
-                          setClothesSizes(selectedSizes)
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-end mt-5">
-                  <button
-                    type="button"
-                    disabled={
-                      !thumbnailImg ||
-                      !productFiles ||
-                      !proNameAr ||
-                      !proNameEn ||
-                      !category ||
-                      !brand
-                    }
-                    onClick={() => setActiveTab("descriptionPrice")}
-                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
-                  >
-                    Next
-                  </button>
-                </div>
-              </>
-            ) : subClothes === "earrings" ? (
+            ) : subJewelry === "necklace" ? (
               <>
                 <div className="flex items-center gap-32 mt-10">
                   <div>
@@ -952,13 +1028,12 @@ const NewJewellery = () => {
                   <div className="flex flex-col gap-4 flex-1">
                     <label className="text-xl">SKU</label>
                     <input
-                      // {...register("proBagSKU")}
                       name="sku"
-                      value={bagObject.sku}
+                      value={necklaceObject.sku}
                       className="input input-bordered"
                       onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
+                        setNecklaceObject({
+                          ...necklaceObject,
                           sku: e.currentTarget.value,
                         });
                       }}
@@ -967,23 +1042,28 @@ const NewJewellery = () => {
                     />
                   </div>
                   <div>
-                    <h1>Size</h1>
+                    <h1>Length</h1>
                     <input
                       type="text"
-                      value="Standard Size"
+                      value={necklaceObject.neckLength}
                       className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setNecklaceObject({
+                          ...necklaceObject,
+                          neckLength: e.currentTarget.value,
+                        });
+                      }}
                     />
                   </div>
                   <div>
                     <h1>Quantity</h1>
                     <input
-                      // {...register("proBagQuantity")}
-                      value={bagObject.quantity}
+                      value={necklaceObject.quantity}
                       type="text"
                       className="input input-bordered mt-2"
                       onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
+                        setNecklaceObject({
+                          ...necklaceObject,
                           quantity: e.currentTarget.value,
                         });
                       }}
@@ -997,11 +1077,17 @@ const NewJewellery = () => {
                     type="button"
                     disabled={
                       !thumbnailImg ||
-                      !productFiles ||
+                      !productImages[0]?.preview ||
                       !proNameAr ||
                       !proNameEn ||
                       !category ||
-                      !brand
+                      !brand ||
+                      !modalId ||
+                      !materialEn ||
+                      !materialAr ||
+                      !necklaceObject.neckLength ||
+                      !necklaceObject.quantity ||
+                      !necklaceObject.sku
                     }
                     onClick={() => setActiveTab("descriptionPrice")}
                     className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
@@ -1010,7 +1096,7 @@ const NewJewellery = () => {
                   </button>
                 </div>
               </>
-            ) : subClothes === "bracelets" ? (
+            ) : subJewelry === "earrings" ? (
               <>
                 <div className="flex items-center gap-32 mt-10">
                   <div>
@@ -1020,13 +1106,12 @@ const NewJewellery = () => {
                   <div className="flex flex-col gap-4 flex-1">
                     <label className="text-xl">SKU</label>
                     <input
-                      // {...register("proBagSKU")}
                       name="sku"
-                      value={bagObject.sku}
+                      value={earingsObject.sku}
                       className="input input-bordered"
                       onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
+                        setEaringsObject({
+                          ...earingsObject,
                           sku: e.currentTarget.value,
                         });
                       }}
@@ -1035,23 +1120,28 @@ const NewJewellery = () => {
                     />
                   </div>
                   <div>
-                    <h1>Size</h1>
+                    <h1>Length</h1>
                     <input
                       type="text"
-                      value="Standard Size"
+                      value={earingsObject.earingsLength}
                       className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setEaringsObject({
+                          ...earingsObject,
+                          earingsLength: e.currentTarget.value,
+                        });
+                      }}
                     />
                   </div>
                   <div>
                     <h1>Quantity</h1>
                     <input
-                      // {...register("proBagQuantity")}
-                      value={bagObject.quantity}
+                      value={earingsObject.quantity}
                       type="text"
                       className="input input-bordered mt-2"
                       onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
+                        setEaringsObject({
+                          ...earingsObject,
                           quantity: e.currentTarget.value,
                         });
                       }}
@@ -1065,11 +1155,95 @@ const NewJewellery = () => {
                     type="button"
                     disabled={
                       !thumbnailImg ||
-                      !productFiles ||
+                      !productImages[0]?.preview ||
                       !proNameAr ||
                       !proNameEn ||
                       !category ||
-                      !brand
+                      !brand ||
+                      !modalId ||
+                      !materialEn ||
+                      !materialAr ||
+                      !earingsObject.earingsLength ||
+                      !earingsObject.quantity ||
+                      !earingsObject.sku
+                    }
+                    onClick={() => setActiveTab("descriptionPrice")}
+                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : subJewelry === "bracelets" ? (
+              <>
+                <div className="flex items-center gap-32 mt-10">
+                  <div>
+                    <h1 className="text-xl font-semibold">Size</h1>
+                    <p className="text-[#47546780]">Pick available sizes</p>
+                  </div>
+                  <div className="flex flex-col gap-4 flex-1">
+                    <label className="text-xl">SKU</label>
+                    <input
+                      name="sku"
+                      value={braceletsObject.sku}
+                      className="input input-bordered"
+                      onChange={(e) => {
+                        setBraceletsObject({
+                          ...braceletsObject,
+                          sku: e.currentTarget.value,
+                        });
+                      }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
+                    />
+                  </div>
+                  <div>
+                    <h1>Length</h1>
+                    <input
+                      type="text"
+                      value={braceletsObject.braceletsLength}
+                      className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setBraceletsObject({
+                          ...braceletsObject,
+                          braceletsLength: e.currentTarget.value,
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <h1>Quantity</h1>
+                    <input
+                      value={braceletsObject.quantity}
+                      type="text"
+                      className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setBraceletsObject({
+                          ...braceletsObject,
+                          quantity: e.currentTarget.value,
+                        });
+                      }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end mt-5">
+                  <button
+                    type="button"
+                    disabled={
+                      !thumbnailImg ||
+                      !productImages[0]?.preview ||
+                      !proNameAr ||
+                      !proNameEn ||
+                      !category ||
+                      !brand ||
+                      !modalId ||
+                      !materialEn ||
+                      !materialAr ||
+                      !braceletsObject.braceletsLength ||
+                      !braceletsObject.quantity ||
+                      !braceletsObject.sku
                     }
                     onClick={() => setActiveTab("descriptionPrice")}
                     className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
@@ -1082,44 +1256,9 @@ const NewJewellery = () => {
               ""
             )}
           </div>
-          <div className="flex gap-40 items-center mt-10">
-            <p className="text-xl font-semibold">Maretial</p>
-            <div className="flex flex-col gap-4">
-              <label className="text-xl">Maretial (English)</label>
-              <input
-                id="proNameEn"
-                type="text"
-                value={proNameEn}
-                className="input input-bordered"
-                onChange={(e) =>
-                  handleNamesChange(e, setProNameEn, setProNameEnError)
-                }
-              />
-              {proNameEnError && (
-                <p className="text-xl underline text-red-600">
-                  {proNameEnError}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col gap-4">
-              <label className="text-xl">Maretial (Arabic)</label>
-              <input
-                value={proNameAr}
-                id="proNameAr"
-                className="input input-bordered"
-                onChange={(e) =>
-                  handleNamesChange(e, setProNameAr, setProNameArError)
-                }
-              />
-              {proNameArError && (
-                <p className="text-xl underline text-red-600">
-                  {proNameArError}
-                </p>
-              )}
-            </div>
-          </div>
         </div>
       )}
+
       {activeTab === "descriptionPrice" && (
         <div className="flex flex-col mt-8">
           {/* Product Information tab content */}
@@ -1171,7 +1310,6 @@ const NewJewellery = () => {
               <div className="mt-5 flex flex-col gap-4 max-w-72">
                 <label>Price</label>
                 <input
-                  // {...register("price")}
                   value={proPrice}
                   onChange={(e) => setPrice(Number(e.currentTarget.value))}
                   className="input input-bordered"
@@ -1182,7 +1320,6 @@ const NewJewellery = () => {
                   <label>Sale percentage</label>
                   <input
                     value={percentage}
-                    // {...register("salePercent")}
                     onChange={(e) =>
                       setPercentage(Number(e.currentTarget.value))
                     }

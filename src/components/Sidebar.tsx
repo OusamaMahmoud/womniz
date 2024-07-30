@@ -18,6 +18,7 @@ import {
   termsConditions,
 } from "../../public/assets/sidebar";
 import { IoBagRemoveOutline } from "react-icons/io5";
+import { RiOrderPlayLine } from "react-icons/ri";
 
 const Sidebar = () => {
   const { setAuth, auth } = useAuth();
@@ -88,6 +89,32 @@ const Sidebar = () => {
       {
         name: "Celebrities",
         link: "/products/celebrities",
+      },
+    ],
+  };
+  const ordersLinks = {
+    title: "Orders",
+    icon: <RiOrderPlayLine />,
+    links: [
+      {
+        name: "All Orders",
+        link: "/orders",
+      },
+      {
+        name: "Delivered",
+        link: "/orders/delivered",
+      },
+      {
+        name: "Failed",
+        link: "/orders/failed",
+      },
+      {
+        name: "Canceled",
+        link: "/orders/canceled",
+      },
+      {
+        name: "Returned",
+        link: "/orders/returned",
       },
     ],
   };
@@ -236,6 +263,22 @@ const Sidebar = () => {
                           }
                         >
                           <span className="capitalize ">{pro.name}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                  {item.title === "Orders" && (
+                    <div className="collapse-content">
+                      {ordersLinks.links.map((order, idx) => (
+                        <NavLink
+                          key={idx}
+                          to={`${order.link}`}
+                          onClick={handleCloseSideBar}
+                          className={({ isActive }) =>
+                            isActive ? activeLink : normalLink
+                          }
+                        >
+                          <span className="capitalize ">{order.name}</span>
                         </NavLink>
                       ))}
                     </div>

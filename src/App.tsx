@@ -34,6 +34,10 @@ import AllProducts from "./components/products/all/AllProducts";
 import Jewellery from "./components/products/jewellery/Jewellery";
 import NewJewellery from "./components/products/jewellery/NewJewellery";
 import JewellerySubCategory from "./components/products/jewellery/JewllerySubCategory";
+import Orders from "./components/orders/Orders";
+import OrdersDetails from "./components/orders/OrderDetails";
+import SpecificStatusOrder from "./components/orders/SpecificStatusOrder";
+import OrdersComponent from "./components/orders/OrdersComponent";
 
 function App() {
   const { permissions } = usePermissions();
@@ -112,22 +116,27 @@ function App() {
         <Route path="salons/salons-profiles/:id" element={<SalonProfile />} />
         {/* Jewelry */}
         <Route path="products/jewellery" element={<Jewellery />} />
-        <Route path="products/jewellery/new-jewellery" element={<NewJewellery />} />
+        <Route
+          path="products/jewellery/new-jewellery"
+          element={<NewJewellery />}
+        />
         <Route
           path="products/jewellery/jewellery-sub-category"
           element={<JewellerySubCategory />}
         />
-       
-       
+
         <Route path="products/celebrities" element={<Celebrities />} />
         <Route
           path="products/celebrities/new-celebrity"
           element={<NewCelebrity />}
         />
-        <Route
-          path="products"
-          element={<AllProducts />}
-        />
+        <Route path="products" element={<AllProducts />} />
+
+        {/* Orders */}
+        <Route path="orders" element={<OrdersComponent />} />
+        <Route path="orders/orders-details/:id" element={<OrdersDetails />} />
+        <Route path="orders/:slug" element={<SpecificStatusOrder />} />
+
         <Route path="*" element={<MissingPage />} />
       </Route>
     </Routes>

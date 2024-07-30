@@ -1,6 +1,7 @@
 import { RiAccountCircleLine } from "react-icons/ri";
 import { IoBagRemoveOutline } from "react-icons/io5";
 import { PiCodesandboxLogoThin, PiHairDryer } from "react-icons/pi";
+import { BoxIcon } from "lucide-react";
 
 export const links = [
   {
@@ -44,24 +45,11 @@ export const links = [
       },
     ],
   },
-  // {
-  //   title: "Orders",
-  //   icon: <LuBox />,
-  //   links: [
-  //     {
-  //       name: "Delivered",
-  //     },
-  //     {
-  //       name: "Failed",
-  //     },
-  //     {
-  //       name: "Canceled",
-  //     },
-  //     {
-  //       name: "Returned",
-  //     },
-  //   ],
-  // },
+  {
+    title: "Orders",
+    icon: <BoxIcon />,
+
+  },
   {
     title: "Salons",
     icon: <PiHairDryer />,
