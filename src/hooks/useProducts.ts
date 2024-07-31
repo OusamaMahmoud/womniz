@@ -78,7 +78,6 @@ const useProducts = ({
 
     if (category) {
       params.append(`main_category_id`, category);
-      console.log("WHO ?",category)
     }
 
     if (brand) {

@@ -4,7 +4,6 @@ import { MdOutlineCancel } from "react-icons/md";
 import { useStateContext } from "../contexts/ContextProvider";
 import { useAuth } from "../contexts/AuthProvider";
 import apiClient from "../services/api-client";
-import { links } from "../data/dummy";
 import dashboard from "/assets/sidebar/dashboard.svg";
 import home from "/assets/sidebar/home.svg";
 import logo from "/assets/logo.svg";
@@ -18,7 +17,9 @@ import {
   termsConditions,
 } from "../../public/assets/sidebar";
 import { IoBagRemoveOutline } from "react-icons/io5";
-import { RiOrderPlayLine } from "react-icons/ri";
+import { RiAccountCircleLine, RiOrderPlayLine } from "react-icons/ri";
+import { BoxIcon } from "lucide-react";
+import { PiCodesandboxLogoThin, PiHairDryer } from "react-icons/pi";
 
 const Sidebar = () => {
   const { setAuth, auth } = useAuth();
@@ -66,9 +67,31 @@ const Sidebar = () => {
     (document.getElementById("logout_modal") as HTMLDialogElement).showModal();
   };
 
+  const links = [
+    {
+      title: "Accounts",
+      icon: <RiAccountCircleLine />,
+    },
+
+    {
+      title: "Products",
+      icon: <IoBagRemoveOutline />,
+    },
+    {
+      title: "Orders",
+      icon: <BoxIcon className="w-5" />,
+    },
+    {
+      title: "Salons",
+      icon: <PiHairDryer />,
+    },
+    {
+      title: "Games",
+      icon: <PiCodesandboxLogoThin />,
+    },
+  ];
+
   const productsLinks = {
-    title: "Products",
-    icon: <IoBagRemoveOutline />,
     links: [
       {
         name: "All",
@@ -93,8 +116,6 @@ const Sidebar = () => {
     ],
   };
   const ordersLinks = {
-    title: "Orders",
-    icon: <RiOrderPlayLine />,
     links: [
       {
         name: "All Orders",
@@ -119,8 +140,6 @@ const Sidebar = () => {
     ],
   };
   const salonsLinks = {
-    title: "Salons",
-    icon: <IoBagRemoveOutline />,
     links: [
       {
         name: "Salon’s Profiles",
@@ -132,6 +151,7 @@ const Sidebar = () => {
       },
     ],
   };
+  
   const activeLink =
     "flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-[#577656] hover:bg-[#BED3C4] hover:text-[#577656] text-md m-2";
   const normalLink =

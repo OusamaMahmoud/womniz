@@ -6,8 +6,6 @@ import {
 } from "react-icons/md";
 import { IoAdd } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import VendorProductsDataGrid from "./VendorProductsDataGrid";
-import BrandProfileDataGrid from "./BrandProfileDataGrid";
 const BrandProfile = () => {
   return (
     <div className="container mx-auto px-2 flex flex-col mt-10 ">
@@ -69,7 +67,6 @@ const BrandProfile = () => {
           <option>Greedo</option>
         </select>
       </div>
-      <BrandProfileDataGrid />
       <div className="mt-10">
         <nav className="flex justify-between items-center">
           <p className="text-2xl ml-4">1-15 of 20 items</p>

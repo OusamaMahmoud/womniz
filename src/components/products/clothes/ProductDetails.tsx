@@ -1,18 +1,24 @@
 import { BiEdit } from "react-icons/bi";
 import orderSales from "../../../../public/assets/products/orderSales.svg";
-import useProducts from "../../../hooks/useProducts";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Product } from "../../../services/clothes-service";
+import apiClient from "../../../services/api-client";
 
 const ProductDetails = () => {
+  const [targetProduct, setTargetProduct] = useState<Product>();
+  const [error, setError] = useState("");
   const { id } = useParams();
 
-  const { products } = useProducts({});
-
-  const targetProduct = products.find((item) => item.id === Number(id));
   useEffect(() => {
-    console.log(targetProduct);
-  }, [targetProduct]);
+    apiClient
+      .get<{ data: Product }>(`products/${id}`)
+      .then((res) => {
+        console.log(res.data.data);
+        setTargetProduct(res.data.data);
+      })
+      .catch((err: any) => setError(err.message));
+  }, []);
 
   return (
     <div className="container mx-auto px-8 py-10 shadow-xl rounded-xl">
@@ -30,12 +36,12 @@ const ProductDetails = () => {
 
             <div className="flex justify-between items-center">
               <div>
-                <div className="max-w-[600px] border p-6 rounded-md mb-6"> 
+                <div className="max-w-[600px] border p-6 rounded-md mb-6">
                   <img src={orderSales} />
                 </div>
                 <div className="max-w-[600px] border p-6 rounded-md">
                   <h1 className="text-2xl font-bold mb-4">Details</h1>
-                 
+
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">
                       Product Name
@@ -58,27 +64,29 @@ const ProductDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className=" max-w-2xl border flex flex-col items-center p-4 mt-20 h-fit w-fit rounded-xl">
-                <div className="w-[50%] h-60 mb-2">
-                  {targetProduct && (
-                    <img
-                      src={targetProduct.thumbnail}
-                      className="object-cover rounded-lg w-[100%] h-[100%]"
-                    />
-                  )}
+              {targetProduct.thumbnail && targetProduct.images && (
+                <div className=" max-w-2xl border flex flex-col items-center p-4 mt-20 h-fit w-fit rounded-xl">
+                  <div className="w-[50%] h-60 mb-2">
+                    {targetProduct.thumbnail && (
+                      <img
+                        src={targetProduct.thumbnail}
+                        className="object-cover rounded-lg w-[100%] h-[100%]"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-10  mt-6 rounded-lg ">
+                    {targetProduct.images &&
+                      targetProduct.images.map((item, idx) => (
+                        <div key={idx} className="">
+                          <img
+                            src={item.image}
+                            className="w-32 h-32 rounded-lg"
+                          />
+                        </div>
+                      ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap items-center justify-center gap-10  mt-6 rounded-lg ">
-                  {targetProduct &&
-                    targetProduct.images.map((item, idx) => (
-                      <div key={idx} className="">
-                        <img
-                          src={item.image}
-                          className="w-32 h-32 rounded-lg"
-                        />
-                      </div>
-                    ))}
-                </div>
-              </div>
+              )}
             </div>
             <div className="max-w-5xl mt-8 border p-6 rounded-md ">
               <h1 className="text-2xl font-bold mb-4">Sizes</h1>
@@ -121,12 +129,8 @@ const ProductDetails = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           {item.stock}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          yellow
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          أصفر
-                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">yellow</td>
+                        <td className="px-6 py-4 whitespace-nowrap">أصفر</td>
                       </tr>
                     ))}
                 </tbody>

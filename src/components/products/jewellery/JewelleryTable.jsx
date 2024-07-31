@@ -123,7 +123,7 @@ const JewelleryTable = ({
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row.model_id}
               </td>
-              <Link to={`product-details/${row.id}`}>
+              <Link to={`/products/product-details/${row.id}`}>
                 <p className="py-3 px-6 text-left xl:text-lg capitalize">
                   {row.name}
                 </p>

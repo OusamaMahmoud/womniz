@@ -3,13 +3,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CompactTable } from "@table-library/react-table-library/compact";
 import { useSort } from "@table-library/react-table-library/sort";
-import { clothes } from "../../data/dummy";
 import { Link } from "react-router-dom";
 
 const FinancialReportDataGrid = () => {
 
 
-  const data = { nodes: clothes };
+  const data = { nodes: [] };
 
   const sort = useSort(
     data,

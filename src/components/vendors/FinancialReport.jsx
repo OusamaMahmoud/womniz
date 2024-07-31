@@ -6,8 +6,6 @@ import {
 } from "react-icons/md";
 import { IoAdd } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import VendorProductsDataGrid from "./VendorProductsDataGrid";
-import BrandProfileDataGrid from "./BrandProfileDataGrid";
 import { BiExport } from "react-icons/bi";
 import FinancialReportDataGrid from "./FinancialReportDataGrid";
 import DateCalender from "./DateCalender";

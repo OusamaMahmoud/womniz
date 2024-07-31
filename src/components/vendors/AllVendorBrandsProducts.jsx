@@ -5,7 +5,6 @@ import {
 } from "react-icons/md";
 import { IoAdd } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import VendorProductsDataGrid from "./VendorProductsDataGrid";
 
 const AllVendorBrandsProducts = () => {
   return (
@@ -81,7 +80,6 @@ const AllVendorBrandsProducts = () => {
           <option>Greedo</option>
         </select>
       </div>
-      <VendorProductsDataGrid />
       <div className="mt-10">
         <nav className="flex justify-between items-center">
           <p className="text-2xl ml-4">1-15 of 20 items</p>

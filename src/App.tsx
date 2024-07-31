@@ -108,7 +108,7 @@ function App() {
           element={<ProductDescription />}
         />
         <Route
-          path="products/clothes/product-details/:id"
+          path="products/product-details/:id"
           element={<ProductDetails />}
         />
         {/* Salons */}
