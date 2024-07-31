@@ -12,9 +12,9 @@ import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import useAllProducts from "../../../hooks/useAllProducts";
 import Pagination from "../../Pagination";
-import CosmeticsTable from "./CelebritiesTable";
+import CosmeticsTable from "./CosmeticsTable";
 
-const Celebrities = () => {
+const Cosmetics = () => {
   // Filters
   const [statusFilter, setStatusFilter] = useState("");
   const [searchFilters, setSearchFilters] = useState("");
@@ -59,9 +59,10 @@ const Celebrities = () => {
 
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
-  const celeritiesCategory = vendorCategories.find(
-    (i) => i.name.toLowerCase() === "Celebrities".toLowerCase()
+  const cosmeticsCategory = vendorCategories.find(
+    (i) => i.name.toLowerCase() === "Cosmetics".toLowerCase()
   );
+
 
   useEffect(() => {
     setIsDeleteEnabled(selectedProducts.size > 0);
@@ -114,7 +115,7 @@ const Celebrities = () => {
     error: clothesServerError,
     isLoading,
   } = useProducts({
-    category: celeritiesCategory?.id.toString(),
+    category: cosmeticsCategory?.id.toString(),
     page: paginationPage,
     brand,
     search: searchFilters,
@@ -303,7 +304,7 @@ const Celebrities = () => {
               <option value="" selected>
                 Select Brand
               </option>
-              {celeritiesCategory?.brands.map((b, idx) => (
+              {cosmeticsCategory?.brands.map((b, idx) => (
                 <option key={idx} value={b.id}>
                   {b.name_en}
                 </option>
@@ -362,4 +363,4 @@ const Celebrities = () => {
   );
 };
 
-export default Celebrities
+export default Cosmetics

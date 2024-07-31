@@ -27,17 +27,19 @@ import ProductDetails from "./components/products/clothes/ProductDetails";
 import Requests from "./components/Requests";
 import Salons from "./components/salons/Salons";
 import SalonProfile from "./components/salons/SalonProfile";
-import Celebrities from "./components/products/celebrities/Celebrities";
-import NewCelebrity from "./components/products/celebrities/NewCelebrities";
 import ProductDescription from "./components/products/clothes/ProductDescription";
 import AllProducts from "./components/products/all/AllProducts";
 import Jewellery from "./components/products/jewellery/Jewellery";
 import NewJewellery from "./components/products/jewellery/NewJewellery";
 import JewellerySubCategory from "./components/products/jewellery/JewllerySubCategory";
-import Orders from "./components/orders/Orders";
 import OrdersDetails from "./components/orders/OrderDetails";
 import SpecificStatusOrder from "./components/orders/SpecificStatusOrder";
 import OrdersComponent from "./components/orders/OrdersComponent";
+import Cosmetics from "./components/products/cosmetics/Cosmetics";
+import NewCosmetics from "./components/products/cosmetics/NewCosmetics";
+import CosmeticsSubCategory from "./components/products/cosmetics/CosmeticsSubCategory";
+import Celebrities from "./components/products/celebrities/Celebrities";
+import NewCelebrities from "./components/products/celebrities/NewCelebrities";
 
 function App() {
   const { permissions } = usePermissions();
@@ -128,7 +130,7 @@ function App() {
         <Route path="products/celebrities" element={<Celebrities />} />
         <Route
           path="products/celebrities/new-celebrity"
-          element={<NewCelebrity />}
+          element={<NewCelebrities />}
         />
         <Route path="products" element={<AllProducts />} />
 
@@ -136,6 +138,14 @@ function App() {
         <Route path="orders" element={<OrdersComponent />} />
         <Route path="orders/orders-details/:id" element={<OrdersDetails />} />
         <Route path="orders/:slug" element={<SpecificStatusOrder />} />
+
+        {/* Orders */}
+        <Route path="products/cosmetics" element={<Cosmetics />} />
+        <Route path="products/cosmetics/new-product" element={<NewCosmetics />} />
+        <Route
+          path="products/cosmetics/cosmetics-sub-category"
+          element={<CosmeticsSubCategory />}
+        />
 
         <Route path="*" element={<MissingPage />} />
       </Route>
