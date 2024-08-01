@@ -29,8 +29,18 @@ interface ProductImage {
 const NewCelebrities = () => {
 
   useEffect(() => {
-    setThumbnailImg(null);
+
     setProductImages([]);
+    setProductFiles([]);
+
+    setThumbnailImg(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+
     setProNameAr("");
     setProNameEn("");
     setCategory("");
@@ -169,8 +179,18 @@ const NewCelebrities = () => {
 
       toast.success("The product has been created successfully.");
       setSubmitButton(false);
-      setThumbnailImg(null);
+
       setProductImages([]);
+      setProductFiles([]);
+  
+      setThumbnailImg(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      if (filesInputRef.current) {
+        filesInputRef.current.value = "";
+      }
+  
       setProNameAr("");
       setProNameEn("");
       setCategory("");
@@ -274,8 +294,17 @@ const NewCelebrities = () => {
     localStorage.removeItem("fitSizeAr");
     localStorage.removeItem("fitSizeEn");
 
-    setThumbnailImg(null);
     setProductImages([]);
+    setProductFiles([]);
+
+    setThumbnailImg(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+
     setProNameAr("");
     setProNameEn("");
     setCategory("");

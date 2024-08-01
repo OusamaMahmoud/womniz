@@ -68,10 +68,10 @@ const NewJewellery = () => {
   });
 
   // Bracelets Object
-  const [braceletsObject, setBraceletsObject] = useState({
+  const [braceletObject, setBraceletsObject] = useState({
     sku: "",
     quantity: "",
-    braceletsLength: "",
+    braceletLength: "",
   });
 
   // FETCH Sizes of Rings.
@@ -115,9 +115,9 @@ const NewJewellery = () => {
   );
   const jewelleryCategoryChields = jewelleryCategory?.childs;
 
-  useEffect(()=>{
-    console.log(jewelleryCategory)
-  },[vendorCategories])
+  useEffect(() => {
+    console.log(jewelleryCategory);
+  }, [vendorCategories]);
 
   const brandCategories = jewelleryCategory?.brands.map((b) => ({
     id: b.id,
@@ -137,6 +137,14 @@ const NewJewellery = () => {
   useEffect(() => {
     setThumbnailImg(null);
     setProductImages([]);
+    setProductFiles([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+    setModalId("");
     setProNameAr("");
     setProNameEn("");
     setCategory("");
@@ -151,7 +159,7 @@ const NewJewellery = () => {
     localStorage.removeItem("ring");
     localStorage.removeItem("necklace");
     localStorage.removeItem("earing");
-    localStorage.removeItem("bracelets");
+    localStorage.removeItem("bracelet");
 
     localStorage.removeItem("prodDescripAr");
     localStorage.removeItem("prodDescripEn");
@@ -208,22 +216,25 @@ const NewJewellery = () => {
 
     // NECKLACE SIZE
     if (necklaceObject.sku && necklaceObject.neckLength) {
-        formData.append(`variants[0][sku]`, necklaceObject.sku);
-        formData.append(`variants[0][size_id]`, necklaceObject.neckLength);
-        formData.append(`variants[0][stock]`, necklaceObject.quantity);
+      formData.append(`variants[0][sku]`, necklaceObject.sku);
+      formData.append(`variants[0][size_id]`, "1");
+      formData.append(`variants[0][stock]`, necklaceObject.quantity);
+      formData.append(`chain_length`, necklaceObject.neckLength);
     }
 
     // EARINGS SIZE
     if (earingObject.earingLength && earingObject.sku) {
       formData.append(`variants[0][sku]`, earingObject.sku);
-      formData.append(`variants[0][size_id]`, earingObject.earingLength);
+      formData.append(`variants[0][size_id]`, "1");
       formData.append(`variants[0][stock]`, earingObject.quantity);
+      formData.append(`dimension`, earingObject.earingLength);
     }
     // BRACELETS SIZE
-    if (braceletsObject.braceletsLength && braceletsObject.sku) {
-      formData.append(`variants[0][sku]`, braceletsObject.sku);
-      formData.append(`variants[0][size_id]`, braceletsObject.braceletsLength);
-      formData.append(`variants[0][stock]`, braceletsObject.quantity);
+    if (braceletObject.braceletLength && braceletObject.sku) {
+      formData.append(`variants[0][sku]`, braceletObject.sku);
+      formData.append(`variants[0][size_id]`, "1");
+      formData.append(`variants[0][stock]`, braceletObject.quantity);
+      formData.append(`chain_length`, braceletObject.braceletLength);
     }
 
     // TEXT EDITOR
@@ -242,11 +253,19 @@ const NewJewellery = () => {
       toast.success("The product has been created successfully.");
       setSubmitButton(false);
 
-
-
       // Clear Fields...
-      setThumbnailImg(null);
       setProductImages([]);
+      setProductFiles([]);
+
+      setThumbnailImg(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      if (filesInputRef.current) {
+        filesInputRef.current.value = "";
+      }
+
+      setModalId("");
       setProNameAr("");
       setProNameEn("");
       setCategory("");
@@ -254,28 +273,26 @@ const NewJewellery = () => {
       setSubBrandCategory("");
       setPrice(0);
       setPercentage(0);
+      setMaterialAr("");
+      setMaterialEn("");
+      setColorAr("");
+      setColorEn("");
 
       if (localStorage.getItem("ring")) {
         localStorage.removeItem("ring");
-        setRingsSizes([{size:"",sku:"",quantity:""}]);
+        setRingsSizes([{ size: "", sku: "", quantity: "" }]);
       }
       if (localStorage.getItem("necklace")) {
         localStorage.removeItem("necklace");
-        setNecklaceObject({sku:"",neckLength:"",quantity:""});
+        setNecklaceObject({ sku: "", neckLength: "", quantity: "" });
       }
       if (localStorage.getItem("earing")) {
         localStorage.removeItem("earing");
-        setEaringObject({sku:"",earingLength:"",quantity:""});
+        setEaringObject({ sku: "", earingLength: "", quantity: "" });
       }
-      if (localStorage.getItem("bracelets")) {
-        localStorage.removeItem("bracelets");
-        setBraceletsObject({sku:"",braceletsLength:"",quantity:""});
-
-      }
-     
-      if (localStorage.getItem("bagFormFields")) {
-        localStorage.removeItem("bagFormFields");
-        setBagObject({ sku: "", quantity: "" });
+      if (localStorage.getItem("bracelet")) {
+        localStorage.removeItem("bracelet");
+        setBraceletsObject({ sku: "", braceletLength: "", quantity: "" });
       }
 
       if (localStorage.getItem("prodDescripEn")) {
@@ -291,13 +308,11 @@ const NewJewellery = () => {
         localStorage.removeItem("fitSizeEn");
       }
 
-
-
-
       setActiveTab("productInfo");
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
+      console.log(error.response.data.data.error);
     }
   };
 
@@ -379,10 +394,10 @@ const NewJewellery = () => {
 
   // Set Bracelets in local_storage
   useEffect(() => {
-    if (braceletsObject.sku !== "") {
-      localStorage.setItem("bracelets", JSON.stringify(braceletsObject));
+    if (braceletObject.sku !== "") {
+      localStorage.setItem("bracelet", JSON.stringify(braceletObject));
     }
-  }, [braceletsObject]);
+  }, [braceletObject]);
 
   //PAST
   const [pastSubClothes, setPastSubClothes] = useState("");
@@ -392,8 +407,17 @@ const NewJewellery = () => {
 
   // CANCEL ALL CHANGES IF SUB_JEWELRY CHANGES
   useEffect(() => {
-    setThumbnailImg(null);
     setProductImages([]);
+    setProductFiles([]);
+
+    setThumbnailImg(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+
     setProNameAr("");
     setProNameEn("");
     setCategory("");
@@ -416,10 +440,19 @@ const NewJewellery = () => {
     localStorage.removeItem("ring");
     localStorage.removeItem("necklace");
     localStorage.removeItem("earing");
-    localStorage.removeItem("bracelets");
+    localStorage.removeItem("bracelet");
+
+    setProductImages([]);
+    setProductFiles([]);
 
     setThumbnailImg(null);
-    setProductImages([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+    
     setProNameAr("");
     setProNameEn("");
     setCategory("");
@@ -429,11 +462,9 @@ const NewJewellery = () => {
     setSelectedColor("");
     setModalId("");
 
-
-    setNecklaceObject({sku:"" ,neckLength:"" ,quantity:""});
-    setEaringObject({sku:"" ,earingLength:"" ,quantity:""});
-    setBraceletsObject({sku:"" ,braceletsLength:"" ,quantity:""});
-
+    setNecklaceObject({ sku: "", neckLength: "", quantity: "" });
+    setEaringObject({ sku: "", earingLength: "", quantity: "" });
+    setBraceletsObject({ sku: "", braceletLength: "", quantity: "" });
 
     const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
     if (modal) {
@@ -453,7 +484,7 @@ const NewJewellery = () => {
     // if (nextSubCloths === "ring") {
     //   localStorage.removeItem("necklace");
     //   localStorage.removeItem("earring");
-    //   localStorage.removeItem("bracelets");
+    //   localStorage.removeItem("bracelet");
     //   setBagObject({ sku: "", quantity: "" });
     //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
     //   if (modal) {
@@ -463,7 +494,7 @@ const NewJewellery = () => {
     //   setBagObject({ sku: "", quantity: "" });
     //   localStorage.removeItem("ring");
     //   localStorage.removeItem("earring");
-    //   localStorage.removeItem("bracelets");
+    //   localStorage.removeItem("bracelet");
     //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
     //   if (modal) {
     //     modal.close();
@@ -471,12 +502,12 @@ const NewJewellery = () => {
     // } else if (nextSubCloths === "earring") {
     //   localStorage.removeItem("ring");
     //   localStorage.removeItem("necklace");
-    //   localStorage.removeItem("bracelets");
+    //   localStorage.removeItem("bracelet");
     //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
     //   if (modal) {
     //     modal.close();
     //   }
-    // } else if (nextSubCloths === "bracelets") {
+    // } else if (nextSubCloths === "bracelet") {
     //   localStorage.removeItem("ring");
     //   localStorage.removeItem("necklace");
     //   localStorage.removeItem("earring");
@@ -577,8 +608,8 @@ const NewJewellery = () => {
             Ring <BiArrowToBottom />
           </option>
           <option value={"necklace"}>Necklace</option>
-          <option value={"earring"}>Earring</option>
-          <option value={"bracelets"}>Bracelets</option>
+          <option value={"earing"}>Earring</option>
+          <option value={"bracelet"}>Bracelets</option>
         </select>
 
         {/* Product & Info Button */}
@@ -671,7 +702,7 @@ const NewJewellery = () => {
           </button>
         )}
 
-        {subJewelry === "earring" && earingObject && (
+        {subJewelry === "earing" && earingObject && (
           <button
             type="button"
             disabled={
@@ -700,7 +731,7 @@ const NewJewellery = () => {
           </button>
         )}
 
-        {subJewelry === "bracelets" && braceletsObject && (
+        {subJewelry === "bracelet" && braceletObject && (
           <button
             type="button"
             disabled={
@@ -713,9 +744,9 @@ const NewJewellery = () => {
               !modalId ||
               !materialEn ||
               !materialAr ||
-              !braceletsObject.braceletsLength ||
-              !braceletsObject.quantity ||
-              !braceletsObject.sku
+              !braceletObject.braceletLength ||
+              !braceletObject.quantity ||
+              !braceletObject.sku
             }
             onClick={() => setActiveTab("descriptionPrice")}
             className={`btn btn-outline text-xl`}
@@ -1145,7 +1176,7 @@ const NewJewellery = () => {
                   </button>
                 </div>
               </>
-            ) : subJewelry === "earring" ? (
+            ) : subJewelry === "earing" ? (
               <>
                 <div className="flex items-center gap-32 mt-10">
                   <div>
@@ -1223,7 +1254,7 @@ const NewJewellery = () => {
                   </button>
                 </div>
               </>
-            ) : subJewelry === "bracelets" ? (
+            ) : subJewelry === "bracelet" ? (
               <>
                 <div className="flex items-center gap-32 mt-10">
                   <div>
@@ -1234,11 +1265,11 @@ const NewJewellery = () => {
                     <label className="text-xl">SKU</label>
                     <input
                       name="sku"
-                      value={braceletsObject.sku}
+                      value={braceletObject.sku}
                       className="input input-bordered"
                       onChange={(e) => {
                         setBraceletsObject({
-                          ...braceletsObject,
+                          ...braceletObject,
                           sku: e.currentTarget.value,
                         });
                       }}
@@ -1250,12 +1281,12 @@ const NewJewellery = () => {
                     <h1>Length</h1>
                     <input
                       type="text"
-                      value={braceletsObject.braceletsLength}
+                      value={braceletObject.braceletLength}
                       className="input input-bordered mt-2"
                       onChange={(e) => {
                         setBraceletsObject({
-                          ...braceletsObject,
-                          braceletsLength: e.currentTarget.value,
+                          ...braceletObject,
+                          braceletLength: e.currentTarget.value,
                         });
                       }}
                     />
@@ -1263,12 +1294,12 @@ const NewJewellery = () => {
                   <div>
                     <h1>Quantity</h1>
                     <input
-                      value={braceletsObject.quantity}
+                      value={braceletObject.quantity}
                       type="text"
                       className="input input-bordered mt-2"
                       onChange={(e) => {
                         setBraceletsObject({
-                          ...braceletsObject,
+                          ...braceletObject,
                           quantity: e.currentTarget.value,
                         });
                       }}
@@ -1290,9 +1321,9 @@ const NewJewellery = () => {
                       !modalId ||
                       !materialEn ||
                       !materialAr ||
-                      !braceletsObject.braceletsLength ||
-                      !braceletsObject.quantity ||
-                      !braceletsObject.sku
+                      !braceletObject.braceletLength ||
+                      !braceletObject.quantity ||
+                      !braceletObject.sku
                     }
                     onClick={() => setActiveTab("descriptionPrice")}
                     className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"

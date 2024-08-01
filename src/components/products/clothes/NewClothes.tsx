@@ -14,28 +14,26 @@ import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import ColorPicker from "./ColorPicker";
 
-// type FormData = z.infer<typeof schema>;
-// interface Image {
-//   preview: string;
-//   name: string;
-// }
-
 interface ProductImage {
   file: File;
   preview: string;
 }
 
 const NewClothes = () => {
-  // REACT HOOK FORM
-  // const {
-  //   handleSubmit,
-  //   register,
-  //   formState: { errors },
-  // } = useForm();
+
 
   useEffect(() => {
     setThumbnailImg(null);
     setProductImages([]);
+    setProductFiles([]);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+
     setProNameAr("");
     setProNameEn("");
     setCategory("");
@@ -195,6 +193,15 @@ const NewClothes = () => {
       setSubmitButton(false);
       setThumbnailImg(null);
       setProductImages([]);
+      setProductFiles([]);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      if (filesInputRef.current) {
+        filesInputRef.current.value = "";
+      }
+
       setProNameAr("");
       setProNameEn("");
       setCategory("");
@@ -324,6 +331,15 @@ const NewClothes = () => {
   useEffect(() => {
     setThumbnailImg(null);
     setProductImages([]);
+    setProductFiles([]);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+
     setProNameAr("");
     setProNameEn("");
     setCategory("");
@@ -342,6 +358,15 @@ const NewClothes = () => {
 
     setThumbnailImg(null);
     setProductImages([]);
+    setProductFiles([]);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (filesInputRef.current) {
+      filesInputRef.current.value = "";
+    }
+
     setProNameAr("");
     setProNameEn("");
     setCategory("");

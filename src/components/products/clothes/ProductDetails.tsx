@@ -14,7 +14,6 @@ const ProductDetails = () => {
     apiClient
       .get<{ data: Product }>(`products/${id}`)
       .then((res) => {
-        console.log(res.data.data);
         setTargetProduct(res.data.data);
       })
       .catch((err: any) => setError(err.message));

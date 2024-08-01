@@ -11,7 +11,7 @@ const ClothesTable = ({
   handleCheckboxChange,
   products
 }) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(products);
   const [sortBy, setSortBy] = useState(null);
   const [sortDesc, setSortDesc] = useState(false);
 
@@ -104,7 +104,7 @@ const ClothesTable = ({
           </tr>
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
-          {sortedData.map((row) => (
+          {sortedData?.map((row) => (
             <tr
               key={row.id}
               className="border-b border-gray-200 hover:bg-gray-100"
@@ -119,46 +119,46 @@ const ClothesTable = ({
                   />
                 </label>
               </td>
-              <td className="py-3 px-6 text-left xl:text-lg ">{row.id}</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row?.id}</td>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row.model_id}
+                {row?.model_id}
               </td>
-              <Link to={`/products/product-details/${row.id}`}>
+              <Link to={`/products/product-details/${row?.id}`}>
                 <td className="py-3 px-6 text-left xl:text-lg capitalize">
-                  {row.name}
+                  {row?.name}
                 </td>
               </Link>
               <td className="py-3 px-6 text-left xl:text-lg ">Vendor</td>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row.brand.name}
+                {row?.brand?.name}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row.categories[0]?.name}
+                {row?.categories[0]?.name}
               </td>
-              <td className="py-3 px-6 text-left xl:text-lg ">{row.price}</td>
-              {row.status === "live" ? (
+              <td className="py-3 px-6 text-left xl:text-lg ">{row?.price}</td>
+              {row?.status === "live" ? (
                 <td
                   className={`badge bg-[#ECFDF3] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row?.status}
                 </td>
-              ) : row.status === "rejected" ? (
+              ) : row?.status === "rejected" ? (
                 <td
                   className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
                 </td>
-              ) : row.status === "deactivated" ? (
+              ) : row?.status === "deactivated" ? (
                 <td
                   className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
                 </td>
               ) : (
                 <td
                   className={`badge bg-[#EDEDED] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#636366]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#636366]`} /> {row?.status}
                 </td>
               )}
             </tr>
