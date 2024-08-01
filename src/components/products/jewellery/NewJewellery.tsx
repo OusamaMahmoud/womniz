@@ -4,8 +4,6 @@ import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
-import ClothsDynamicForm from "../clothes/ClothsDynamicForm";
-import ShoesDynamicForm from "../clothes/ShoesDynamicForm";
 import { CameraIcon } from "@heroicons/react/24/solid";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import { Brand } from "../../../services/vendor-category-sevice";
@@ -78,8 +76,8 @@ const NewJewellery = () => {
   const { sizes } = useSizes({ productType: "ring" });
 
   // ERRORS STATES
-  const [thumbnailImgError, setThumbnailImgError] = useState(false);
-  const [productFilesError, setProductFilesError] = useState(false);
+  const [, setThumbnailImgError] = useState(false);
+  const [, setProductFilesError] = useState(false);
 
   const [isSetSubmitButton, setSubmitButton] = useState(false);
 
@@ -92,14 +90,14 @@ const NewJewellery = () => {
 
   // TODO:
 
-  const [clothesSizes, setClothesSizes] = useState<
+  const [clothesSizes, ] = useState<
     | {
         size: string;
         quantity: string;
         sku: string;
       }[]
   >([]);
-  const [shoesSizes, setShoesSizes] = useState<
+  const [shoesSizes, ] = useState<
     {
       size: string;
       quantity: string;
@@ -376,7 +374,7 @@ const NewJewellery = () => {
     }
   };
 
-  const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
+  const [bagObject, ] = useState({ sku: "", quantity: "" });
 
   // Set Necklace in local_storage
   useEffect(() => {
@@ -400,7 +398,7 @@ const NewJewellery = () => {
   }, [braceletObject]);
 
   //PAST
-  const [pastSubClothes, setPastSubClothes] = useState("");
+  // const [pastSubClothes, setPastSubClothes] = useState("");
 
   //NEXT
   const [nextSubCloths, setNextSubCloths] = useState("");

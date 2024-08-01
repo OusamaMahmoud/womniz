@@ -1,18 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BiArrowToBottom } from "react-icons/bi";
 import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
-import useSizes from "../../../hooks/useSizes";
 import { CameraIcon } from "@heroicons/react/24/solid";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
-import ColorPicker from "../clothes/ColorPicker";
-import ShoesDynamicForm from "../clothes/ShoesDynamicForm";
-import ClothsDynamicForm from "../clothes/ClothsDynamicForm";
 
 // type FormData = z.infer<typeof schema>;
 // interface Image {
@@ -76,7 +71,7 @@ const NewCelebrities = () => {
   const [subBrandCategory, setSubBrandCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
 
-  const [clothesSizes, setClothesSizes] = useState<
+  const [, setClothesSizes] = useState<
     | {
         size: string;
         quantity: string;

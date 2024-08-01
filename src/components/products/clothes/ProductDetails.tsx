@@ -7,7 +7,7 @@ import apiClient from "../../../services/api-client";
 
 const ProductDetails = () => {
   const [targetProduct, setTargetProduct] = useState<Product>();
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const { id } = useParams();
 
   useEffect(() => {

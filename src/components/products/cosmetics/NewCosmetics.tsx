@@ -68,7 +68,7 @@ const NewCosmetics = () => {
   const [subBrandCategory, setSubBrandCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
 
-  const [clothesSizes, setClothesSizes] = useState<
+  const [, setClothesSizes] = useState<
     | {
         size: string;
         quantity: string;
@@ -76,7 +76,7 @@ const NewCosmetics = () => {
       }[]
   >([]);
 
-  const [shoesSizes, setShoesSizes] = useState<
+  const [, setShoesSizes] = useState<
     {
       size: string;
       quantity: string;

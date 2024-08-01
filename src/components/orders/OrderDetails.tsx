@@ -1,6 +1,5 @@
 import useTargetOrder from "../../hooks/useTargetOrder";
 import { useParams } from "react-router-dom";
-import { GoDotFill } from "react-icons/go";
 import { useEffect, useState } from "react";
 import apiClient from "../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
@@ -12,16 +11,16 @@ const OrdersDetails = () => {
     orderId: id || "",
   });
 
-  const subtotal = targetOrder?.orderDetails?.reduce(
-    (accumulator, currentValue) => {
-      return accumulator + currentValue.price_after_sale;
-    },
-    0
-  );
+  // const subtotal = targetOrder?.orderDetails?.reduce(
+  //   (accumulator, currentValue) => {
+  //     return accumulator + currentValue.price_after_sale;
+  //   },
+  //   0
+  // );
 
   const [selectStatus, setSelectStatus] = useState(targetOrder?.status);
   const [changeStatusError, setChangeStatusError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   useEffect(() => {
     setSelectStatus(targetOrder?.status);

@@ -312,7 +312,7 @@ const NewClothes = () => {
   }, [bagObject]);
 
   //PAST
-  const [pastSubClothes, setPastSubClothes] = useState("");
+  const [, setPastSubClothes] = useState("");
 
   //NEXT
   const [nextSubCloths, setNextSubCloths] = useState("");
@@ -434,7 +434,7 @@ const NewClothes = () => {
   };
 
   const [colorAr, setColorAr] = useState("");
-  const [colorEn, setColorEn] = useState("");
+  // const [colorEn, setColorEn] = useState("");
 
   return (
     <form

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Product } from "../services/clothes-service";
 import _ from "lodash";
-import { Order } from "../services/order-service";
 interface MetaObject {
   current_page: number;
   from: number;

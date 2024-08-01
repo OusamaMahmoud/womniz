@@ -17,7 +17,7 @@ import {
   termsConditions,
 } from "../../public/assets/sidebar";
 import { IoBagRemoveOutline } from "react-icons/io5";
-import { RiAccountCircleLine, RiOrderPlayLine } from "react-icons/ri";
+import { RiAccountCircleLine } from "react-icons/ri";
 import { BoxIcon } from "lucide-react";
 import { PiCodesandboxLogoThin, PiHairDryer } from "react-icons/pi";
 

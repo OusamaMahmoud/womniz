@@ -9,7 +9,6 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import useOrders from "../../hooks/useOrders";
 import Pagination from "../Pagination";
-import { Order } from "../../services/order-service";
 
 const Orders = ({ specificStatus }: { specificStatus: string }) => {
   const [date, setDate] = useState("");
