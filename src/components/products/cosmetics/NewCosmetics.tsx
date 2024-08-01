@@ -9,7 +9,6 @@ import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 
-
 // type FormData = z.infer<typeof schema>;
 // interface Image {
 //   preview: string;
@@ -45,10 +44,8 @@ const NewCosmetics = () => {
     setPrice(0);
     setPercentage(0);
 
-    localStorage.removeItem("formFields");
-    localStorage.removeItem("shoesFormFields");
-    localStorage.removeItem("bagFormFields");
-
+    localStorage.removeItem("ingredientsAr");
+    localStorage.removeItem("ingredientsEn");
     localStorage.removeItem("prodDescripAr");
     localStorage.removeItem("prodDescripEn");
     localStorage.removeItem("fitSizeAr");
@@ -60,6 +57,8 @@ const NewCosmetics = () => {
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
     {} as Brand
   );
+  const [ingredientsAr, setIngredientsAr] = useState("");
+  const [ingredientsEn, setIngredientsEn] = useState("");
 
   const [proPrice, setPrice] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
@@ -159,8 +158,10 @@ const NewCosmetics = () => {
     // TEXT EDITOR
     formData.append(`desc_en`, prodDescripEn);
     formData.append(`desc_ar`, prodDescripAr);
-    formData.append(`fit_size_desc_en`, fitSizeEn);
-    formData.append(`fit_size_desc_ar`, fitSizeAr);
+    formData.append(`about_product_desc_en`, fitSizeEn);
+    formData.append(`about_product_desc_ar`, fitSizeAr);
+    formData.append(`ingredients_desc_ar`, ingredientsAr);
+    formData.append(`ingredients_desc_en`, ingredientsEn);
 
     // PRICE
     formData.append(`price`, proPrice.toString());
@@ -192,7 +193,6 @@ const NewCosmetics = () => {
       setPrice(0);
       setPercentage(0);
 
-    
       if (localStorage.getItem("prodDescripEn")) {
         localStorage.removeItem("prodDescripEn");
       }
@@ -205,6 +205,13 @@ const NewCosmetics = () => {
       if (localStorage.getItem("fitSizeEn")) {
         localStorage.removeItem("fitSizeEn");
       }
+      if (localStorage.getItem("ingredientsAr")) {
+        localStorage.removeItem("ingredientsAr");
+      }
+      if (localStorage.getItem("ingredientsEn")) {
+        localStorage.removeItem("ingredientsEn");
+      }
+
       setActiveTab("productInfo");
     } catch (error: any) {
       setSubmitButton(false);
@@ -282,10 +289,24 @@ const NewCosmetics = () => {
   }, [bagObject]);
 
   const ignoreChanges = () => {
-    localStorage.removeItem("prodDescripAr");
-    localStorage.removeItem("prodDescripEn");
-    localStorage.removeItem("fitSizeAr");
-    localStorage.removeItem("fitSizeEn");
+    if (localStorage.getItem("prodDescripEn")) {
+      localStorage.removeItem("prodDescripEn");
+    }
+    if (localStorage.getItem("prodDescripAr")) {
+      localStorage.removeItem("prodDescripAr");
+    }
+    if (localStorage.getItem("fitSizeAr")) {
+      localStorage.removeItem("fitSizeAr");
+    }
+    if (localStorage.getItem("fitSizeEn")) {
+      localStorage.removeItem("fitSizeEn");
+    }
+    if (localStorage.getItem("ingredientsAr")) {
+      localStorage.removeItem("ingredientsAr");
+    }
+    if (localStorage.getItem("ingredientsEn")) {
+      localStorage.removeItem("ingredientsEn");
+    }
 
     setProductImages([]);
     setProductFiles([]);
@@ -394,7 +415,7 @@ const NewCosmetics = () => {
             !proNameAr ||
             !proNameEn ||
             !category ||
-            !brand 
+            !brand
           }
           onClick={() => setActiveTab("descriptionPrice")}
           className={`btn btn-outline text-xl ${
@@ -727,18 +748,18 @@ const NewCosmetics = () => {
               <div className="grow flex flex-col">
                 <h1 className="mb-2">ingredients & Details (Arabic)</h1>
                 <TextEditor
-                  localKey={"fitSizeAr"}
+                  localKey={"ingredientsAr"}
                   onHtmlContent={(htmlContent: string) =>
-                    setFitSizeAr(htmlContent)
+                    setIngredientsAr(htmlContent)
                   }
                 />
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">ingredients & Details (English)</h1>
                 <TextEditor
-                  localKey={"fitSizeEn"}
+                  localKey={"ingredientsEn"}
                   onHtmlContent={(htmlContent: string) =>
-                    setFitSizeEn(htmlContent)
+                    setIngredientsEn(htmlContent)
                   }
                 />
               </div>
@@ -864,40 +885,6 @@ const NewCosmetics = () => {
                 </div>
               </div>
               <div className="mt-8">
-                <h1 className="text-2xl font-bold tracking-wider">Size</h1>
-                {shoesSizes &&
-                  shoesSizes.map((i, idx) => {
-                    return (
-                      <div key={idx} className="mt-4 flex flex-wrap gap-10 ">
-                        <div className="flex flex-col gap-3">
-                          <h1 className="text-lg font-semibold tracking-wider">
-                            SKU
-                          </h1>
-                          <div className="border p-5 rounded-lg min-w-36">
-                            {i.sku}
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-3">
-                          <h1 className="text-lg font-semibold tracking-wider">
-                            Size
-                          </h1>
-                          <div className="border p-5 rounded-lg min-w-36">
-                            {i.size}
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-3">
-                          <h1 className="text-lg font-semibold tracking-wider">
-                            Quantity
-                          </h1>
-                          <div className="border p-5 rounded-lg min-w-36">
-                            {i.quantity}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-              <div className="mt-8">
                 <h1 className="text-2xl font-bold tracking-wider">
                   Description
                 </h1>
@@ -916,6 +903,29 @@ const NewCosmetics = () => {
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
                       {localStorage.getItem("prodDescripEn")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-8">
+                <h1 className="text-2xl font-bold tracking-wider">
+                ingredients & Details
+                </h1>
+                <div className="mt-2 flex flex-wrap gap-10 ">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      ingredients & Details (Arabic)
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-36">
+                      {localStorage.getItem("ingredientsAr")}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-lg font-semibold tracking-wider">
+                      ingredients & Details (English)
+                    </h1>
+                    <div className="border p-5 rounded-lg min-w-36">
+                      {localStorage.getItem("ingredientsAr")}
                     </div>
                   </div>
                 </div>

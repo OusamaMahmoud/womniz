@@ -59,7 +59,7 @@ const ProductDetails = () => {
                   </div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">Brand</span>
-                    <span>{targetProduct?.brand.name}</span>
+                    <span>{targetProduct?.brand?.name}</span>
                   </div>
                 </div>
               </div>

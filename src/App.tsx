@@ -142,6 +142,7 @@ function App() {
         {/* Orders */}
         <Route path="products/cosmetics" element={<Cosmetics />} />
         <Route path="products/cosmetics/new-product" element={<NewCosmetics />} />
+        <Route path="products/celebrities/new-product" element={<NewCelebrities />} />
         <Route
           path="products/cosmetics/cosmetics-sub-category"
           element={<CosmeticsSubCategory />}

@@ -92,7 +92,7 @@ const NewCelebrities = () => {
     }[]
   >([]);
 
-  const [prodDescripAr, setProdDescripAr] = useState("");
+  const [prodDescripAr, setProdDescripAr] = useState(""); 
   const [prodDescripEn, setProdDescripEn] = useState("");
   const [fitSizeEn, setFitSizeEn] = useState("");
   const [fitSizeAr, setFitSizeAr] = useState("");
@@ -130,8 +130,8 @@ const NewCelebrities = () => {
 
     const formData = new FormData();
     // PRODUCT TYPE
-    formData.append("product_type", "cosmetics");
-    formData.append("product_sub_type", "cosmetics");
+    formData.append("product_type", "clothes");
+    formData.append("product_sub_type", "clothes");
 
     // THUMBNAIL
     if (thumbnailImg) {
@@ -742,27 +742,6 @@ const NewCelebrities = () => {
               </div>
               <div className="grow flex flex-col">
                 <h1 className="mb-2">ingredients & Details (English)</h1>
-                <TextEditor
-                  localKey={"fitSizeEn"}
-                  onHtmlContent={(htmlContent: string) =>
-                    setFitSizeEn(htmlContent)
-                  }
-                />
-              </div>
-            </div>
-            <h1 className="text-xl font-bold mt-6">About the product</h1>
-            <div className="flex justify-around items-center gap-20 mt-4">
-              <div className="grow flex flex-col">
-                <h1 className="mb-2">About the product (Arabic)</h1>
-                <TextEditor
-                  localKey={"fitSizeAr"}
-                  onHtmlContent={(htmlContent: string) =>
-                    setFitSizeAr(htmlContent)
-                  }
-                />
-              </div>
-              <div className="grow flex flex-col">
-                <h1 className="mb-2">About the product (English)</h1>
                 <TextEditor
                   localKey={"fitSizeEn"}
                   onHtmlContent={(htmlContent: string) =>
