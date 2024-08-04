@@ -1,15 +1,18 @@
 import { BiDotsVertical, BiEditAlt } from "react-icons/bi";
 import subCategory from "../../../../public/assets/products/subCategory.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaAddressCard } from "react-icons/fa";
 import { HiMiniCamera } from "react-icons/hi2";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 
 const CelebritiesSubCategory = () => {
   const { vendorCategories } = useVendorCategories();
-  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
+  const clothesCategory = vendorCategories.find((i) => i.name === "Celebrities");
   const clothesCategoryChields = clothesCategory?.childs;
-  console.log("tasneem=>", clothesCategoryChields);
+
+  useEffect(()=>{
+console.log(clothesCategory)
+  },[clothesCategory])
   const [openSettingId, setOpenSettingId] = useState(null);
 
   const toggleSetting = (id) => {

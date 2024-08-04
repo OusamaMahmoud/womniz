@@ -40,6 +40,7 @@ import NewCosmetics from "./components/products/cosmetics/NewCosmetics";
 import CosmeticsSubCategory from "./components/products/cosmetics/CosmeticsSubCategory";
 import Celebrities from "./components/products/celebrities/Celebrities";
 import NewCelebrities from "./components/products/celebrities/NewCelebrities";
+import CelebritiesSubCategory from "./components/products/celebrities/CelebritiesSubCategory";
 
 function App() {
   const { permissions } = usePermissions();
@@ -132,6 +133,10 @@ function App() {
           path="products/celebrities/new-celebrity"
           element={<NewCelebrities />}
         />
+               <Route
+          path="products/celebrities/celebrities-sub-category"
+          element={<CelebritiesSubCategory />}
+        />
         <Route path="products" element={<AllProducts />} />
 
         {/* Orders */}
@@ -139,9 +144,9 @@ function App() {
         <Route path="orders/orders-details/:id" element={<OrdersDetails />} />
         <Route path="orders/:slug" element={<SpecificStatusOrder />} />
 
-        {/* Orders */}
         <Route path="products/cosmetics" element={<Cosmetics />} />
         <Route path="products/cosmetics/new-product" element={<NewCosmetics />} />
+        <Route path="products/cosmetics/cosmetics-sub-category" element={<CosmeticsSubCategory />} />
         <Route path="products/celebrities/new-product" element={<NewCelebrities />} />
         <Route
           path="products/cosmetics/cosmetics-sub-category"

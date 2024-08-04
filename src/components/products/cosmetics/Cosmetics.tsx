@@ -210,7 +210,7 @@ const Cosmetics = () => {
         <>
           <div className="flex items-center gap-8 justify-end mb-8">
             <Link
-              to={"cloths-sub-category"}
+              to={"cosmetics-sub-category"}
               className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
             >
               Sub Category

@@ -1,6 +1,6 @@
 import { BiDotsVertical, BiEditAlt } from "react-icons/bi";
 import subCategory from "../../../../public/assets/products/subCategory.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaAddressCard } from "react-icons/fa";
 import { HiMiniCamera } from "react-icons/hi2";
 import useVendorCategories from "../../../hooks/useVendorCategories";
@@ -10,9 +10,16 @@ const JewellerySubCategory = () => {
   const jewelleryCategory = vendorCategories.find(
     (i) => i.name.toLowerCase() === "Jewellery".toLowerCase()
   );
+
+  useEffect(() => {
+    console.log(jewelleryCategory);
+  }, [jewelleryCategory]);
+
+
   const jewelleryCategoryChields = jewelleryCategory?.childs;
   const [openSettingId, setOpenSettingId] = useState(null);
 
+  
   const toggleSetting = (id) => {
     setOpenSettingId(openSettingId === id ? null : id);
   };

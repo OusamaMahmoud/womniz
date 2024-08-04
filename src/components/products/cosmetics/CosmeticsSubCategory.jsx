@@ -1,17 +1,21 @@
 import { BiDotsVertical, BiEditAlt } from "react-icons/bi";
 import subCategory from "../../../../public/assets/products/subCategory.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaAddressCard } from "react-icons/fa";
 import { HiMiniCamera } from "react-icons/hi2";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 
 const CosmeticsSubCategory = () => {
   const { vendorCategories } = useVendorCategories();
-  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  const clothesCategoryChields = clothesCategory?.childs;
-  console.log("tasneem=>", clothesCategoryChields);
+  const cosmeticsCategory = vendorCategories.find(
+    (i) => i.name === "Cosmetics"
+  );
+  const cosmeticsCategoryChields = cosmeticsCategory?.childs;
   const [openSettingId, setOpenSettingId] = useState(null);
 
+  useEffect(() => {
+    console.log(cosmeticsCategory);
+  }, [cosmeticsCategory]);
   const toggleSetting = (id) => {
     setOpenSettingId(openSettingId === id ? null : id);
   };
@@ -21,7 +25,7 @@ const CosmeticsSubCategory = () => {
       {vendorCategories ? (
         <div className="flex justify-between items-start shadow-lg p-8">
           <div className="flex gap-6  ">
-            {clothesCategoryChields?.map((item) => (
+            {cosmeticsCategoryChields?.map((item) => (
               <div key={item.id} className="relative">
                 {item.image ? (
                   <img
@@ -41,7 +45,7 @@ const CosmeticsSubCategory = () => {
                 <button className="absolute top-2 right-2">
                   <BiDotsVertical className="text-xl" />
                 </button>
-                { false &&
+                {false && (
                   <div className="flex flex-col items-center bg-white border rounded-lg shadow-lg gap-2 absolute top-12 right-2 z-10">
                     <button className="p-2 w-full hover:bg-gray-200">
                       Edit
@@ -50,7 +54,7 @@ const CosmeticsSubCategory = () => {
                       Delete
                     </button>
                   </div>
-                }
+                )}
               </div>
             ))}
           </div>
@@ -114,4 +118,4 @@ const CosmeticsSubCategory = () => {
   );
 };
 
-export default CosmeticsSubCategory
+export default CosmeticsSubCategory;
