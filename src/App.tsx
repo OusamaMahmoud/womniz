@@ -41,6 +41,9 @@ import CosmeticsSubCategory from "./components/products/cosmetics/CosmeticsSubCa
 import Celebrities from "./components/products/celebrities/Celebrities";
 import NewCelebrities from "./components/products/celebrities/NewCelebrities";
 import CelebritiesSubCategory from "./components/products/celebrities/CelebritiesSubCategory";
+import ProductDetailsEditing from "./components/products/clothes/ProductDetailsEditing";
+import NewClothes from "./components/products/clothes/NewClothes";
+import NewClothesEdit from "./components/products/clothes/NewClothesEdit";
 
 function App() {
   const { permissions } = usePermissions();
@@ -73,25 +76,48 @@ function App() {
           <Route path="accounts/vendors/:id" element={<VendorProfile />} />
           <Route path="accounts/vendors/brands" element={<VendorBrand />} />
         </Route>
+
+        <Route path="login" element={<Login />} />
+        <Route path="dashboard" element={<Dashboard />} />
+
+        {/* Games */}
         <Route element={<RequiredAuth allowedRoles={SCRATCH_PERMISSIONS} />}>
           <Route path="games/scratch" element={<ScratchCoupon />} />
         </Route>
         <Route element={<RequiredAuth allowedRoles={SPIN_PERMISSIONS} />}>
           <Route path="games/spin" element={<SpinTheWheel />} />
         </Route>
+        {/* Games */}
 
-        <Route path="login" element={<Login />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="products/clothes" element={<Clothes />} />
-        <Route
-          path="products/clothes/new-product"
-          element={<NewClothesProduct />}
-        />
+        {/* all products */}
+        <Route path="products" element={<AllProducts />} />
+
         <Route
           path="see-all-customers-orders/:id"
           element={<CustomerOrders />}
         />
 
+        {/* Clothes */}
+        <Route path="products/clothes" element={<Clothes />} />
+        <Route
+          path="products/clothes/new-clothes"
+          element={<NewClothes />}
+        />
+        <Route
+          path="products/edit/:id"
+          element={<NewClothesEdit />}
+        />
+        <Route
+          path="products/clothes/cloths-sub-category"
+          element={<ClothsSubCategory />}
+        />
+        <Route
+          path="products/clothes/product-description"
+          element={<ProductDescription />}
+        />
+        {/* Clothes */}
+
+        {/* Brands */}
         <Route
           path="AllVendorBrandsProducts"
           element={<AllVendorBrandsProducts />}
@@ -102,21 +128,24 @@ function App() {
         />
         <Route path="financial-reports" element={<FinancialReport />} />
         <Route path="accounts/requests" element={<Requests />} />
-        <Route
-          path="products/clothes/cloths-sub-category"
-          element={<ClothsSubCategory />}
-        />
-        <Route
-          path="products/clothes/product-description"
-          element={<ProductDescription />}
-        />
+        {/* Brands */}
+
+        {/* Product details */}
         <Route
           path="products/product-details/:id"
           element={<ProductDetails />}
         />
+        <Route
+          path="products/product-details/:id/edit"
+          element={<ProductDetailsEditing />}
+        />
+        {/* Product details */}
+
         {/* Salons */}
         <Route path="salons/salons-profiles" element={<Salons />} />
         <Route path="salons/salons-profiles/:id" element={<SalonProfile />} />
+        {/* Salons */}
+
         {/* Jewelry */}
         <Route path="products/jewellery" element={<Jewellery />} />
         <Route
@@ -127,31 +156,46 @@ function App() {
           path="products/jewellery/jewellery-sub-category"
           element={<JewellerySubCategory />}
         />
+        {/* Jewelry */}
 
+        {/* celebrities */}
         <Route path="products/celebrities" element={<Celebrities />} />
         <Route
           path="products/celebrities/new-celebrity"
           element={<NewCelebrities />}
         />
-               <Route
+        <Route
           path="products/celebrities/celebrities-sub-category"
           element={<CelebritiesSubCategory />}
         />
-        <Route path="products" element={<AllProducts />} />
+
+        <Route
+          path="products/celebrities/new-product"
+          element={<NewCelebrities />}
+        />
+        {/* celebrities */}
 
         {/* Orders */}
         <Route path="orders" element={<OrdersComponent />} />
         <Route path="orders/orders-details/:id" element={<OrdersDetails />} />
         <Route path="orders/:slug" element={<SpecificStatusOrder />} />
+        {/* Orders */}
 
+        {/*cosmetics  */}
         <Route path="products/cosmetics" element={<Cosmetics />} />
-        <Route path="products/cosmetics/new-product" element={<NewCosmetics />} />
-        <Route path="products/cosmetics/cosmetics-sub-category" element={<CosmeticsSubCategory />} />
-        <Route path="products/celebrities/new-product" element={<NewCelebrities />} />
+        <Route
+          path="products/cosmetics/new-cosmetics"
+          element={<NewCosmetics />}
+        />
         <Route
           path="products/cosmetics/cosmetics-sub-category"
           element={<CosmeticsSubCategory />}
         />
+        <Route
+          path="products/cosmetics/cosmetics-sub-category"
+          element={<CosmeticsSubCategory />}
+        />
+        {/*cosmetics  */}
 
         <Route path="*" element={<MissingPage />} />
       </Route>

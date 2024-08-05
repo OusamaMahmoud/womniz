@@ -1,13 +1,15 @@
 import { BiEdit } from "react-icons/bi";
 import orderSales from "../../../../public/assets/products/orderSales.svg";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Product } from "../../../services/clothes-service";
 import apiClient from "../../../services/api-client";
 
 const ProductDetails = () => {
   const [targetProduct, setTargetProduct] = useState<Product>();
-  const [, setError] = useState("");
+  const [targetCategory, setTargetCategory] = useState("");
+
+  const [error, setError] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
@@ -19,6 +21,12 @@ const ProductDetails = () => {
       .catch((err: any) => setError(err.message));
   }, []);
 
+  useEffect(() => {
+    if (targetProduct) {
+      setTargetCategory(targetProduct.product_type);
+    }
+  }, [targetProduct]);
+
   return (
     <div className="container mx-auto px-8 py-10 shadow-xl rounded-xl">
       {targetProduct ? (
@@ -28,16 +36,16 @@ const ProductDetails = () => {
               <h1 className="mb-2 text-2xl font-bold tracking-wider">
                 Product Details
               </h1>
-              <p className="flex items-center gap-2 border p-4 rounded-md">
+              <Link
+                to={`/products/edit/${targetProduct?.id}`}
+                className="flex items-center gap-2 border p-4 rounded-md"
+              >
                 <BiEdit /> Edit
-              </p>
+              </Link>
             </div>
 
             <div className="flex justify-between items-center">
               <div>
-                <div className="max-w-[600px] border p-6 rounded-md mb-6">
-                  <img src={orderSales} />
-                </div>
                 <div className="max-w-[600px] border p-6 rounded-md">
                   <h1 className="text-2xl font-bold mb-4">Details</h1>
 

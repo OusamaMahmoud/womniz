@@ -214,11 +214,11 @@ const Clothes = () => {
               Sub Category
             </Link>
             <Link
-              to={"/products/clothes/new-product"}
+              to={"/products/clothes/new-clothes"}
               className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
             >
-              <IoAdd className="text-white text-2xl hover:text-black" /> Add New
-              Product
+              <IoAdd className="text-white text-2xl hover:text-black" /> 
+              Add New Product
             </Link>
             <label
               htmlFor="excel"

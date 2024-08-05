@@ -779,9 +779,9 @@ const NewCosmetics = () => {
                 <h1 className="mb-2">About the product (English)</h1>
                 <TextEditor
                   localKey={"fitSizeEn"}
-                  onHtmlContent={(htmlContent: string) =>
-                    setFitSizeEn(htmlContent)
-                  }
+                  onHtmlContent={(htmlContent: string) => {
+                    setFitSizeEn(htmlContent);
+                  }}
                 />
               </div>
             </div>
@@ -909,7 +909,7 @@ const NewCosmetics = () => {
               </div>
               <div className="mt-8">
                 <h1 className="text-2xl font-bold tracking-wider">
-                ingredients & Details
+                  ingredients & Details
                 </h1>
                 <div className="mt-2 flex flex-wrap gap-10 ">
                   <div className="flex flex-col gap-3">

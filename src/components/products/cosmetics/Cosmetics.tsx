@@ -63,6 +63,9 @@ const Cosmetics = () => {
     (i) => i.name.toLowerCase() === "Cosmetics".toLowerCase()
   );
 
+  useEffect(() => {
+    console.log("look here => ",cosmeticsCategory?.id);
+  }, [cosmeticsCategory]);
 
   useEffect(() => {
     setIsDeleteEnabled(selectedProducts.size > 0);
@@ -195,9 +198,7 @@ const Cosmetics = () => {
           <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-10">
             <li>The URL was mistyped</li>
             <li>The page has moved or no longer exists</li>
-            <li>
-              You found a broken link
-            </li>
+            <li>You found a broken link</li>
           </ul>
         </div>
       ) : (
@@ -328,7 +329,7 @@ const Cosmetics = () => {
           </div>
         </>
       )}
-      
+
       {!isLoading ? (
         <CosmeticsTable
           handleCheckAll={handleCheckAll}
@@ -363,4 +364,4 @@ const Cosmetics = () => {
   );
 };
 
-export default Cosmetics
+export default Cosmetics;
