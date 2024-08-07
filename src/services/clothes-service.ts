@@ -20,14 +20,16 @@ export interface Product {
   ship_information_desc: string;
   return_order_desc: string;
   discount: number;
-  model_id:number;
-  material_ar:string;
-  material_en:string;
-  product_type:string;
-  product_sub_type:string;
-  chain_length:string;
-  dimension:string;
+  model_id: number;
+  material_ar: string;
+  material_en: string;
+  product_type: string;
+  product_sub_type: string;
+  chain_length: string;
+  dimension: string;
+  color: { id: number; color: string; hexa: string };
+  ingredients_desc_en:string
+  about_product_desc_ar:string
 }
-
 
 export default create("/products");

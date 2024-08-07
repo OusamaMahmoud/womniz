@@ -14,6 +14,8 @@ import ColorPicker from "../clothes/ColorPicker";
 import RingsDynamicForm from "./RingsDynamicForm";
 import { Product } from "../../../services/clothes-service";
 import { useNavigate, useParams } from "react-router-dom";
+import CustomSelect from "../CustomSelect";
+import useColorPalette from "../../../hooks/useColorPalette";
 
 interface ProductImage {
   file: File;
@@ -197,8 +199,9 @@ const NewJewelleryEdit = () => {
     setModalId(targetProduct?.model_id?.toString());
     setProNameEn(targetProduct?.name_en);
     setProNameAr(targetProduct?.name_ar);
-
+    setSelectedColorHexa(targetProduct?.color?.hexa)
     setBrand(targetProduct?.brand?.id?.toString());
+
     if (targetProduct.categories) {
       setCategory(targetProduct?.categories[0]?.id?.toString());
       setSubBrandCategory(targetProduct?.categories[1]?.id);
@@ -287,7 +290,7 @@ const NewJewelleryEdit = () => {
     }
 
     // NAMES IN ENGLISH & ARABIC
-    // formData.append("model_id", modalId);
+    formData.append("model_id", modalId);
     formData.append("name_en", proNameEn);
     formData.append("name_ar", proNameAr);
 
@@ -343,6 +346,7 @@ const NewJewelleryEdit = () => {
     // PRICE
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
+    formData.append(`color_id`, selectedColorID.toString());
 
     formData.append(`_method`, "PUT");
 
@@ -379,8 +383,6 @@ const NewJewelleryEdit = () => {
       setPercentage(0);
       setMaterialAr("");
       setMaterialEn("");
-      setColorAr("");
-      setColorEn("");
 
       if (localStorage.getItem("ring")) {
         localStorage.removeItem("ring");
@@ -522,15 +524,17 @@ const NewJewelleryEdit = () => {
     }
   };
 
-  // Handle Color Pick .
-  const [selectedColor, setSelectedColor] = useState("#fff"); // Default color
+  const { colors } = useColorPalette();
+  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [selectedColorID, setSelectedColorID] = useState(0);
 
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
+  const handleColorsChange = (
+    colorHexa: string,
+    colorId: number
+  ) => {
+    setSelectedColorHexa(colorHexa);
+    setSelectedColorID(colorId);
   };
-
-  const [colorAr, setColorAr] = useState("");
-  const [colorEn, setColorEn] = useState("");
 
   return (
     <form
@@ -905,7 +909,7 @@ const NewJewelleryEdit = () => {
                     <option value="" disabled selected>
                       Select Brand
                     </option>
-                    {jewelleryCategory?.brands.map((b) => (
+                    {jewelleryCategory?.brands?.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.name_en}
                       </option>
@@ -941,47 +945,18 @@ const NewJewelleryEdit = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-32 xl:gap-60 items-center mt-10">
+            <div className="flex gap-[232px] items-center">
               <h1 className="text-xl font-bold mt-8">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color(English)</label>
-                  <input
-                    name="colorEn"
-                    value={colorEn}
-                    onChange={(e) => setColorEn(e.currentTarget.value)}
-                    className="input input-bordered"
-                  />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color(Arabic)</label>
-                  <input
-                    name="colorAr"
-                    value={colorAr}
-                    onChange={(e) => setColorAr(e.currentTarget.value)}
-                    className="input input-bordered"
-                  />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color</label>
                   <div>
-                    <ColorPicker onChange={handleColorChange} />
-                    <div
-                      className="flex items-center gap-4"
-                      style={{ marginTop: "20px" }}
-                    >
-                      <p className="tetx-lg font-bold">Selected Color:</p>
-                      <div
-                        style={{
-                          width: "30px",
-                          height: "30px",
-                          borderRadius: "50%",
-                          backgroundColor: selectedColor,
-                          border: "1px solid #ccc",
-                        }}
-                      ></div>
-                      <div>{selectedColor}</div>
-                    </div>
+                    <CustomSelect
+                      colors={colors}
+                      selectedColor={selectedColorHexa}
+                      handleColorsChange={(a: string, b: number) =>
+                        handleColorsChange(a, b)
+                      }
+                    />
                   </div>
                 </div>
               </div>

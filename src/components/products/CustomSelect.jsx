@@ -64,7 +64,7 @@ const CustomSelect = ({ colors, selectedColor, handleColorsChange }) => {
               <div
                 key={color.id}
                 className="flex items-center space-x-2 p-2 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleColorsChange(color.hexa, color.color)}
+                onClick={() => handleColorsChange(color.hexa,color.id)}
               >
                 <div
                   className="w-6 h-6 rounded"

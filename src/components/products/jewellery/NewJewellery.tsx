@@ -173,9 +173,9 @@ const NewJewellery = () => {
 
     const formData = new FormData();
     // PRODUCT TYPE
+    formData.append("model_id", modalId);
     formData.append("product_type", "jewellery");
     formData.append("product_sub_type", subJewelry);
-
     // THUMBNAIL
     if (thumbnailImg) {
       formData.append("thumbnail", thumbnailImg);
@@ -192,7 +192,7 @@ const NewJewellery = () => {
     }
 
     // NAMES IN ENGLISH & ARABIC
-    // formData.append("model_id", modalId);
+    formData.append("model_id", modalId);
     formData.append("name_en", proNameEn);
     formData.append("name_ar", proNameAr);
 
@@ -245,6 +245,7 @@ const NewJewellery = () => {
     // PRICE
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
+    formData.append(`color_id`, selectedColorID.toString());
 
     try {
       setSubmitButton(true);
@@ -274,8 +275,6 @@ const NewJewellery = () => {
       setPercentage(0);
       setMaterialAr("");
       setMaterialEn("");
-      setColorAr("");
-      setColorEn("");
 
       if (localStorage.getItem("ring")) {
         localStorage.removeItem("ring");
@@ -493,23 +492,20 @@ const NewJewellery = () => {
   // Handle Color Pick .
   const [, setSelectedColor] = useState("#fff"); // Default color
 
-  // const handleColorChange = (color: string) => {
-  //   setSelectedColor(color);
-  // };
-
-  const [, setColorAr] = useState("");
-  const [, setColorEn] = useState("");
 
   const { colors } = useColorPalette();
-  const [, setSelectedColorHexa] = useState("");
-  const [selectedColorLabel, setSelectedColorLabel] = useState("");
+  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [selectedColorID, setSelectedColorID] = useState(0);
 
-  const handleColorsChange = (colorHexa: string, colorLabel: string) => {
+  const handleColorsChange = (
+    colorHexa: string,
+    colorLabel: string,
+    colorId: number
+  ) => {
     setSelectedColorHexa(colorHexa);
-    setSelectedColorLabel(colorLabel);
+    setSelectedColorID(colorId);
   };
-
-
+  
   
   return (
     <form
@@ -961,9 +957,9 @@ const NewJewellery = () => {
                   <div>
                     <CustomSelect
                       colors={colors}
-                      selectedColor={selectedColorLabel}
-                      handleColorsChange={(a: string, b: string) =>
-                        handleColorsChange(a, b)
+                      selectedColor={selectedColorHexa}
+                      handleColorsChange={(a: string, b: string, c: number) =>
+                        handleColorsChange(a, b, c)
                       }
                     />
                   </div>

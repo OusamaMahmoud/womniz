@@ -44,6 +44,7 @@ import ProductDetailsEditing from "./components/products/clothes/ProductDetailsE
 import NewClothes from "./components/products/clothes/NewClothes";
 import NewClothesEdit from "./components/products/clothes/NewClothesEdit";
 import NewJewelleryEdit from "./components/products/jewellery/NewJewelleryEdit";
+import NewCosmeticsEdit from "./components/products/cosmetics/NewCosmeticsEdit";
 
 function App() {
   const { permissions } = usePermissions();
@@ -186,6 +187,10 @@ function App() {
         <Route
           path="products/cosmetics/new-cosmetics"
           element={<NewCosmetics />}
+        />
+        <Route
+          path="products/cosmetics/edit/:id"
+          element={<NewCosmeticsEdit />}
         />
         <Route
           path="products/cosmetics/cosmetics-sub-category"

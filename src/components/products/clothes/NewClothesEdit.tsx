@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BiArrowToBottom } from "react-icons/bi";
-import {  MdDelete, MdDrafts } from "react-icons/md";
+import { MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
@@ -12,8 +12,10 @@ import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
-import { useNavigate , useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Product } from "../../../services/clothes-service";
+import useColorPalette from "../../../hooks/useColorPalette";
+import CustomSelect from "../CustomSelect";
 
 interface ProductImage {
   file: File;
@@ -81,7 +83,7 @@ const NewClothesEdit = () => {
     setSubClothes(targetProduct?.product_sub_type?.toLowerCase());
     setPrice(targetProduct.price);
     setPercentage(targetProduct.discount);
-
+    setSelectedColorHexa(targetProduct?.color?.hexa);
     if (subClothes?.toLowerCase() === "shoes") {
       console.log("okay!!_shoese");
       setShoesSizes([
@@ -177,7 +179,7 @@ const NewClothesEdit = () => {
   const [isSetSubmitButton, setSubmitButton] = useState(false);
   const { sizes } = useSizes({ productType: subClothes });
 
-const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // USBMIT FUNCTION
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -205,6 +207,7 @@ const navigate = useNavigate()
     }
 
     // NAMES IN ENGLISH & ARABIC
+    formData.append("model_id", modalId);
     formData.append("name_en", proNameEn);
     formData.append("name_ar", proNameAr);
 
@@ -247,6 +250,7 @@ const navigate = useNavigate()
     // PRICE
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
+    formData.append(`color_id`, selectedColorID.toString());
 
     formData.append(`_method`, "PUT");
 
@@ -254,11 +258,11 @@ const navigate = useNavigate()
       setSubmitButton(true);
       await apiClient.post(`/products/${targetProduct?.id}`, formData);
 
-      toast.success('The product has been created successfully.', {
+      toast.success("The product has been created successfully.", {
         autoClose: 500, // Duration in milliseconds (2 seconds)
-        onClose: () => navigate('/products')
+        onClose: () => navigate("/products"),
       });
-      
+
       setSubmitButton(false);
       setThumbnailImg(null);
       setProductImages([]);
@@ -304,7 +308,6 @@ const navigate = useNavigate()
       if (localStorage.getItem("fitSizeEn")) {
         localStorage.removeItem("fitSizeEn");
       }
-   
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
@@ -424,15 +427,18 @@ const navigate = useNavigate()
       event.preventDefault();
     }
   };
-  const [selectedColor] = useState("#fff"); // Default color
 
-  // const handleColorChange = (color: string) => {
-  //   setSelectedColor(color);
-  // };
+  const { colors } = useColorPalette();
+  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [selectedColorID, setSelectedColorID] = useState(0);
 
-  // const [colorAr, setColorAr] = useState("");
-  // const [colorEn, setColorEn] = useState("");
-
+  const handleColorsChange = (
+    colorHexa: string,
+    colorId: number
+  ) => {
+    setSelectedColorHexa(colorHexa);
+    setSelectedColorID(colorId);
+  };
   return (
     <form
       onSubmit={onSubmit}
@@ -820,17 +826,20 @@ const navigate = useNavigate()
                 </div>
               )}
             </div>
-            <div className="flex gap-32 items-center">
+
+            <div className="flex gap-[232px] items-center">
               <h1 className="text-xl font-bold mt-8">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color(English)</label>
-                  <input
-                    name="colorEn"
-                    value={selectedColor}
-                    // onChange={(e) => setColorEn(e.currentTarget.value)}
-                    className="input input-bordered"
-                  />
+                  <div>
+                    <CustomSelect
+                      colors={colors}
+                      selectedColor={selectedColorHexa}
+                      handleColorsChange={(a: string, b: number) =>
+                        handleColorsChange(a, b)
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>

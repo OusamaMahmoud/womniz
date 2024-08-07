@@ -141,6 +141,7 @@ const NewCosmetics = () => {
     }
 
     // NAMES IN ENGLISH & ARABIC
+    formData.append("model_id", modalId);
     formData.append("name_en", proNameEn);
     formData.append("name_ar", proNameAr);
 
@@ -192,6 +193,8 @@ const NewCosmetics = () => {
       setSubBrandCategory("");
       setPrice(0);
       setPercentage(0);
+      setModalId('')
+      setBagObject({sku:"" ,quantity:""})
 
       if (localStorage.getItem("prodDescripEn")) {
         localStorage.removeItem("prodDescripEn");
