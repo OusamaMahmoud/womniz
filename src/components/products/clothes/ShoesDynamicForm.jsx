@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
+import { BiAddToQueue } from "react-icons/bi";
 
-const ShoesDynamicForm = ({ onSelectedSizes, sizes , shoesSizes }) => {
+const ShoesDynamicForm = ({ onSelectedSizes, sizes , shoesSizes  }) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const ShoesDynamicForm = ({ onSelectedSizes, sizes , shoesSizes }) => {
           className="flex flex-col gap-4 xl:max-w-[800px] mb-4 border-b pb-4"
         >
           <div className="flex justify-between items-center gap-4">
-            <div className="flex flex-col gap-4 flex-1">
+            <div className="flex flex-col gap-4 ">
               <label className="text-xl">SKU</label>
               <input
                 name="sku"
@@ -68,7 +69,7 @@ const ShoesDynamicForm = ({ onSelectedSizes, sizes , shoesSizes }) => {
                 onKeyDown={handleKeyDown}
               />
             </div>
-            <div className="flex-1">
+            <div className="">
               <label className="label">
                 <span className="label-text">Size</span>
               </label>
@@ -88,7 +89,7 @@ const ShoesDynamicForm = ({ onSelectedSizes, sizes , shoesSizes }) => {
                 ))}
               </select>
             </div>
-            <div className="flex-1">
+            <div className="">
               <label className="label">
                 <span className="label-text">Quantity</span>
               </label>
@@ -106,7 +107,7 @@ const ShoesDynamicForm = ({ onSelectedSizes, sizes , shoesSizes }) => {
               <button
                 type="button"
                 onClick={() => handleRemove(index)}
-                className="btn btn-error btn-sm"
+                className="btn btn-sm"
               >
                 <AiOutlineClose />
               </button>
@@ -115,7 +116,7 @@ const ShoesDynamicForm = ({ onSelectedSizes, sizes , shoesSizes }) => {
         </div>
       ))}
       <button type="button" onClick={addField} className="btn ">
-        Add
+        <BiAddToQueue /> Add
       </button>
     </div>
   );

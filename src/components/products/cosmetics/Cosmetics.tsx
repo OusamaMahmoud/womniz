@@ -217,7 +217,7 @@ const Cosmetics = () => {
               Sub Category
             </Link>
             <Link
-              to={"/products/cosmetics/new-product"}
+              to={"/products/cosmetics/new-cosmetics"}
               className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
             >
               <IoAdd className="text-white text-2xl hover:text-black" /> Add New

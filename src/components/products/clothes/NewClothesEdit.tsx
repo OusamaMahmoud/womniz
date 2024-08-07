@@ -13,7 +13,7 @@ import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import ColorPicker from "./ColorPicker";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useNavigation, useParams } from "react-router-dom";
 import { Product } from "../../../services/clothes-service";
 
 interface ProductImage {
@@ -37,7 +37,6 @@ const NewClothesEdit = () => {
       .catch((err: any) => setError(err.message));
   }, []);
 
-
   // STATE VARIABLES
   const [productFiles, setProductFiles] = useState<File[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
@@ -45,11 +44,39 @@ const NewClothesEdit = () => {
   );
 
   TODO: useEffect(() => {
+    if (localStorage.getItem("formFields")) {
+      localStorage.removeItem("formFields");
+      setClothesSizes([]);
+    }
+    if (localStorage.getItem("shoesFormFields")) {
+      localStorage.removeItem("shoesFormFields");
+      setShoesSizes([]);
+    }
+    if (localStorage.getItem("bagFormFields")) {
+      localStorage.removeItem("bagFormFields");
+      setBagObject({ sku: "", quantity: "" });
+    }
+
+    if (localStorage.getItem("prodDescripEn")) {
+      localStorage.removeItem("prodDescripEn");
+    }
+    if (localStorage.getItem("prodDescripAr")) {
+      localStorage.removeItem("prodDescripAr");
+    }
+    if (localStorage.getItem("fitSizeAr")) {
+      localStorage.removeItem("fitSizeAr");
+    }
+    if (localStorage.getItem("fitSizeEn")) {
+      localStorage.removeItem("fitSizeEn");
+    }
+
     setModalId(targetProduct?.model_id?.toString());
-    setProNameEn(targetProduct?.name);
+    setProNameEn(targetProduct?.name_en);
+    setProNameAr(targetProduct?.name_ar);
     if (targetProduct.categories) {
       setCategory(targetProduct?.categories[0]?.id?.toString());
-      setSubBrandCategory(targetProduct?.categories[1]?.id?.toString());
+      setSubBrandCategory(targetProduct?.categories[1]?.id);
+      console.log("oppppp=>", targetProduct?.categories[1]?.id?.toString());
     }
     setBrand(targetProduct?.brand?.id.toString());
     setSubClothes(targetProduct?.product_sub_type?.toLowerCase());
@@ -96,7 +123,7 @@ const NewClothesEdit = () => {
   const [proNameEn, setProNameEn] = useState<string>("");
   const [proNameAr, setProNameAr] = useState<string>("");
   const [category, setCategory] = useState<string>("");
-  const [subBrandCategory, setSubBrandCategory] = useState<string>("");
+  const [subBrandCategory, setSubBrandCategory] = useState<number>();
   const [brand, setBrand] = useState<string>("");
 
   const [clothesSizes, setClothesSizes] = useState<
@@ -136,6 +163,7 @@ const NewClothesEdit = () => {
   }));
 
   useEffect(() => {
+    console.log("pos");
     if (brandCategories) {
       const selectedItem = brandCategories?.find((b) => b.id === Number(brand));
       if (selectedItem) {
@@ -149,6 +177,8 @@ const NewClothesEdit = () => {
   const [, setProductFilesError] = useState(false);
   const [isSetSubmitButton, setSubmitButton] = useState(false);
   const { sizes } = useSizes({ productType: subClothes });
+
+const navigate = useNavigate()
 
   // USBMIT FUNCTION
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -182,7 +212,9 @@ const NewClothesEdit = () => {
     // SUB CATEGORY & BRAND
     formData.append("brand_id", brand);
     formData.append("categories[0][id]", category);
-    formData.append("categories[1][id]", subBrandCategory);
+    if (subBrandCategory) {
+      formData.append("categories[1][id]", subBrandCategory?.toString());
+    }
 
     // CLOTHES SIZE
     if (clothesSizes) {
@@ -217,11 +249,17 @@ const NewClothesEdit = () => {
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
 
+    formData.append(`_method`, "PUT");
+
     try {
       setSubmitButton(true);
-      await apiClient.post("/products", formData);
+      await apiClient.post(`/products/${targetProduct?.id}`, formData);
 
-      toast.success("The product has been created successfully.");
+      toast.success('The product has been created successfully.', {
+        autoClose: 500, // Duration in milliseconds (2 seconds)
+        onClose: () => navigate('/products')
+      });
+      
       setSubmitButton(false);
       setThumbnailImg(null);
       setProductImages([]);
@@ -238,7 +276,7 @@ const NewClothesEdit = () => {
       setProNameEn("");
       setCategory("");
       setBrand("");
-      setSubBrandCategory("");
+      setSubBrandCategory(0);
       setPrice(0);
       setPercentage(0);
 
@@ -267,7 +305,7 @@ const NewClothesEdit = () => {
       if (localStorage.getItem("fitSizeEn")) {
         localStorage.removeItem("fitSizeEn");
       }
-      setActiveTab("productInfo");
+   
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
@@ -371,108 +409,14 @@ const NewClothesEdit = () => {
   //NEXT
   const [nextSubCloths, setNextSubCloths] = useState("");
 
-  useEffect(() => {
-    if (localStorage.getItem("bagFormFields")) {
-      setPastSubClothes("bags");
-    } else if (localStorage.getItem("shoesFormFields")) {
-      setPastSubClothes("shoes");
-    } else {
-      setPastSubClothes("clothes");
-    }
-  }, [subClothes]);
-
-  // CANCEL ALL CHANGES
-  useEffect(() => {
-    setThumbnailImg(null);
-    setProductImages([]);
-    setProductFiles([]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (filesInputRef.current) {
-      filesInputRef.current.value = "";
-    }
-
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setPrice(0);
-    setPercentage(0);
-    setSelectedColor("");
-    setModalId("");
-  }, [subClothes]);
-
-  const ignoreChanges = () => {
-    localStorage.removeItem("prodDescripAr");
-    localStorage.removeItem("prodDescripEn");
-    localStorage.removeItem("fitSizeAr");
-    localStorage.removeItem("fitSizeEn");
-
-    setThumbnailImg(null);
-    setProductImages([]);
-    setProductFiles([]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (filesInputRef.current) {
-      filesInputRef.current.value = "";
-    }
-
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setPrice(0);
-    setPercentage(0);
-    setShoesSizes([]);
-    setClothesSizes([]);
-    setSelectedColor("");
-    setModalId("");
-    setBagObject({ sku: "", quantity: "" });
-
-    if (nextSubCloths) {
-      setSubClothes(nextSubCloths);
-    } else {
-      setActiveTab("productInfo");
-    }
-
-    if (nextSubCloths === "clothes") {
-      localStorage.removeItem("shoesFormFields");
-      setBagObject({ sku: "", quantity: "" });
-      localStorage.removeItem("bagFormFields");
-      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
-    } else if (nextSubCloths === "shoes") {
-      localStorage.removeItem("formFields");
-      setBagObject({ sku: "", quantity: "" });
-      localStorage.removeItem("bagFormFields");
-      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
-    } else {
-      localStorage.removeItem("formFields");
-      localStorage.removeItem("shoesFormFields");
-      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
-    }
-    setActiveTab("productInfo");
-  };
   const [modalId, setModalId] = useState("");
 
-  const cancelFunc = () => {
-    const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-    if (modal) {
-      modal.showModal();
-    }
-  };
+  // const cancelFunc = () => {
+  //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
+  //   if (modal) {
+  //     modal.showModal();
+  //   }
+  // };
   const [proNameArError, setProNameArError] = useState("");
   const [proNameEnError, setProNameEnError] = useState("");
 
@@ -573,68 +517,31 @@ const NewClothesEdit = () => {
         </button>
 
         <IoIosArrowForward className="mx-3" />
-        {subClothes === "clothes" && clothesSizes && (
-          <button
-            type="button"
-            onClick={() => setActiveTab("descriptionPrice")}
-            className={`btn btn-outline text-xl ${
-              activeTab === "descriptionPrice"
-                ? "text-[#577656]"
-                : "text-[#1B1B1B80]"
-            }`}
-          >
-            {activeTab === "arPreview" ? (
-              <FaCheckCircle className="text-[#577656]" />
-            ) : (
-              <span
-                className={`rounded-full w-4 h-4 bg-[#1B1B1B80]  ${
-                  activeTab === "arPreview" ? "bg-[#577656]" : ""
-                } `}
-              ></span>
-            )}
-            Description & Price
-          </button>
-        )}
-        {subClothes === "shoes" && (
-          <button
-            type="button"
-      
-            onClick={() => setActiveTab("descriptionPrice")}
-            className={`btn btn-outline text-xl ${
-              activeTab === "descriptionPrice"
-                ? "text-[#577656]"
-                : "text-[#1B1B1B80]"
-            }`}
-          >
+        <button
+          type="button"
+          onClick={() => setActiveTab("descriptionPrice")}
+          className={`btn btn-outline text-xl ${
+            activeTab === "descriptionPrice"
+              ? "text-[#577656]"
+              : "text-[#1B1B1B80]"
+          }`}
+        >
+          {activeTab === "arPreview" ? (
+            <FaCheckCircle className="text-[#577656]" />
+          ) : (
             <span
               className={`rounded-full w-4 h-4 bg-[#1B1B1B80]  ${
                 activeTab === "arPreview" ? "bg-[#577656]" : ""
               } `}
-            ></span>{" "}
-            Description & Price
-          </button>
-        )}
-
-        {subClothes === "bags" && (
-          <button
-            type="button"
-            onClick={() => setActiveTab("descriptionPrice")}
-            className={`btn btn-outline text-xl`}
-          >
-            <span
-              className={`rounded-full w-4 h-4 bg-[#1B1B1B80]  ${
-                activeTab === "arPreview" ? "bg-[#577656]" : ""
-              } `}
-            ></span>{" "}
-            Description & Price
-          </button>
-        )}
+            ></span>
+          )}
+          Description & Price
+        </button>
 
         <IoIosArrowForward className="mx-3" />
 
         <button
           type="button"
-          disabled={!proPrice || !percentage}
           onClick={() => setActiveTab("arPreview")}
           className={`btn btn-outline text-xl`}
         >
@@ -650,11 +557,13 @@ const NewClothesEdit = () => {
       {activeTab === "productInfo" && (
         <div className="flex flex-col mt-8">
           <div>
+            <h1 className="text-2xl font-bold mb-8">
+              {targetProduct.thumbnail
+                ? "Previous Thumbnail Image"
+                : "Thumbnail Image"}
+            </h1>
             {targetProduct.thumbnail && (
               <>
-                <h1 className="text-2xl font-bold mb-8">
-                  Previous Thumbnail Image
-                </h1>
                 <div className="relative w-[200px]">
                   <img
                     src={targetProduct?.thumbnail}
@@ -672,7 +581,7 @@ const NewClothesEdit = () => {
               </>
             )}
 
-            <div className="flex gap-4 items-center border w-fit p-4 my-6">
+            <div className="flex flex-col gap-4 items-center  w-fit p-4 my-6">
               {thumbnailImg && (
                 <div className="relative w-[200px]">
                   <img
@@ -689,34 +598,33 @@ const NewClothesEdit = () => {
                   </button>
                 </div>
               )}
-              {!targetProduct.thumbnail && (
-                <>
-                  <h1 className="text-2xl font-bold mb-8 mt-2">
-                    Thumbnail Image
-                  </h1>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleThumbnailChange}
-                      hidden
-                      id="thumbnail"
-                      ref={fileInputRef}
-                    />
-                    {!thumbnailImg && (
-                      <label
-                        className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
-                        htmlFor="thumbnail"
-                      >
-                        <CameraIcon
-                          width={100}
-                          className="absolute top-5 left-10"
-                        />
-                      </label>
-                    )}
-                  </div>
-                </>
-              )}
+              <div className=" ">
+                {!targetProduct.thumbnail && (
+                  <>
+                    <div className="relative ">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailChange}
+                        hidden
+                        id="thumbnail"
+                        ref={fileInputRef}
+                      />
+                      {!thumbnailImg && (
+                        <label
+                          className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
+                          htmlFor="thumbnail"
+                        >
+                          <CameraIcon
+                            width={100}
+                            className="absolute top-5 left-10"
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -883,9 +791,6 @@ const NewClothesEdit = () => {
                         </option>
                       ))}
                     </select>
-                    {/* {errors.brand && (
-                    <p className="text-red-600">{errors.brand.message}</p>
-                  )} */}
                   </div>
                   <div className="flex flex-col gap-4">
                     <label className="text-xl">
@@ -895,7 +800,7 @@ const NewClothesEdit = () => {
                       id="subBrandCategory"
                       value={subBrandCategory}
                       onChange={(e) =>
-                        setSubBrandCategory(e.currentTarget.value)
+                        setSubBrandCategory(Number(e.currentTarget.value))
                       }
                       className="select select-bordered w-full grow"
                     >
@@ -903,7 +808,11 @@ const NewClothesEdit = () => {
                         Select Brand Sub Category
                       </option>
                       {selectedBrand.categories?.map((i) => (
-                        <option key={i.id} value={i.id}>
+                        <option
+                          key={i.id}
+                          value={i.id}
+                          selected={subBrandCategory === i.id}
+                        >
                           {i.name}
                         </option>
                       ))}
@@ -913,7 +822,7 @@ const NewClothesEdit = () => {
               )}
             </div>
             <div className="flex gap-32 items-center">
-              <h1 className="text-xl font-bold mt-8">Model ID & Colors</h1>
+              <h1 className="text-xl font-bold mt-8">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Color(English)</label>
@@ -923,36 +832,6 @@ const NewClothesEdit = () => {
                     // onChange={(e) => setColorEn(e.currentTarget.value)}
                     className="input input-bordered"
                   />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color(Arabic)</label>
-                  <input
-                    name="colorAr"
-                    value={colorAr}
-                    onChange={(e) => setColorAr(e.currentTarget.value)}
-                    className="input input-bordered"
-                  />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color</label>
-                  <div>
-                    <ColorPicker onChange={handleColorChange} />
-                    <div
-                      className="flex items-center gap-4"
-                      style={{ marginTop: "20px" }}
-                    >
-                      <p className="tetx-lg font-bold">Selected Color:</p>
-                      <div
-                        style={{
-                          width: "30px",
-                          height: "30px",
-                          borderRadius: "50%",
-                          backgroundColor: selectedColor,
-                          border: "1px solid #ccc",
-                        }}
-                      ></div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -1095,7 +974,7 @@ const NewClothesEdit = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setProdDescripAr(htmlContent)
                   }
-                  prodDesc={targetProduct.desc}
+                  prodDesc={targetProduct.desc_ar}
                 />
               </div>
               <div className="grow flex flex-col">
@@ -1105,7 +984,7 @@ const NewClothesEdit = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setProdDescripEn(htmlContent)
                   }
-                  prodDesc={targetProduct.desc}
+                  prodDesc={targetProduct.desc_en}
                 />
               </div>
             </div>
@@ -1118,7 +997,7 @@ const NewClothesEdit = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeAr(htmlContent)
                   }
-                  prodDesc={targetProduct.fit_size_desc}
+                  prodDesc={targetProduct.fit_size_desc_ar}
                 />
               </div>
               <div className="grow flex flex-col">
@@ -1128,7 +1007,7 @@ const NewClothesEdit = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeEn(htmlContent)
                   }
-                  prodDesc={targetProduct.fit_size_desc}
+                  prodDesc={targetProduct.fit_size_desc_en}
                 />
               </div>
             </div>
@@ -1364,7 +1243,7 @@ const NewClothesEdit = () => {
               </div>
             </div>
             <div className="max-w-2xl flex flex-col gap-4 ">
-              <div className="border p-4 rounded-xl">
+              <div className=" p-4 rounded-xl">
                 <p>
                   {thumbnailImg && (
                     <div className="min-w-[400px] border rounded-xl">
@@ -1412,7 +1291,7 @@ const NewClothesEdit = () => {
                 </div>
               </div>
               <div>
-                <div className="mt-8 min-w-[300px]">
+                <div className="mt-8 xl:min-w-[500px]">
                   <h1 className="text-2xl font-bold tracking-wider">
                     {" "}
                     Pricing

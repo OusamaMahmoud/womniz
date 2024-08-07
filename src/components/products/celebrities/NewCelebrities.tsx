@@ -8,6 +8,8 @@ import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
+import useColorPalette from "../../../hooks/useColorPalette";
+import CustomSelect from "../CustomSelect";
 
 // type FormData = z.infer<typeof schema>;
 // interface Image {
@@ -326,7 +328,14 @@ const NewCelebrities = () => {
       event.preventDefault();
     }
   };
+  const { colors } = useColorPalette();
+  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [selectedColorLabel, setSelectedColorLabel] = useState("");
 
+  const handleColorsChange = (colorHexa: string, colorLabel: string) => {
+    setSelectedColorHexa(colorHexa);
+    setSelectedColorLabel(colorLabel);
+  };
   return (
     <form
       onSubmit={onSubmit}
@@ -632,7 +641,22 @@ const NewCelebrities = () => {
                 </div>
               </div>
             </div>
-
+            <div className="flex gap-40 xl:gap-[232px] items-center">
+              <h1 className="text-xl font-bold mt-8">Colors</h1>
+              <div className="flex items-center gap-24 justify-center mt-10">
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <CustomSelect
+                      colors={colors}
+                      selectedColor={selectedColorLabel}
+                      handleColorsChange={(a: string, b: string) =>
+                        handleColorsChange(a, b)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="flex items-center gap-32 mt-10">
               <div>
                 <h1 className="text-xl font-semibold">Size</h1>

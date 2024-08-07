@@ -4,79 +4,65 @@ import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
-import ClothsDynamicForm from "./ClothsDynamicForm";
-import ShoesDynamicForm from "./ShoesDynamicForm";
 import { CameraIcon } from "@heroicons/react/24/solid";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
-import useColorPalette from "../../../hooks/useColorPalette";
-import CustomSelect from "../CustomSelect";
+import ColorPicker from "../clothes/ColorPicker";
+import RingsDynamicForm from "./RingsDynamicForm";
+import { Product } from "../../../services/clothes-service";
+import { useNavigate, useParams } from "react-router-dom";
+import { set } from "lodash";
 
 interface ProductImage {
   file: File;
   preview: string;
 }
 
-const NewClothes = () => {
+const NewJewelleryEdit = () => {
+  const [targetProduct, setTargetProduct] = useState<Product>({} as Product);
+  const [error, setError] = useState("");
+
+  const { id } = useParams();
+
   useEffect(() => {
-    setThumbnailImg(null);
-    setProductImages([]);
-    setProductFiles([]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (filesInputRef.current) {
-      filesInputRef.current.value = "";
-    }
-
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setSubBrandCategory("");
-    setShoesSizes([]);
-    setClothesSizes([]);
-    setBagObject({ quantity: "", sku: "" });
-    setPrice(0);
-    setPercentage(0);
-
-    localStorage.removeItem("formFields");
-    localStorage.removeItem("shoesFormFields");
-    localStorage.removeItem("bagFormFields");
-
-    localStorage.removeItem("prodDescripAr");
-    localStorage.removeItem("prodDescripEn");
-    localStorage.removeItem("fitSizeAr");
-    localStorage.removeItem("fitSizeEn");
+    apiClient
+      .get<{ data: Product }>(`products/${id}`)
+      .then((res) => {
+        setTargetProduct(res.data.data);
+        console.log(res.data.data);
+      })
+      .catch((err: any) => console.log(err.message));
   }, []);
 
-  // STATE VARIABLES
+  // Images States
   const [productFiles, setProductFiles] = useState<File[]>([]);
+  const [productImages, setProductImages] = useState<ProductImage[]>([]);
+  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
+
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
     {} as Brand
   );
-
   const [proPrice, setPrice] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
   const [proNameEn, setProNameEn] = useState<string>("");
   const [proNameAr, setProNameAr] = useState<string>("");
   const [category, setCategory] = useState<string>("");
-  const [subBrandCategory, setSubBrandCategory] = useState<string>("");
+  const [subBrandCategory, setSubBrandCategory] = useState<number>();
+
   const [brand, setBrand] = useState<string>("");
+  const [prodDescripAr, setProdDescripAr] = useState("");
+  const [prodDescripEn, setProdDescripEn] = useState("");
+  const [fitSizeEn, setFitSizeEn] = useState("");
+  const [fitSizeAr, setFitSizeAr] = useState("");
+  const [modalId, setModalId] = useState("");
+  const [materialEn, setMaterialEn] = useState("");
+  const [materialAr, setMaterialAr] = useState("");
 
-  const [clothesSizes, setClothesSizes] = useState<
-    | {
-        size: string;
-        quantity: string;
-        sku: string;
-      }[]
-  >([]);
-
-  const [shoesSizes, setShoesSizes] = useState<
+  // Rings Object
+  const [ringSizes, setRingsSizes] = useState<
     {
       size: string;
       quantity: string;
@@ -84,24 +70,91 @@ const NewClothes = () => {
     }[]
   >([]);
 
-  const [prodDescripAr, setProdDescripAr] = useState("");
-  const [prodDescripEn, setProdDescripEn] = useState("");
-  const [fitSizeEn, setFitSizeEn] = useState("");
-  const [fitSizeAr, setFitSizeAr] = useState("");
+  // Necklace Object
+  const [necklaceObject, setNecklaceObject] = useState({
+    sku: "",
+    quantity: "",
+    neckLength: "",
+  });
 
+  // Earing Object
+  const [earingObject, setEaringObject] = useState({
+    sku: "",
+    quantity: "",
+    earingLength: "",
+  });
+
+  // Bracelets Object
+  const [braceletObject, setBraceletsObject] = useState({
+    sku: "",
+    quantity: "",
+    braceletLength: "",
+  });
+
+  // FETCH Sizes of Rings.
+  const { sizes } = useSizes({ productType: "ring" });
+
+  // ERRORS STATES
+  const [, setThumbnailImgError] = useState(false);
+  const [, setProductFilesError] = useState(false);
+
+  const [isSetSubmitButton, setSubmitButton] = useState(false);
+
+  const [proNameArError, setProNameArError] = useState("");
+  const [proNameEnError, setProNameEnError] = useState("");
+
+  // TAPS And SUB_TAPS
   const [activeTab, setActiveTab] = useState("productInfo");
-  const [subClothes, setSubClothes] = useState("clothes");
+  const [subJewelry, setSubJewelry] = useState("ring");
+  const [PreviousThumbnail, setPreviousThumbnail] = useState("");
+  const [previousImage, setPreviousImage] = useState("");
 
-  //CATEGORIES
+  const removePreviousFile = (imageId: string) => {
+    try {
+      apiClient
+        .delete("thumbnail/id")
+        .then(() => setPreviousImage(""))
+        .catch((err) => console.log(err));
+    } catch (error) {}
+  };
+
+  const handleRemovePreviousImage = () => {
+    try {
+      apiClient
+        .delete("thumbnail/id")
+        .then(() => setPreviousThumbnail(""))
+        .catch((err) => console.log(err));
+    } catch (error) {}
+  };
+  const [clothesSizes] = useState<
+    | {
+        size: string;
+        quantity: string;
+        sku: string;
+      }[]
+  >([]);
+  const [shoesSizes] = useState<
+    {
+      size: string;
+      quantity: string;
+      sku: string;
+    }[]
+  >([]);
+
+  // FETCH CATEGORIES
   const { vendorCategories } = useVendorCategories();
 
-  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  const clothesCategoryChields = clothesCategory?.childs;
-  const brandCategories = clothesCategory?.brands.map((b) => ({
+  const jewelleryCategory = vendorCategories.find(
+    (i) => i.name === "Jewellery"
+  );
+  const jewelleryCategoryChields = jewelleryCategory?.childs;
+
+  const brandCategories = jewelleryCategory?.brands.map((b) => ({
     id: b.id,
     categories: b.categories,
   }));
 
+  const navigate = useNavigate();
   useEffect(() => {
     if (brandCategories) {
       const selectedItem = brandCategories?.find((b) => b.id === Number(brand));
@@ -111,21 +164,113 @@ const NewClothes = () => {
     }
   }, [brand]);
 
-  // ERRORS STATES
-  const [, setThumbnailImgError] = useState(false);
-  const [, setProductFilesError] = useState(false);
-  const [isSetSubmitButton, setSubmitButton] = useState(false);
-  const { sizes } = useSizes({ productType: subClothes });
+  TODO: useEffect(() => {
+    if (localStorage.getItem("ring")) {
+      localStorage.removeItem("ring");
+      setRingsSizes([]);
+    }
+    if (localStorage.getItem("necklace")) {
+      localStorage.removeItem("necklace");
+      setNecklaceObject({ sku: "", neckLength: "", quantity: "" });
+    }
+    if (localStorage.getItem("earing")) {
+      localStorage.removeItem("earing");
+      setEaringObject({ sku: "", quantity: "", earingLength: "" });
+    }
+    if (localStorage.getItem("bracelet")) {
+      localStorage.removeItem("bracelet");
+      setBraceletsObject({ sku: "", quantity: "", braceletLength: "" });
+    }
 
-  // USBMIT FUNCTION
+    if (localStorage.getItem("prodDescripEn")) {
+      localStorage.removeItem("prodDescripEn");
+    }
+    if (localStorage.getItem("prodDescripAr")) {
+      localStorage.removeItem("prodDescripAr");
+    }
+    if (localStorage.getItem("fitSizeAr")) {
+      localStorage.removeItem("fitSizeAr");
+    }
+    if (localStorage.getItem("fitSizeEn")) {
+      localStorage.removeItem("fitSizeEn");
+    }
+
+    setModalId(targetProduct?.model_id?.toString());
+    setProNameEn(targetProduct?.name_en);
+    setProNameAr(targetProduct?.name_ar);
+
+    setBrand(targetProduct?.brand?.id?.toString());
+    if (targetProduct.categories) {
+      setCategory(targetProduct?.categories[0]?.id?.toString());
+      setSubBrandCategory(targetProduct?.categories[1]?.id);
+    }
+    setSubJewelry(targetProduct?.product_sub_type?.toLowerCase());
+
+    setMaterialAr(targetProduct.material_ar);
+    setMaterialEn(targetProduct.material_en);
+
+    setPrice(targetProduct?.price);
+    setPercentage(targetProduct?.discount);
+
+    if (subJewelry?.toLowerCase() === "ring") {
+      console.log("okay!!ring");
+      if (targetProduct.variants) {
+        setRingsSizes([
+          ...targetProduct?.variants?.map((va) => ({
+            sku: va?.sku?.toString(),
+            quantity: va?.stock?.toString(),
+            size: va?.size?.toString(),
+          })),
+        ]);
+      }
+    }
+
+    if (subJewelry?.toLowerCase() === "necklace") {
+      console.log("okay!!necklace");
+      if (targetProduct?.variants) {
+        const { size, sku, stock } = targetProduct?.variants[0];
+        setNecklaceObject({
+          neckLength: targetProduct.chain_length,
+          quantity: stock.toString(),
+          sku,
+        });
+      }
+    }
+
+    if (subJewelry?.toLowerCase() === "earing") {
+      console.log("okay!!earing");
+      if (targetProduct?.variants) {
+        const { size, sku, stock } = targetProduct?.variants[0];
+        setEaringObject({
+          earingLength: targetProduct.dimension,
+          quantity: stock.toString(),
+          sku,
+        });
+      }
+    }
+
+    if (subJewelry?.toLowerCase() === "bracelet") {
+      console.log("bracelet!!");
+      if (targetProduct?.variants) {
+        const { size, sku, stock } = targetProduct?.variants[0];
+        setBraceletsObject({
+          braceletLength: targetProduct.chain_length,
+          quantity: stock.toString(),
+          sku,
+        });
+      }
+    }
+  }, [targetProduct]);
+
+  // SUBMIT FUNCTION
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // FIELDS ERRORS
 
     const formData = new FormData();
     // PRODUCT TYPE
-    formData.append("product_type", "clothes");
-    formData.append("product_sub_type", subClothes);
+    formData.append("product_type", "jewellery");
+    formData.append("product_sub_type", subJewelry);
 
     // THUMBNAIL
     if (thumbnailImg) {
@@ -143,35 +288,51 @@ const NewClothes = () => {
     }
 
     // NAMES IN ENGLISH & ARABIC
+    // formData.append("model_id", modalId);
     formData.append("name_en", proNameEn);
     formData.append("name_ar", proNameAr);
+
+    formData.append("material_en", materialEn);
+    formData.append("material_ar", materialAr);
 
     // SUB CATEGORY & BRAND
     formData.append("brand_id", brand);
     formData.append("categories[0][id]", category);
-    formData.append("categories[1][id]", subBrandCategory);
 
-    // CLOTHES SIZE
-    if (clothesSizes) {
-      clothesSizes.map((obj, idx) => {
+    if (subBrandCategory) {
+      formData.append("categories[1][id]", subBrandCategory?.toString());
+    }
+
+    // RINGS SIZE
+    if (ringSizes.length > 0 && ringSizes[0].sku) {
+      ringSizes.map((obj, idx) => {
         formData.append(`variants[${idx}][sku]`, obj.sku);
         formData.append(`variants[${idx}][size_id]`, obj.size);
         formData.append(`variants[${idx}][stock]`, obj.quantity);
       });
     }
-    // CLOTHES SIZE
-    if (shoesSizes) {
-      shoesSizes.map((obj, idx) => {
-        formData.append(`variants[${idx}][sku]`, obj.sku);
-        formData.append(`variants[${idx}][size_id]`, obj.size);
-        formData.append(`variants[${idx}][stock]`, obj.quantity);
-      });
-    }
-    // // BAG SIZE
-    if (bagObject.sku || bagObject.quantity) {
-      formData.append(`variants[0][sku]`, bagObject.sku);
+
+    // NECKLACE SIZE
+    if (necklaceObject.sku && necklaceObject.neckLength) {
+      formData.append(`variants[0][sku]`, necklaceObject.sku);
       formData.append(`variants[0][size_id]`, "1");
-      formData.append(`variants[0][stock]`, bagObject.quantity);
+      formData.append(`variants[0][stock]`, necklaceObject.quantity);
+      formData.append(`chain_length`, necklaceObject.neckLength);
+    }
+
+    // EARINGS SIZE
+    if (earingObject.earingLength && earingObject.sku) {
+      formData.append(`variants[0][sku]`, earingObject.sku);
+      formData.append(`variants[0][size_id]`, "1");
+      formData.append(`variants[0][stock]`, earingObject.quantity);
+      formData.append(`dimension`, earingObject.earingLength);
+    }
+    // BRACELETS SIZE
+    if (braceletObject.braceletLength && braceletObject.sku) {
+      formData.append(`variants[0][sku]`, braceletObject.sku);
+      formData.append(`variants[0][size_id]`, "1");
+      formData.append(`variants[0][stock]`, braceletObject.quantity);
+      formData.append(`chain_length`, braceletObject.braceletLength);
     }
 
     // TEXT EDITOR
@@ -184,16 +345,24 @@ const NewClothes = () => {
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
 
+    formData.append(`_method`, "PUT");
+
     try {
       setSubmitButton(true);
-      await apiClient.post("/products", formData);
+      await apiClient.post(`/products/${targetProduct?.id}`, formData);
 
-      toast.success("The product has been created successfully.");
+      toast.success("The product has been created successfully.", {
+        autoClose: 500, // Duration in milliseconds (2 seconds)
+        onClose: () => navigate("/products"),
+      });
+
       setSubmitButton(false);
-      setThumbnailImg(null);
+
+      // Clear Fields...
       setProductImages([]);
       setProductFiles([]);
 
+      setThumbnailImg(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -201,25 +370,34 @@ const NewClothes = () => {
         filesInputRef.current.value = "";
       }
 
+      setModalId("");
       setProNameAr("");
       setProNameEn("");
       setCategory("");
       setBrand("");
-      setSubBrandCategory("");
+      setSubBrandCategory(0);
       setPrice(0);
       setPercentage(0);
+      setMaterialAr("");
+      setMaterialEn("");
+      setColorAr("");
+      setColorEn("");
 
-      if (localStorage.getItem("formFields")) {
-        localStorage.removeItem("formFields");
-        setClothesSizes([]);
+      if (localStorage.getItem("ring")) {
+        localStorage.removeItem("ring");
+        setRingsSizes([{ size: "", sku: "", quantity: "" }]);
       }
-      if (localStorage.getItem("shoesFormFields")) {
-        localStorage.removeItem("shoesFormFields");
-        setShoesSizes([]);
+      if (localStorage.getItem("necklace")) {
+        localStorage.removeItem("necklace");
+        setNecklaceObject({ sku: "", neckLength: "", quantity: "" });
       }
-      if (localStorage.getItem("bagFormFields")) {
-        localStorage.removeItem("bagFormFields");
-        setBagObject({ sku: "", quantity: "" });
+      if (localStorage.getItem("earing")) {
+        localStorage.removeItem("earing");
+        setEaringObject({ sku: "", earingLength: "", quantity: "" });
+      }
+      if (localStorage.getItem("bracelet")) {
+        localStorage.removeItem("bracelet");
+        setBraceletsObject({ sku: "", braceletLength: "", quantity: "" });
       }
 
       if (localStorage.getItem("prodDescripEn")) {
@@ -234,17 +412,19 @@ const NewClothes = () => {
       if (localStorage.getItem("fitSizeEn")) {
         localStorage.removeItem("fitSizeEn");
       }
+
       setActiveTab("productInfo");
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
+      console.log(error.response.data.data.error);
     }
   };
-  const [productImages, setProductImages] = useState<ProductImage[]>([]);
-  const filesInputRef = useRef<HTMLInputElement>(null);
 
-  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
+  // Handle Product Images.
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const filesInputRef = useRef<HTMLInputElement>(null);
 
   const handleRemoveImage = () => {
     setThumbnailImg(null);
@@ -300,115 +480,35 @@ const NewClothes = () => {
       setError("");
     }
   };
-  // CHANGE SUB_CLOTHS STATE
 
-  const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
+  const [bagObject] = useState({ sku: "", quantity: "" });
 
+  // Set Necklace in local_storage
   useEffect(() => {
-    if (bagObject.sku !== "") {
-      localStorage.setItem("bagFormFields", JSON.stringify(bagObject));
+    if (necklaceObject.sku !== "") {
+      localStorage.setItem("necklace", JSON.stringify(necklaceObject));
     }
-  }, [bagObject]);
+  }, [necklaceObject]);
+
+  // Set Earing in local_storage
+  useEffect(() => {
+    if (earingObject.sku !== "") {
+      localStorage.setItem("earing", JSON.stringify(earingObject));
+    }
+  }, [earingObject]);
+
+  // Set Bracelets in local_storage
+  useEffect(() => {
+    if (braceletObject.sku !== "") {
+      localStorage.setItem("bracelet", JSON.stringify(braceletObject));
+    }
+  }, [braceletObject]);
 
   //PAST
-  const [, setPastSubClothes] = useState("");
+  // const [pastSubClothes, setPastSubClothes] = useState("");
 
   //NEXT
   const [nextSubCloths, setNextSubCloths] = useState("");
-
-  useEffect(() => {
-    if (localStorage.getItem("bagFormFields")) {
-      setPastSubClothes("bags");
-    } else if (localStorage.getItem("shoesFormFields")) {
-      setPastSubClothes("shoes");
-    } else {
-      setPastSubClothes("clothes");
-    }
-  }, [subClothes]);
-
-  // CANCEL ALL CHANGES
-  useEffect(() => {
-    setThumbnailImg(null);
-    setProductImages([]);
-    setProductFiles([]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (filesInputRef.current) {
-      filesInputRef.current.value = "";
-    }
-
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setPrice(0);
-    setPercentage(0);
-    setModalId("");
-  }, [subClothes]);
-
-  const ignoreChanges = () => {
-    localStorage.removeItem("prodDescripAr");
-    localStorage.removeItem("prodDescripEn");
-    localStorage.removeItem("fitSizeAr");
-    localStorage.removeItem("fitSizeEn");
-
-    setThumbnailImg(null);
-    setProductImages([]);
-    setProductFiles([]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (filesInputRef.current) {
-      filesInputRef.current.value = "";
-    }
-
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setPrice(0);
-    setPercentage(0);
-    setShoesSizes([]);
-    setClothesSizes([]);
-    setModalId("");
-    setBagObject({ sku: "", quantity: "" });
-
-    if (nextSubCloths) {
-      setSubClothes(nextSubCloths);
-    } else {
-      setActiveTab("productInfo");
-    }
-
-    if (nextSubCloths === "clothes") {
-      localStorage.removeItem("shoesFormFields");
-      setBagObject({ sku: "", quantity: "" });
-      localStorage.removeItem("bagFormFields");
-      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
-    } else if (nextSubCloths === "shoes") {
-      localStorage.removeItem("formFields");
-      setBagObject({ sku: "", quantity: "" });
-      localStorage.removeItem("bagFormFields");
-      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
-    } else {
-      localStorage.removeItem("formFields");
-      localStorage.removeItem("shoesFormFields");
-      const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
-    }
-    setActiveTab("productInfo");
-  };
-  const [modalId, setModalId] = useState("");
 
   const cancelFunc = () => {
     const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
@@ -416,8 +516,6 @@ const NewClothes = () => {
       modal.showModal();
     }
   };
-  const [proNameArError, setProNameArError] = useState("");
-  const [proNameEnError, setProNameEnError] = useState("");
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "-" || event.key === "e") {
@@ -425,17 +523,15 @@ const NewClothes = () => {
     }
   };
 
-  const { colors } = useColorPalette();
-  const [colorAr, setColorAr] = useState("");
-  // const [colorEn, setColorEn] = useState("");
+  // Handle Color Pick .
+  const [selectedColor, setSelectedColor] = useState("#fff"); // Default color
 
-  const [selectedColorHexa, setSelectedColorHexa] = useState("");
-  const [selectedColorLabel, setSelectedColorLabel] = useState("");
-
-  const handleColorsChange = (colorHexa: string, colorLabel: string) => {
-    setSelectedColorHexa(colorHexa);
-    setSelectedColorLabel(colorLabel);
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
   };
+
+  const [colorAr, setColorAr] = useState("");
+  const [colorEn, setColorEn] = useState("");
 
   return (
     <form
@@ -443,48 +539,14 @@ const NewClothes = () => {
       className="container mx-auto px-8 shadow-2xl rounded-xl p-10"
     >
       <ToastContainer />
-      <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">
-          <p className="py-4 text-lg tracking-wider font-semibold">
-            You are sure ? All changes will be lost!
-          </p>
-
-          <div className="modal-action">
-            <button
-              type="button"
-              onClick={ignoreChanges}
-              className="btn font-semibold text-lg hover:bg-red-500 hover:text-white"
-            >
-              Discard Changes
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                // setSubClothes(pastSubClothes);
-                const modal = document.getElementById(
-                  "my_modal_3"
-                ) as HTMLDialogElement;
-                if (modal) {
-                  modal.close();
-                }
-              }}
-              className="btn"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </dialog>
-
       <div className="flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Adding New Product</h1>
-        <button type="button" onClick={cancelFunc} className="btn btn-outline">
-          <MdCancel /> Cancel
-        </button>
       </div>
+
+      {/* Select Jewelry Type */}
       <div className="flex items-center">
         <select
-          value={subClothes}
+          value={subJewelry}
           onChange={(e) => {
             const modal = document.getElementById(
               "my_modal_3"
@@ -494,15 +556,18 @@ const NewClothes = () => {
             }
             setNextSubCloths(e.currentTarget.value);
           }}
-          className={`animate-bounce select select-bordered text-xl text-[#577656] mr-10`}
+          disabled
+          className={`select select-bordered text-xl text-[#577656] mr-10`}
         >
-          <option value={"clothes"}>
-            Clothes <BiArrowToBottom />
+          <option value={"ring"}>
+            Ring <BiArrowToBottom />
           </option>
-          <option value={"shoes"}>Shoes</option>
-          <option value={"bags"}>Bags</option>
+          <option value={"necklace"}>Necklace</option>
+          <option value={"earing"}>Earring</option>
+          <option value={"bracelet"}>Bracelets</option>
         </select>
 
+        {/* Product & Info Button */}
         <button
           type="button"
           onClick={() => setActiveTab("productInfo")}
@@ -518,21 +583,13 @@ const NewClothes = () => {
           Product Information
         </button>
 
+        {/* ICON */}
         <IoIosArrowForward className="mx-3" />
-        {subClothes === "clothes" && clothesSizes && (
+
+        {/* Description & Price Button */}
+        {subJewelry === "ring" && ringSizes && (
           <button
             type="button"
-            disabled={
-              !thumbnailImg ||
-              !productFiles ||
-              !proNameAr ||
-              !proNameEn ||
-              !category ||
-              !brand ||
-              !clothesSizes[0]?.sku ||
-              !clothesSizes[0]?.quantity ||
-              !clothesSizes[0]?.size
-            }
             onClick={() => setActiveTab("descriptionPrice")}
             className={`btn btn-outline text-xl ${
               activeTab === "descriptionPrice"
@@ -552,20 +609,10 @@ const NewClothes = () => {
             Description & Price
           </button>
         )}
-        {subClothes === "shoes" && (
+
+        {subJewelry === "necklace" && necklaceObject && (
           <button
             type="button"
-            disabled={
-              !thumbnailImg ||
-              !productFiles ||
-              !proNameAr ||
-              !proNameEn ||
-              !category ||
-              !brand ||
-              !shoesSizes[0]?.sku ||
-              !shoesSizes[0]?.size ||
-              !shoesSizes[0]?.quantity
-            }
             onClick={() => setActiveTab("descriptionPrice")}
             className={`btn btn-outline text-xl ${
               activeTab === "descriptionPrice"
@@ -582,19 +629,9 @@ const NewClothes = () => {
           </button>
         )}
 
-        {subClothes === "bags" && (
+        {subJewelry === "earing" && earingObject && (
           <button
             type="button"
-            disabled={
-              !thumbnailImg ||
-              !productFiles ||
-              !proNameAr ||
-              !proNameEn ||
-              !category ||
-              !brand ||
-              !bagObject.sku ||
-              !bagObject.quantity
-            }
             onClick={() => setActiveTab("descriptionPrice")}
             className={`btn btn-outline text-xl`}
           >
@@ -607,11 +644,26 @@ const NewClothes = () => {
           </button>
         )}
 
+        {subJewelry === "bracelet" && braceletObject && (
+          <button
+            type="button"
+            onClick={() => setActiveTab("descriptionPrice")}
+            className={`btn btn-outline text-xl`}
+          >
+            <span
+              className={`rounded-full w-4 h-4 bg-[#1B1B1B80]  ${
+                activeTab === "arPreview" ? "bg-[#577656]" : ""
+              } `}
+            ></span>{" "}
+            Description & Price
+          </button>
+        )}
+
+        {/* ICON */}
         <IoIosArrowForward className="mx-3" />
 
         <button
           type="button"
-          disabled={!proPrice || !percentage}
           onClick={() => setActiveTab("arPreview")}
           className={`btn btn-outline text-xl`}
         >
@@ -627,8 +679,31 @@ const NewClothes = () => {
       {activeTab === "productInfo" && (
         <div className="flex flex-col mt-8">
           <div>
-            <h1 className="text-2xl font-bold mb-8">Thumbnail Image</h1>
-            <div className="flex gap-4 items-center border w-fit p-4 my-6">
+            <h1 className="text-2xl font-bold mb-8">
+              {targetProduct.thumbnail
+                ? "Previous Thumbnail Image"
+                : "Thumbnail Image"}
+            </h1>
+            {targetProduct.thumbnail && (
+              <>
+                <div className="relative w-[200px]">
+                  <img
+                    src={targetProduct?.thumbnail}
+                    alt="Thumbnail Preview"
+                    className="object-cover h-[100%] w-[100%]"
+                  />
+                  <button
+                    type="button"
+                    className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
+                    onClick={handleRemovePreviousImage}
+                  >
+                    <MdDelete className="text-5xl text-white" />
+                  </button>
+                </div>
+              </>
+            )}
+
+            <div className="flex flex-col gap-4 items-center  w-fit p-4 my-6">
               {thumbnailImg && (
                 <div className="relative w-[200px]">
                   <img
@@ -645,25 +720,31 @@ const NewClothes = () => {
                   </button>
                 </div>
               )}
-              <div className="relative">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleThumbnailChange}
-                  hidden
-                  id="thumbnail"
-                  ref={fileInputRef}
-                />
-                {!thumbnailImg && (
-                  <label
-                    className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
-                    htmlFor="thumbnail"
-                  >
-                    <CameraIcon
-                      width={100}
-                      className="absolute top-5 left-10"
-                    />
-                  </label>
+              <div className=" ">
+                {!targetProduct.thumbnail && (
+                  <>
+                    <div className="relative ">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailChange}
+                        hidden
+                        id="thumbnail"
+                        ref={fileInputRef}
+                      />
+                      {!thumbnailImg && (
+                        <label
+                          className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
+                          htmlFor="thumbnail"
+                        >
+                          <CameraIcon
+                            width={100}
+                            className="absolute top-5 left-10"
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -671,6 +752,30 @@ const NewClothes = () => {
 
           {/* handle images */}
           <div>
+            {targetProduct?.images?.length > 0 && (
+              <>
+                <h1 className="text-2xl font-bold mt-8">Previous Images</h1>
+                <div className="flex gap-4 flex-wrap items-center">
+                  {targetProduct &&
+                    targetProduct?.images?.map((item, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={item.image}
+                          alt={`Product Preview ${index}`}
+                          className="max-w-xs max-h-40"
+                        />
+                        <button
+                          type="button"
+                          className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
+                          onClick={() => removePreviousFile(item.id.toString())}
+                        >
+                          <MdDelete className="text-5xl text-white" />
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </>
+            )}
             <h1 className="text-2xl font-bold mt-8">Images</h1>
             <div className="flex border w-fit my-6 p-4">
               <div className="flex gap-4 flex-wrap items-center">
@@ -713,7 +818,7 @@ const NewClothes = () => {
           </div>
           <div className="mt-10">
             <h1 className="text-2xl font-bold">General Information</h1>
-            <div className="flex items-center gap-52 mt-10">
+            <div className="flex items-center gap-[220px] mt-10">
               <label className="text-xl font-bold">Model ID</label>
               <input
                 name="modalId"
@@ -729,7 +834,6 @@ const NewClothes = () => {
               <div className="flex flex-col gap-4">
                 <label className="text-xl">Product Name (English)</label>
                 <input
-                  // {...register("nameEn")}
                   id="proNameEn"
                   type="text"
                   value={proNameEn}
@@ -747,7 +851,6 @@ const NewClothes = () => {
               <div className="flex flex-col gap-4">
                 <label className="text-xl">Product Name (Arabic)</label>
                 <input
-                  // {...register("nameAr")}
                   value={proNameAr}
                   id="proNameAr"
                   className="input input-bordered"
@@ -762,7 +865,6 @@ const NewClothes = () => {
                 )}
               </div>
             </div>
-
             <div className="flex gap-20 items-center">
               <h1 className="text-xl font-bold mt-8">Sub Category & Brand</h1>
               <div className="flex items-center gap-10 justify-center mt-10">
@@ -780,7 +882,7 @@ const NewClothes = () => {
                     <option value="" disabled selected>
                       Select App Sub Category
                     </option>
-                    {clothesCategoryChields?.map((i, idx) => (
+                    {jewelleryCategoryChields?.map((i, idx) => (
                       <option key={idx} value={`${i.id}`}>
                         {i.name}
                       </option>
@@ -804,7 +906,7 @@ const NewClothes = () => {
                     <option value="" disabled selected>
                       Select Brand
                     </option>
-                    {clothesCategory?.brands.map((b) => (
+                    {jewelleryCategory?.brands.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.name_en}
                       </option>
@@ -819,15 +921,20 @@ const NewClothes = () => {
                   <select
                     id="subBrandCategory"
                     value={subBrandCategory}
-                    onChange={(e) => setSubBrandCategory(e.currentTarget.value)}
+                    onChange={(e) =>
+                      setSubBrandCategory(Number(e.currentTarget.value))
+                    }
                     className="select select-bordered w-full grow"
-                    disabled={brand ? false : true}
                   >
                     <option value="" disabled selected>
                       Select Brand Sub Category
                     </option>
                     {selectedBrand.categories?.map((i) => (
-                      <option key={i.id} value={i.id}>
+                      <option
+                        key={i.id}
+                        value={i.id}
+                        selected={subBrandCategory === i.id}
+                      >
                         {i.name}
                       </option>
                     ))}
@@ -835,23 +942,77 @@ const NewClothes = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-40 xl:gap-[232px] items-center">
+            <div className="flex gap-32 xl:gap-60 items-center mt-10">
               <h1 className="text-xl font-bold mt-8">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
+                  <label className="text-xl">Color(English)</label>
+                  <input
+                    name="colorEn"
+                    value={colorEn}
+                    onChange={(e) => setColorEn(e.currentTarget.value)}
+                    className="input input-bordered"
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Color(Arabic)</label>
+                  <input
+                    name="colorAr"
+                    value={colorAr}
+                    onChange={(e) => setColorAr(e.currentTarget.value)}
+                    className="input input-bordered"
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Color</label>
                   <div>
-                    <CustomSelect
-                      colors={colors}
-                      selectedColor={selectedColorLabel}
-                      handleColorsChange={(a: string, b: string) =>
-                        handleColorsChange(a, b)
-                      }
-                    />
+                    <ColorPicker onChange={handleColorChange} />
+                    <div
+                      className="flex items-center gap-4"
+                      style={{ marginTop: "20px" }}
+                    >
+                      <p className="tetx-lg font-bold">Selected Color:</p>
+                      <div
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "50%",
+                          backgroundColor: selectedColor,
+                          border: "1px solid #ccc",
+                        }}
+                      ></div>
+                      <div>{selectedColor}</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            {subClothes === "shoes" ? (
+            <div className="flex  gap-32 xl:gap-60  items-center my-20">
+              <h1 className="text-xl font-semibold">Material</h1>
+              <div className="flex gap-24">
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Material (English)</label>
+                  <input
+                    id="materialEn"
+                    type="text"
+                    value={materialEn}
+                    className="input input-bordered"
+                    onChange={(e) => setMaterialEn(e.currentTarget.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Material (Arabic)</label>
+                  <input
+                    value={materialAr}
+                    id="materialAr"
+                    className="input input-bordered"
+                    onChange={(e) => setMaterialAr(e.currentTarget.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {subJewelry === "ring" ? (
               <>
                 <div className="flex gap-40 mt-10">
                   <div>
@@ -861,29 +1022,18 @@ const NewClothes = () => {
                     </div>
                   </div>
                   <div>
-                    <ShoesDynamicForm
+                    <RingsDynamicForm
                       sizes={sizes}
                       onSelectedSizes={(selectedSizes: any) =>
-                        setShoesSizes(selectedSizes)
+                        setRingsSizes(selectedSizes)
                       }
-                      shoesSizes={null}
+                      ringsSizes={ringSizes}
                     />
                   </div>
                 </div>
                 <div className="flex justify-end mt-5">
                   <button
                     type="button"
-                    disabled={
-                      !thumbnailImg ||
-                      !productFiles ||
-                      !proNameAr ||
-                      !proNameEn ||
-                      !category ||
-                      !brand ||
-                      !shoesSizes[0]?.sku ||
-                      !shoesSizes[0]?.size ||
-                      !shoesSizes[0]?.quantity
-                    }
                     onClick={() => setActiveTab("descriptionPrice")}
                     className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
                   >
@@ -891,49 +1041,7 @@ const NewClothes = () => {
                   </button>
                 </div>
               </>
-            ) : subClothes === "clothes" ? (
-              <>
-                <div className="flex gap-40 items-center mt-10">
-                  <div className="flex gap-40 mt-10">
-                    <div>
-                      <div>
-                        <h1 className="text-xl font-semibold">Size</h1>
-                        <p className="text-[#47546780]">Pick available sizes</p>
-                      </div>
-                    </div>
-                    <div>
-                      <ClothsDynamicForm
-                        sizes={sizes}
-                        onSelectedSizes={(selectedSizes: any) =>
-                          setClothesSizes(selectedSizes)
-                        }
-                        clothesSizes={null}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-end mt-5">
-                  <button
-                    type="button"
-                    disabled={
-                      !thumbnailImg ||
-                      !productFiles ||
-                      !proNameAr ||
-                      !proNameEn ||
-                      !category ||
-                      !brand ||
-                      !clothesSizes[0]?.sku ||
-                      !clothesSizes[0]?.quantity ||
-                      !clothesSizes[0]?.size
-                    }
-                    onClick={() => setActiveTab("descriptionPrice")}
-                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
-                  >
-                    Next
-                  </button>
-                </div>
-              </>
-            ) : subClothes === "bags" ? (
+            ) : subJewelry === "necklace" ? (
               <>
                 <div className="flex items-center gap-32 mt-10">
                   <div>
@@ -943,13 +1051,12 @@ const NewClothes = () => {
                   <div className="flex flex-col gap-4 flex-1">
                     <label className="text-xl">SKU</label>
                     <input
-                      // {...register("proBagSKU")}
                       name="sku"
-                      value={bagObject.sku}
+                      value={necklaceObject.sku}
                       className="input input-bordered"
                       onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
+                        setNecklaceObject({
+                          ...necklaceObject,
                           sku: e.currentTarget.value,
                         });
                       }}
@@ -958,23 +1065,28 @@ const NewClothes = () => {
                     />
                   </div>
                   <div>
-                    <h1>Size</h1>
+                    <h1>Length</h1>
                     <input
                       type="text"
-                      value="Standard Size"
+                      value={necklaceObject.neckLength}
                       className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setNecklaceObject({
+                          ...necklaceObject,
+                          neckLength: e.currentTarget.value,
+                        });
+                      }}
                     />
                   </div>
                   <div>
                     <h1>Quantity</h1>
                     <input
-                      // {...register("proBagQuantity")}
-                      value={bagObject.quantity}
+                      value={necklaceObject.quantity}
                       type="text"
                       className="input input-bordered mt-2"
                       onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
+                        setNecklaceObject({
+                          ...necklaceObject,
                           quantity: e.currentTarget.value,
                         });
                       }}
@@ -986,16 +1098,134 @@ const NewClothes = () => {
                 <div className="flex justify-end mt-5">
                   <button
                     type="button"
-                    disabled={
-                      !thumbnailImg ||
-                      !productFiles ||
-                      !proNameAr ||
-                      !proNameEn ||
-                      !category ||
-                      !brand ||
-                      !bagObject.sku ||
-                      !bagObject.quantity
-                    }
+                    onClick={() => setActiveTab("descriptionPrice")}
+                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : subJewelry === "earing" ? (
+              <>
+                <div className="flex items-center gap-32 mt-10">
+                  <div>
+                    <h1 className="text-xl font-semibold">Size</h1>
+                    <p className="text-[#47546780]">Pick available sizes</p>
+                  </div>
+                  <div className="flex flex-col gap-4 flex-1">
+                    <label className="text-xl">SKU</label>
+                    <input
+                      name="sku"
+                      value={earingObject.sku}
+                      className="input input-bordered"
+                      onChange={(e) => {
+                        setEaringObject({
+                          ...earingObject,
+                          sku: e.currentTarget.value,
+                        });
+                      }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
+                    />
+                  </div>
+                  <div>
+                    <h1>Dimension</h1>
+                    <input
+                      type="text"
+                      value={earingObject.earingLength}
+                      className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setEaringObject({
+                          ...earingObject,
+                          earingLength: e.currentTarget.value,
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <h1>Quantity</h1>
+                    <input
+                      value={earingObject.quantity}
+                      type="text"
+                      className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setEaringObject({
+                          ...earingObject,
+                          quantity: e.currentTarget.value,
+                        });
+                      }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end mt-5">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("descriptionPrice")}
+                    className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : subJewelry === "bracelet" ? (
+              <>
+                <div className="flex items-center gap-32 mt-10">
+                  <div>
+                    <h1 className="text-xl font-semibold">Size</h1>
+                    <p className="text-[#47546780]">Pick available sizes</p>
+                  </div>
+                  <div className="flex flex-col gap-4 flex-1">
+                    <label className="text-xl">SKU</label>
+                    <input
+                      name="sku"
+                      value={braceletObject.sku}
+                      className="input input-bordered"
+                      onChange={(e) => {
+                        setBraceletsObject({
+                          ...braceletObject,
+                          sku: e.currentTarget.value,
+                        });
+                      }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
+                    />
+                  </div>
+                  <div>
+                    <h1>Length</h1>
+                    <input
+                      type="text"
+                      value={braceletObject.braceletLength}
+                      className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setBraceletsObject({
+                          ...braceletObject,
+                          braceletLength: e.currentTarget.value,
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <h1>Quantity</h1>
+                    <input
+                      value={braceletObject.quantity}
+                      type="text"
+                      className="input input-bordered mt-2"
+                      onChange={(e) => {
+                        setBraceletsObject({
+                          ...braceletObject,
+                          quantity: e.currentTarget.value,
+                        });
+                      }}
+                      min={0}
+                      onKeyDown={handleKeyDown}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end mt-5">
+                  <button
+                    type="button"
                     onClick={() => setActiveTab("descriptionPrice")}
                     className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
                   >
@@ -1009,6 +1239,7 @@ const NewClothes = () => {
           </div>
         </div>
       )}
+
       {activeTab === "descriptionPrice" && (
         <div className="flex flex-col mt-8">
           {/* Product Information tab content */}
@@ -1022,6 +1253,7 @@ const NewClothes = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setProdDescripAr(htmlContent)
                   }
+                  prodDesc={targetProduct.desc_ar}
                 />
               </div>
               <div className="grow flex flex-col">
@@ -1031,6 +1263,7 @@ const NewClothes = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setProdDescripEn(htmlContent)
                   }
+                  prodDesc={targetProduct.desc_en}
                 />
               </div>
             </div>
@@ -1043,6 +1276,7 @@ const NewClothes = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeAr(htmlContent)
                   }
+                  prodDesc={targetProduct.fit_size_desc_ar}
                 />
               </div>
               <div className="grow flex flex-col">
@@ -1052,6 +1286,7 @@ const NewClothes = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeEn(htmlContent)
                   }
+                  prodDesc={targetProduct.fit_size_desc_en}
                 />
               </div>
             </div>
@@ -1060,7 +1295,6 @@ const NewClothes = () => {
               <div className="mt-5 flex flex-col gap-4 max-w-72">
                 <label>Price</label>
                 <input
-                  // {...register("price")}
                   value={proPrice}
                   onChange={(e) => setPrice(Number(e.currentTarget.value))}
                   className="input input-bordered"
@@ -1071,7 +1305,6 @@ const NewClothes = () => {
                   <label>Sale percentage</label>
                   <input
                     value={percentage}
-                    // {...register("salePercent")}
                     onChange={(e) =>
                       setPercentage(Number(e.currentTarget.value))
                     }
@@ -1092,7 +1325,6 @@ const NewClothes = () => {
             </button>
             <button
               type="button"
-              disabled={!proPrice || !percentage}
               onClick={() => setActiveTab("arPreview")}
               className="btn mt-10 self-end px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
             >
@@ -1383,4 +1615,4 @@ const NewClothes = () => {
   );
 };
 
-export default NewClothes;
+export default NewJewelleryEdit;

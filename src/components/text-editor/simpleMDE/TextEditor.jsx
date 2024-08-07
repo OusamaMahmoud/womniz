@@ -4,7 +4,7 @@ import "easymde/dist/easymde.min.css";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
-const TextEditor = ({ onHtmlContent, localKey, prodDesc }) => {
+const TextEditor = ({ onHtmlContent, localKey, prodDesc = "" }) => {
   const [content, setContent] = useState(() => {
     return localStorage.getItem(localKey) || "";
   });
@@ -12,12 +12,18 @@ const TextEditor = ({ onHtmlContent, localKey, prodDesc }) => {
   useEffect(() => {
     const stripHtmlTags = (html) => {
       const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
+      const doc = parser.parseFromString(html, "text/html");
       return doc.body.textContent || "";
     };
-    
+
     setContent(stripHtmlTags(prodDesc));
   }, [prodDesc]);
+
+  useEffect(() => {
+    if (localStorage.getItem(localKey)) {
+      setContent(localStorage.getItem(localKey));
+    }
+  }, [localStorage.getItem(localKey)]);
 
   const handleChange = (value) => {
     setContent(value);
@@ -28,7 +34,6 @@ const TextEditor = ({ onHtmlContent, localKey, prodDesc }) => {
     const rawHtml = marked(content);
     const sanitizedHtml = DOMPurify.sanitize(rawHtml);
     onHtmlContent(sanitizedHtml);
-
   }, [content]);
 
   return (

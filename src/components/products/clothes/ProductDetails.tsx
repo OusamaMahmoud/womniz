@@ -23,6 +23,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (targetProduct) {
+      console.log(targetProduct.product_type);
       setTargetCategory(targetProduct.product_type);
     }
   }, [targetProduct]);
@@ -37,7 +38,7 @@ const ProductDetails = () => {
                 Product Details
               </h1>
               <Link
-                to={`/products/edit/${targetProduct?.id}`}
+                to={`/products/${targetCategory}/edit/${targetProduct?.id}`}
                 className="flex items-center gap-2 border p-4 rounded-md"
               >
                 <BiEdit /> Edit
@@ -46,9 +47,8 @@ const ProductDetails = () => {
 
             <div className="flex justify-between items-center">
               <div>
-                <div className="max-w-[600px] border p-6 rounded-md">
+                <div className="max-w-[600px] xl:min-w-[600px] border p-6 rounded-md">
                   <h1 className="text-2xl font-bold mb-4">Details</h1>
-
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">
                       Product Name

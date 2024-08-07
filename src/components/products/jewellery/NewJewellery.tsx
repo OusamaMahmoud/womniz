@@ -12,6 +12,8 @@ import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import ColorPicker from "../clothes/ColorPicker";
 import RingsDynamicForm from "./RingsDynamicForm";
+import useColorPalette from "../../../hooks/useColorPalette";
+import CustomSelect from "../CustomSelect";
 
 interface ProductImage {
   file: File;
@@ -473,48 +475,6 @@ const NewJewellery = () => {
       setSubJewelry(nextSubCloths);
     }
 
-    // if (nextSubCloths) {
-    //   setSubJewelry(nextSubCloths);
-    // } else {
-    //   setActiveTab("productInfo");
-    // }
-
-    // if (nextSubCloths === "ring") {
-    //   localStorage.removeItem("necklace");
-    //   localStorage.removeItem("earring");
-    //   localStorage.removeItem("bracelet");
-    //   setBagObject({ sku: "", quantity: "" });
-    //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-    //   if (modal) {
-    //     modal.close();
-    //   }
-    // } else if (nextSubCloths === "necklace") {
-    //   setBagObject({ sku: "", quantity: "" });
-    //   localStorage.removeItem("ring");
-    //   localStorage.removeItem("earring");
-    //   localStorage.removeItem("bracelet");
-    //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-    //   if (modal) {
-    //     modal.close();
-    //   }
-    // } else if (nextSubCloths === "earring") {
-    //   localStorage.removeItem("ring");
-    //   localStorage.removeItem("necklace");
-    //   localStorage.removeItem("bracelet");
-    //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-    //   if (modal) {
-    //     modal.close();
-    //   }
-    // } else if (nextSubCloths === "bracelet") {
-    //   localStorage.removeItem("ring");
-    //   localStorage.removeItem("necklace");
-    //   localStorage.removeItem("earring");
-
-    //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-    //   if (modal) {
-    //     modal.close();
-    //   }
-    // }
     setActiveTab("productInfo");
   };
 
@@ -541,6 +501,17 @@ const NewJewellery = () => {
   const [colorAr, setColorAr] = useState("");
   const [colorEn, setColorEn] = useState("");
 
+  const { colors } = useColorPalette();
+  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [selectedColorLabel, setSelectedColorLabel] = useState("");
+
+  const handleColorsChange = (colorHexa: string, colorLabel: string) => {
+    setSelectedColorHexa(colorHexa);
+    setSelectedColorLabel(colorLabel);
+  };
+
+
+  
   return (
     <form
       onSubmit={onSubmit}
@@ -600,7 +571,7 @@ const NewJewellery = () => {
             }
             setNextSubCloths(e.currentTarget.value);
           }}
-          className={`select select-bordered text-xl text-[#577656] mr-10`}
+          className={`animate-bounce select select-bordered text-xl text-[#577656] mr-10`}
         >
           <option value={"ring"}>
             Ring <BiArrowToBottom />
@@ -984,47 +955,18 @@ const NewJewellery = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-32 xl:gap-60 items-center mt-10">
+            <div className="flex gap-[232px] items-center">
               <h1 className="text-xl font-bold mt-8">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color(English)</label>
-                  <input
-                    name="colorEn"
-                    value={colorEn}
-                    onChange={(e) => setColorEn(e.currentTarget.value)}
-                    className="input input-bordered"
-                  />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color(Arabic)</label>
-                  <input
-                    name="colorAr"
-                    value={colorAr}
-                    onChange={(e) => setColorAr(e.currentTarget.value)}
-                    className="input input-bordered"
-                  />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <label className="text-xl">Color</label>
                   <div>
-                    <ColorPicker onChange={handleColorChange} />
-                    <div
-                      className="flex items-center gap-4"
-                      style={{ marginTop: "20px" }}
-                    >
-                      <p className="tetx-lg font-bold">Selected Color:</p>
-                      <div
-                        style={{
-                          width: "30px",
-                          height: "30px",
-                          borderRadius: "50%",
-                          backgroundColor: selectedColor,
-                          border: "1px solid #ccc",
-                        }}
-                      ></div>
-                      <div>{selectedColor}</div>
-                    </div>
+                    <CustomSelect
+                      colors={colors}
+                      selectedColor={selectedColorLabel}
+                      handleColorsChange={(a: string, b: string) =>
+                        handleColorsChange(a, b)
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -1069,6 +1011,7 @@ const NewJewellery = () => {
                       onSelectedSizes={(selectedSizes: any) =>
                         setRingsSizes(selectedSizes)
                       }
+                      ringsSizes={null}
                     />
                   </div>
                 </div>

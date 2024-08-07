@@ -44,6 +44,7 @@ import CelebritiesSubCategory from "./components/products/celebrities/Celebritie
 import ProductDetailsEditing from "./components/products/clothes/ProductDetailsEditing";
 import NewClothes from "./components/products/clothes/NewClothes";
 import NewClothesEdit from "./components/products/clothes/NewClothesEdit";
+import NewJewelleryEdit from "./components/products/jewellery/NewJewelleryEdit";
 
 function App() {
   const { permissions } = usePermissions();
@@ -99,14 +100,9 @@ function App() {
 
         {/* Clothes */}
         <Route path="products/clothes" element={<Clothes />} />
-        <Route
-          path="products/clothes/new-clothes"
-          element={<NewClothes />}
-        />
-        <Route
-          path="products/edit/:id"
-          element={<NewClothesEdit />}
-        />
+        <Route path="products/clothes/new-clothes" element={<NewClothes />} />
+        <Route path="products/clothes/edit/:id" element={<NewClothesEdit />} />
+
         <Route
           path="products/clothes/cloths-sub-category"
           element={<ClothsSubCategory />}
@@ -115,6 +111,7 @@ function App() {
           path="products/clothes/product-description"
           element={<ProductDescription />}
         />
+
         {/* Clothes */}
 
         {/* Brands */}
@@ -155,6 +152,10 @@ function App() {
         <Route
           path="products/jewellery/jewellery-sub-category"
           element={<JewellerySubCategory />}
+        />
+        <Route
+          path="products/jewellery/edit/:id"
+          element={<NewJewelleryEdit />}
         />
         {/* Jewelry */}
 

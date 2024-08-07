@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
-const RingsDynamicForm = ({ onSelectedSizes, sizes }) => {
+const RingsDynamicForm = ({ onSelectedSizes, sizes , ringsSizes}) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
@@ -10,7 +10,11 @@ const RingsDynamicForm = ({ onSelectedSizes, sizes }) => {
       setFields(JSON.parse(savedFields));
     }
   }, []);
-
+  useEffect(() => {
+    if (ringsSizes) {
+      setFields(ringsSizes);
+    }
+  }, [ringsSizes]);
   // Function to handle the change in input fields
   const handleChange = (index, event) => {
     const values = [...fields];
