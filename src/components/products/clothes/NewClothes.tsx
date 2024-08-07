@@ -426,10 +426,10 @@ const NewClothes = () => {
   };
 
   const { colors } = useColorPalette();
-  const [colorAr, setColorAr] = useState("");
+  // const [colorAr, setColorAr] = useState("");
   // const [colorEn, setColorEn] = useState("");
 
-  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [, setSelectedColorHexa] = useState("");
   const [selectedColorLabel, setSelectedColorLabel] = useState("");
 
   const handleColorsChange = (colorHexa: string, colorLabel: string) => {

@@ -10,7 +10,6 @@ import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
-import ColorPicker from "../clothes/ColorPicker";
 import RingsDynamicForm from "./RingsDynamicForm";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
@@ -492,17 +491,17 @@ const NewJewellery = () => {
   };
 
   // Handle Color Pick .
-  const [selectedColor, setSelectedColor] = useState("#fff"); // Default color
+  const [, setSelectedColor] = useState("#fff"); // Default color
 
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-  };
+  // const handleColorChange = (color: string) => {
+  //   setSelectedColor(color);
+  // };
 
-  const [colorAr, setColorAr] = useState("");
-  const [colorEn, setColorEn] = useState("");
+  const [, setColorAr] = useState("");
+  const [, setColorEn] = useState("");
 
   const { colors } = useColorPalette();
-  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [, setSelectedColorHexa] = useState("");
   const [selectedColorLabel, setSelectedColorLabel] = useState("");
 
   const handleColorsChange = (colorHexa: string, colorLabel: string) => {

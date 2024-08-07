@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BiArrowToBottom } from "react-icons/bi";
-import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
+import {  MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
@@ -14,7 +14,6 @@ import ColorPicker from "../clothes/ColorPicker";
 import RingsDynamicForm from "./RingsDynamicForm";
 import { Product } from "../../../services/clothes-service";
 import { useNavigate, useParams } from "react-router-dom";
-import { set } from "lodash";
 
 interface ProductImage {
   file: File;
@@ -23,7 +22,7 @@ interface ProductImage {
 
 const NewJewelleryEdit = () => {
   const [targetProduct, setTargetProduct] = useState<Product>({} as Product);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
   const { id } = useParams();
 
@@ -106,13 +105,13 @@ const NewJewelleryEdit = () => {
   // TAPS And SUB_TAPS
   const [activeTab, setActiveTab] = useState("productInfo");
   const [subJewelry, setSubJewelry] = useState("ring");
-  const [PreviousThumbnail, setPreviousThumbnail] = useState("");
-  const [previousImage, setPreviousImage] = useState("");
+  const [, setPreviousThumbnail] = useState("");
+  const [, setPreviousImage] = useState("");
 
   const removePreviousFile = (imageId: string) => {
     try {
       apiClient
-        .delete("thumbnail/id")
+        .delete(`thumbnail/${imageId}`)
         .then(() => setPreviousImage(""))
         .catch((err) => console.log(err));
     } catch (error) {}
@@ -228,7 +227,7 @@ const NewJewelleryEdit = () => {
     if (subJewelry?.toLowerCase() === "necklace") {
       console.log("okay!!necklace");
       if (targetProduct?.variants) {
-        const { size, sku, stock } = targetProduct?.variants[0];
+        const {  sku, stock } = targetProduct?.variants[0];
         setNecklaceObject({
           neckLength: targetProduct.chain_length,
           quantity: stock.toString(),
@@ -240,7 +239,7 @@ const NewJewelleryEdit = () => {
     if (subJewelry?.toLowerCase() === "earing") {
       console.log("okay!!earing");
       if (targetProduct?.variants) {
-        const { size, sku, stock } = targetProduct?.variants[0];
+        const { sku, stock } = targetProduct?.variants[0];
         setEaringObject({
           earingLength: targetProduct.dimension,
           quantity: stock.toString(),
@@ -252,7 +251,7 @@ const NewJewelleryEdit = () => {
     if (subJewelry?.toLowerCase() === "bracelet") {
       console.log("bracelet!!");
       if (targetProduct?.variants) {
-        const { size, sku, stock } = targetProduct?.variants[0];
+        const { sku, stock } = targetProduct?.variants[0];
         setBraceletsObject({
           braceletLength: targetProduct.chain_length,
           quantity: stock.toString(),
@@ -508,14 +507,14 @@ const NewJewelleryEdit = () => {
   // const [pastSubClothes, setPastSubClothes] = useState("");
 
   //NEXT
-  const [nextSubCloths, setNextSubCloths] = useState("");
+  const [, setNextSubCloths] = useState("");
 
-  const cancelFunc = () => {
-    const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-    if (modal) {
-      modal.showModal();
-    }
-  };
+  // const cancelFunc = () => {
+  //   const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
+  //   if (modal) {
+  //     modal.showModal();
+  //   }
+  // };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "-" || event.key === "e") {

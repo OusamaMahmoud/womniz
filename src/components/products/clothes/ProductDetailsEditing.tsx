@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Product } from '../../../services/clothes-service';
 import { useParams } from 'react-router-dom';
 import apiClient from '../../../services/api-client';
 
 const ProductDetailsEditing = () => {
-    const [targetProduct, setTargetProduct] = useState<Product>();
+    const [, setTargetProduct] = useState<Product>();
     const [, setError] = useState("");
     const { id } = useParams();
   

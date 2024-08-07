@@ -1,5 +1,4 @@
 import { BiEdit } from "react-icons/bi";
-import orderSales from "../../../../public/assets/products/orderSales.svg";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Product } from "../../../services/clothes-service";
@@ -9,7 +8,7 @@ const ProductDetails = () => {
   const [targetProduct, setTargetProduct] = useState<Product>();
   const [targetCategory, setTargetCategory] = useState("");
 
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
@@ -53,7 +52,7 @@ const ProductDetails = () => {
                     <span className="text-xl text-[#00000066]">
                       Product Name
                     </span>
-                    <span>{targetProduct?.name}</span>
+                    <span>{targetProduct?.name_en}</span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">Category</span>
@@ -156,10 +155,10 @@ const ProductDetails = () => {
                 </div>
                 <div className="flex flex-col gap-4">
                   {targetProduct && (
-                    <p>{extractContent(targetProduct?.desc)}</p>
+                    <p>{extractContent(targetProduct?.desc_en)}</p>
                   )}
                   {targetProduct && (
-                    <p>{extractContent(targetProduct?.fit_size_desc)}</p>
+                    <p>{extractContent(targetProduct?.fit_size_desc_en)}</p>
                   )}
                   {targetProduct && (
                     <p>

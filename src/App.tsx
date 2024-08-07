@@ -12,7 +12,6 @@ import Layout from "./components/Layout";
 import UnauthorizedPage from "./components/UnauthorizedPage";
 import MissingPage from "./components/MissingPage";
 import Clothes from "./components/products/clothes/Clothes";
-import NewClothesProduct from "./components/products/clothes/NewClothes";
 import ScratchCoupon from "./components/games/ScratchCoupon";
 import SpinTheWheel from "./components/games/SpinTheWheel";
 import Roles from "./components/roles-and-permtions/Roles";

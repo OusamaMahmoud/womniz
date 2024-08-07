@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BiArrowToBottom } from "react-icons/bi";
-import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
+import {  MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
@@ -12,8 +12,7 @@ import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
-import ColorPicker from "./ColorPicker";
-import { Navigate, useNavigate, useNavigation, useParams } from "react-router-dom";
+import { useNavigate , useParams } from "react-router-dom";
 import { Product } from "../../../services/clothes-service";
 
 interface ProductImage {
@@ -23,7 +22,7 @@ interface ProductImage {
 
 const NewClothesEdit = () => {
   const [targetProduct, setTargetProduct] = useState<Product>({} as Product);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
 
   const { id } = useParams();
 
@@ -324,7 +323,7 @@ const navigate = useNavigate()
     }
   };
 
-  const [PreviousThumbnail, setPreviousThumbnail] = useState("");
+  const [, setPreviousThumbnail] = useState("");
 
   const handleRemovePreviousImage = () => {
     try {
@@ -344,16 +343,16 @@ const navigate = useNavigate()
     }
   };
 
-  const [previousImage, setPreviousImage] = useState("");
+  // const [, setPreviousImage] = useState("");
 
-  const removePreviousFile = (imageId: string) => {
-    try {
-      apiClient
-        .delete("thumbnail/id")
-        .then(() => setPreviousImage(""))
-        .catch((err) => console.log(err));
-    } catch (error) {}
-  };
+  // const removePreviousFile = () => {
+  //   try {
+  //     apiClient
+  //       .delete("thumbnail/id")
+  //       .then(() => setPreviousImage(""))
+  //       .catch((err) => console.log(err));
+  //   } catch (error) {}
+  // };
 
   // THUMBNAIL IMAGE
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -404,10 +403,10 @@ const navigate = useNavigate()
   }, [bagObject]);
 
   //PAST
-  const [, setPastSubClothes] = useState("");
+  // const [, setPastSubClothes] = useState("");
 
   //NEXT
-  const [nextSubCloths, setNextSubCloths] = useState("");
+  const [, setNextSubCloths] = useState("");
 
   const [modalId, setModalId] = useState("");
 
@@ -425,13 +424,13 @@ const navigate = useNavigate()
       event.preventDefault();
     }
   };
-  const [selectedColor, setSelectedColor] = useState("#fff"); // Default color
+  const [selectedColor] = useState("#fff"); // Default color
 
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-  };
+  // const handleColorChange = (color: string) => {
+  //   setSelectedColor(color);
+  // };
 
-  const [colorAr, setColorAr] = useState("");
+  // const [colorAr, setColorAr] = useState("");
   // const [colorEn, setColorEn] = useState("");
 
   return (
@@ -645,7 +644,7 @@ const navigate = useNavigate()
                         <button
                           type="button"
                           className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
-                          onClick={() => removePreviousFile(item.id.toString())}
+                          // onClick={() => removePreviousFile(item.id.toString())}
                         >
                           <MdDelete className="text-5xl text-white" />
                         </button>

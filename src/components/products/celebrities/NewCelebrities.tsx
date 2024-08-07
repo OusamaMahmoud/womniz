@@ -329,7 +329,7 @@ const NewCelebrities = () => {
     }
   };
   const { colors } = useColorPalette();
-  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [,setSelectedColorHexa] = useState("");
   const [selectedColorLabel, setSelectedColorLabel] = useState("");
 
   const handleColorsChange = (colorHexa: string, colorLabel: string) => {
