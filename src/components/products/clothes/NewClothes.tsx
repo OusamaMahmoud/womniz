@@ -141,7 +141,7 @@ const NewClothes = () => {
     } else {
       setProductFilesError(true);
     }
-    
+
     formData.append("model_id", modalId);
 
     // NAMES IN ENGLISH & ARABIC
@@ -434,7 +434,6 @@ const NewClothes = () => {
 
   const handleColorsChange = (
     colorHexa: string,
-    colorLabel: string,
     colorId: number
   ) => {
     setSelectedColorHexa(colorHexa);
@@ -844,12 +843,38 @@ const NewClothes = () => {
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
                   <div>
-                     <CustomSelect
+                    <CustomSelect
                       colors={colors}
                       selectedColor={selectedColorHexa}
-                      handleColorsChange={(a: string, b: string, c: number) =>
-                        handleColorsChange(a, b, c)
+                      handleColorsChange={(a: string,  c: number) =>
+                        handleColorsChange(a, c)
                       }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-40 xl:gap-[232px] items-center">
+              <h1 className="text-xl font-bold mt-8">Returnable</h1>
+              <div className="flex items-center gap-24 justify-center mt-10">
+                <div className="flex  gap-8">
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-1">Yes</label>
+                    <input
+                      type="radio"
+                      name="radio-1"
+                      id="radio-1"
+                      className="radio"
+                      defaultChecked
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-1">No</label>
+                    <input
+                      type="radio"
+                      id="radio-1"
+                      name="radio-1"
+                      className="radio"
                     />
                   </div>
                 </div>

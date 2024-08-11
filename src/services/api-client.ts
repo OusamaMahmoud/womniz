@@ -8,7 +8,7 @@ export { CanceledError };
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken"); // Adjust based on your storage method
+    const token = localStorage.getItem("authToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -19,16 +19,20 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle errors
+let isRedirecting = false;
+
 apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("auth");
-      localStorage.removeItem("authToken");
-      window.location.href = "/login";
+      if (!isRedirecting && !window.location.pathname.includes("/login")) {
+        isRedirecting = true;
+        localStorage.removeItem("auth");
+        localStorage.removeItem("authToken");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

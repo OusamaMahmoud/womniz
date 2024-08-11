@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
+import {  MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import { CameraIcon } from "@heroicons/react/24/solid";

@@ -91,14 +91,14 @@ const NewJewellery = () => {
 
   // TODO:
 
-  const [clothesSizes, ] = useState<
+  const [clothesSizes] = useState<
     | {
         size: string;
         quantity: string;
         sku: string;
       }[]
   >([]);
-  const [shoesSizes, ] = useState<
+  const [shoesSizes] = useState<
     {
       size: string;
       quantity: string;
@@ -374,7 +374,7 @@ const NewJewellery = () => {
     }
   };
 
-  const [bagObject, ] = useState({ sku: "", quantity: "" });
+  const [bagObject] = useState({ sku: "", quantity: "" });
 
   // Set Necklace in local_storage
   useEffect(() => {
@@ -450,7 +450,7 @@ const NewJewellery = () => {
     if (filesInputRef.current) {
       filesInputRef.current.value = "";
     }
-    
+
     setProNameAr("");
     setProNameEn("");
     setCategory("");
@@ -492,21 +492,15 @@ const NewJewellery = () => {
   // Handle Color Pick .
   const [, setSelectedColor] = useState("#fff"); // Default color
 
-
   const { colors } = useColorPalette();
   const [selectedColorHexa, setSelectedColorHexa] = useState("");
   const [selectedColorID, setSelectedColorID] = useState(0);
 
-  const handleColorsChange = (
-    colorHexa: string,
-    colorLabel: string,
-    colorId: number
-  ) => {
+  const handleColorsChange = (colorHexa: string, colorId: number) => {
     setSelectedColorHexa(colorHexa);
     setSelectedColorID(colorId);
   };
-  
-  
+
   return (
     <form
       onSubmit={onSubmit}
@@ -958,8 +952,8 @@ const NewJewellery = () => {
                     <CustomSelect
                       colors={colors}
                       selectedColor={selectedColorHexa}
-                      handleColorsChange={(a: string, b: string, c: number) =>
-                        handleColorsChange(a, b, c)
+                      handleColorsChange={(a: string, c: number) =>
+                        handleColorsChange(a, c)
                       }
                     />
                   </div>
