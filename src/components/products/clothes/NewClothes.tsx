@@ -14,6 +14,7 @@ import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
+import TextEditorForReturn from "../TextEditorForReturn";
 
 interface ProductImage {
   file: File;
@@ -21,6 +22,7 @@ interface ProductImage {
 }
 
 const NewClothes = () => {
+  // Cancel All Variables...
   useEffect(() => {
     setThumbnailImg(null);
     setProductImages([]);
@@ -38,6 +40,9 @@ const NewClothes = () => {
     setCategory("");
     setBrand("");
     setSubBrandCategory("");
+    setModalId("");
+    setSelectedColorHexa("");
+    setSelectedColorID(0);
     setShoesSizes([]);
     setClothesSizes([]);
     setBagObject({ quantity: "", sku: "" });
@@ -59,7 +64,7 @@ const NewClothes = () => {
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
     {} as Brand
   );
-
+  const [returnableValue, setReturnableValue] = useState("yes");
   const [proPrice, setPrice] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
   const [proNameEn, setProNameEn] = useState<string>("");
@@ -67,13 +72,13 @@ const NewClothes = () => {
   const [category, setCategory] = useState<string>("");
   const [subBrandCategory, setSubBrandCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
-
+  const [modalId, setModalId] = useState("");
   const [clothesSizes, setClothesSizes] = useState<
-    | {
-        size: string;
-        quantity: string;
-        sku: string;
-      }[]
+    {
+      size: string;
+      quantity: string;
+      sku: string;
+    }[]
   >([]);
 
   const [shoesSizes, setShoesSizes] = useState<
@@ -88,9 +93,24 @@ const NewClothes = () => {
   const [prodDescripEn, setProdDescripEn] = useState("");
   const [fitSizeEn, setFitSizeEn] = useState("");
   const [fitSizeAr, setFitSizeAr] = useState("");
+  const [returnAr, setReturnAr] = useState("");
+  const [returnEn, setReturnEn] = useState("");
 
   const [activeTab, setActiveTab] = useState("productInfo");
   const [subClothes, setSubClothes] = useState("clothes");
+  const [productImages, setProductImages] = useState<ProductImage[]>([]);
+  const filesInputRef = useRef<HTMLInputElement>(null);
+
+  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
+  const [, setPastSubClothes] = useState("");
+  const [nextSubCloths, setNextSubCloths] = useState("");
+  const [proNameArError, setProNameArError] = useState("");
+  const [proNameEnError, setProNameEnError] = useState("");
+  const { colors } = useColorPalette();
+  const [selectedColorHexa, setSelectedColorHexa] = useState("");
+  const [selectedColorID, setSelectedColorID] = useState(0);
 
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
@@ -117,7 +137,7 @@ const NewClothes = () => {
   const [isSetSubmitButton, setSubmitButton] = useState(false);
   const { sizes } = useSizes({ productType: subClothes });
 
-  // USBMIT FUNCTION
+  // SUBMIT FUNCTION
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // FIELDS ERRORS
@@ -133,6 +153,7 @@ const NewClothes = () => {
     } else {
       setThumbnailImgError(true);
     }
+
     // PRODUCTS IMAGES
     if (productFiles) {
       productFiles.map((img, idx) => {
@@ -143,7 +164,6 @@ const NewClothes = () => {
     }
 
     formData.append("model_id", modalId);
-
     // NAMES IN ENGLISH & ARABIC
     formData.append("name_en", proNameEn);
     formData.append("name_ar", proNameAr);
@@ -181,6 +201,8 @@ const NewClothes = () => {
     formData.append(`desc_ar`, prodDescripAr);
     formData.append(`fit_size_desc_en`, fitSizeEn);
     formData.append(`fit_size_desc_ar`, fitSizeAr);
+    formData.append(`return_order_desc_en`, returnEn);
+    formData.append(`return_order_desc_ar`, returnAr);
 
     // PRICE
     formData.append(`price`, proPrice.toString());
@@ -211,6 +233,9 @@ const NewClothes = () => {
       setSubBrandCategory("");
       setPrice(0);
       setPercentage(0);
+      setModalId("");
+      setSelectedColorID(0);
+      setSelectedColorHexa("");
 
       if (localStorage.getItem("formFields")) {
         localStorage.removeItem("formFields");
@@ -237,17 +262,19 @@ const NewClothes = () => {
       if (localStorage.getItem("fitSizeEn")) {
         localStorage.removeItem("fitSizeEn");
       }
+      if (localStorage.getItem("returnEn")) {
+        localStorage.removeItem("returnEn");
+      }
+      if (localStorage.getItem("returnAr")) {
+        localStorage.removeItem("returnAr");
+      }
+
       setActiveTab("productInfo");
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
     }
   };
-  const [productImages, setProductImages] = useState<ProductImage[]>([]);
-  const filesInputRef = useRef<HTMLInputElement>(null);
-
-  const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleRemoveImage = () => {
     setThumbnailImg(null);
@@ -305,19 +332,11 @@ const NewClothes = () => {
   };
   // CHANGE SUB_CLOTHS STATE
 
-  const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
-
   useEffect(() => {
     if (bagObject.sku !== "") {
       localStorage.setItem("bagFormFields", JSON.stringify(bagObject));
     }
   }, [bagObject]);
-
-  //PAST
-  const [, setPastSubClothes] = useState("");
-
-  //NEXT
-  const [nextSubCloths, setNextSubCloths] = useState("");
 
   useEffect(() => {
     if (localStorage.getItem("bagFormFields")) {
@@ -349,6 +368,11 @@ const NewClothes = () => {
     setPrice(0);
     setPercentage(0);
     setModalId("");
+    setSelectedColorID(0);
+
+    setClothesSizes([]);
+    setShoesSizes([]);
+    setBagObject({ quantity: "", sku: "" });
   }, [subClothes]);
 
   const ignoreChanges = () => {
@@ -356,6 +380,8 @@ const NewClothes = () => {
     localStorage.removeItem("prodDescripEn");
     localStorage.removeItem("fitSizeAr");
     localStorage.removeItem("fitSizeEn");
+    localStorage.removeItem("returnEn");
+    localStorage.removeItem("returnAr");
 
     setThumbnailImg(null);
     setProductImages([]);
@@ -376,8 +402,10 @@ const NewClothes = () => {
     setPercentage(0);
     setShoesSizes([]);
     setClothesSizes([]);
-    setModalId("");
     setBagObject({ sku: "", quantity: "" });
+    setModalId("");
+    setSelectedColorID(0);
+    setReturnableValue("yes");
 
     if (nextSubCloths) {
       setSubClothes(nextSubCloths);
@@ -409,9 +437,9 @@ const NewClothes = () => {
         modal.close();
       }
     }
+
     setActiveTab("productInfo");
   };
-  const [modalId, setModalId] = useState("");
 
   const cancelFunc = () => {
     const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
@@ -419,8 +447,6 @@ const NewClothes = () => {
       modal.showModal();
     }
   };
-  const [proNameArError, setProNameArError] = useState("");
-  const [proNameEnError, setProNameEnError] = useState("");
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "-" || event.key === "e") {
@@ -428,14 +454,7 @@ const NewClothes = () => {
     }
   };
 
-  const { colors } = useColorPalette();
-  const [selectedColorHexa, setSelectedColorHexa] = useState("");
-  const [selectedColorID, setSelectedColorID] = useState(0);
-
-  const handleColorsChange = (
-    colorHexa: string,
-    colorId: number
-  ) => {
+  const handleColorsChange = (colorHexa: string, colorId: number) => {
     setSelectedColorHexa(colorHexa);
     setSelectedColorID(colorId);
   };
@@ -481,7 +500,11 @@ const NewClothes = () => {
 
       <div className="flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Adding New Product</h1>
-        <button type="button" onClick={cancelFunc} className="btn btn-outline">
+        <button
+          type="button"
+          onClick={cancelFunc}
+          className="btn hover:bg-red-500 animate-pulse"
+        >
           <MdCancel /> Cancel
         </button>
       </div>
@@ -499,9 +522,7 @@ const NewClothes = () => {
           }}
           className={`animate-bounce select select-bordered text-xl text-[#577656] mr-10`}
         >
-          <option value={"clothes"}>
-            Clothes <BiArrowToBottom />
-          </option>
+          <option value={"clothes"}>Clothes</option>
           <option value={"shoes"}>Shoes</option>
           <option value={"bags"}>Bags</option>
         </select>
@@ -521,7 +542,8 @@ const NewClothes = () => {
           Product Information
         </button>
 
-        <IoIosArrowForward className="mx-3" />
+        <IoIosArrowForward className="mx-3 animate-ping" />
+
         {subClothes === "clothes" && clothesSizes && (
           <button
             type="button"
@@ -532,6 +554,8 @@ const NewClothes = () => {
               !proNameEn ||
               !category ||
               !brand ||
+              !modalId ||
+              !selectedColorID ||
               !clothesSizes[0]?.sku ||
               !clothesSizes[0]?.quantity ||
               !clothesSizes[0]?.size
@@ -565,6 +589,8 @@ const NewClothes = () => {
               !proNameEn ||
               !category ||
               !brand ||
+              !modalId ||
+              !selectedColorID ||
               !shoesSizes[0]?.sku ||
               !shoesSizes[0]?.size ||
               !shoesSizes[0]?.quantity
@@ -595,6 +621,8 @@ const NewClothes = () => {
               !proNameEn ||
               !category ||
               !brand ||
+              !modalId ||
+              !selectedColorID ||
               !bagObject.sku ||
               !bagObject.quantity
             }
@@ -610,7 +638,7 @@ const NewClothes = () => {
           </button>
         )}
 
-        <IoIosArrowForward className="mx-3" />
+        <IoIosArrowForward className="mx-3 animate-ping" />
 
         <button
           type="button"
@@ -716,8 +744,41 @@ const NewClothes = () => {
           </div>
           <div className="mt-10">
             <h1 className="text-2xl font-bold">General Information</h1>
-            <div className="flex items-center gap-52 mt-10">
-              <label className="text-xl font-bold">Model ID</label>
+            <div
+              className="flex gap-40 xl:gap-[232px] items-center"
+              data-aos="fade-up"
+            >
+              <h1 className="text-xl font-bold mt-8 ">Returnable</h1>
+              <div className="flex items-center gap-24 justify-center mt-10">
+                <div className="flex gap-8">
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-yes">Yes</label>
+                    <input
+                      type="radio"
+                      name="returnable"
+                      id="radio-yes"
+                      className="radio"
+                      value="yes" // Value for Yes
+                      defaultChecked
+                      onClick={(e) => setReturnableValue(e.currentTarget.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-no">No</label>
+                    <input
+                      type="radio"
+                      id="radio-no"
+                      name="returnable"
+                      className="radio"
+                      value="no" // Value for No
+                      onClick={(e) => setReturnableValue(e.currentTarget.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">Model ID</label>
               <input
                 name="modalId"
                 value={modalId}
@@ -727,52 +788,54 @@ const NewClothes = () => {
                 onKeyDown={handleKeyDown}
               />
             </div>
-            <div className="flex gap-40 items-center mt-10">
-              <p className="text-xl font-semibold">Product Name</p>
-              <div className="flex flex-col gap-4">
-                <label className="text-xl">Product Name (English)</label>
-                <input
-                  // {...register("nameEn")}
-                  id="proNameEn"
-                  type="text"
-                  value={proNameEn}
-                  className="input input-bordered"
-                  onChange={(e) =>
-                    handleNamesChange(e, setProNameEn, setProNameEnError)
-                  }
-                />
-                {proNameEnError && (
-                  <p className="text-xl underline text-red-600">
-                    {proNameEnError}
-                  </p>
-                )}
-              </div>
-              <div className="flex flex-col gap-4">
-                <label className="text-xl">Product Name (Arabic)</label>
-                <input
-                  // {...register("nameAr")}
-                  value={proNameAr}
-                  id="proNameAr"
-                  className="input input-bordered"
-                  onChange={(e) =>
-                    handleNamesChange(e, setProNameAr, setProNameArError)
-                  }
-                />
-                {proNameArError && (
-                  <p className="text-xl underline text-red-600">
-                    {proNameArError}
-                  </p>
-                )}
+            <div className="flex  items-center mt-10" data-aos="fade-up">
+              <label className="text-xl font-semibold w-64 mr-10">
+                Product Name
+              </label>
+              <div className="flex gap-24">
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Product Name (English)</label>
+                  <input
+                    id="proNameEn"
+                    type="text"
+                    value={proNameEn}
+                    className="input input-bordered"
+                    onChange={(e) =>
+                      handleNamesChange(e, setProNameEn, setProNameEnError)
+                    }
+                  />
+                  {proNameEnError && (
+                    <p className="text-xl underline text-red-600">
+                      {proNameEnError}
+                    </p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Product Name (Arabic)</label>
+                  <input
+                    value={proNameAr}
+                    id="proNameAr"
+                    className="input input-bordered"
+                    onChange={(e) =>
+                      handleNamesChange(e, setProNameAr, setProNameArError)
+                    }
+                  />
+                  {proNameArError && (
+                    <p className="text-xl underline text-red-600">
+                      {proNameArError}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-
-            <div className="flex gap-20 items-center">
-              <h1 className="text-xl font-bold mt-8">Sub Category & Brand</h1>
-              <div className="flex items-center gap-10 justify-center mt-10">
+            <div className="flex items-center mt-5" data-aos="fade-up">
+              <h1 className="text-xl font-bold  w-64 mr-10">
+                Sub Category & Brand
+              </h1>
+              <div className="flex items-center gap-10 justify-center ">
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Select App sub categories</label>
                   <select
-                    // {...register("appSubCategory")}
                     id="category"
                     value={category}
                     className="select select-bordered w-full grow"
@@ -780,7 +843,7 @@ const NewClothes = () => {
                       setCategory(e.currentTarget.value);
                     }}
                   >
-                    <option value="" disabled selected>
+                    <option value="" disabled defaultValue={""}>
                       Select App Sub Category
                     </option>
                     {clothesCategoryChields?.map((i, idx) => (
@@ -789,11 +852,6 @@ const NewClothes = () => {
                       </option>
                     ))}
                   </select>
-                  {/* {errors.appSubCategory && (
-                    <p className="text-red-600">
-                      {errors.appSubCategory.message}
-                    </p>
-                  )} */}
                 </div>
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Brand</label>
@@ -804,7 +862,7 @@ const NewClothes = () => {
                     className="select select-bordered w-full  grow"
                     onChange={(e) => setBrand(e.currentTarget.value)}
                   >
-                    <option value="" disabled selected>
+                    <option value="" disabled defaultValue={""}>
                       Select Brand
                     </option>
                     {clothesCategory?.brands.map((b) => (
@@ -813,9 +871,6 @@ const NewClothes = () => {
                       </option>
                     ))}
                   </select>
-                  {/* {errors.brand && (
-                    <p className="text-red-600">{errors.brand.message}</p>
-                  )} */}
                 </div>
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Select Brand sub categories</label>
@@ -826,7 +881,7 @@ const NewClothes = () => {
                     className="select select-bordered w-full grow"
                     disabled={brand ? false : true}
                   >
-                    <option value="" disabled selected>
+                    <option value="" disabled defaultValue={""}>
                       Select Brand Sub Category
                     </option>
                     {selectedBrand.categories?.map((i) => (
@@ -838,15 +893,15 @@ const NewClothes = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-40 xl:gap-[232px] items-center">
-              <h1 className="text-xl font-bold mt-8">Colors</h1>
-              <div className="flex items-center gap-24 justify-center mt-10">
-                <div className="flex flex-col gap-4">
+            <div className="flex items-center mt-5 mb-20 ">
+              <h1 className="text-xl font-bold  w-64 mr-10">Colors</h1>
+              <div className="flex items-center justify-center mt-10">
+                <div className="flex flex-col ">
                   <div>
                     <CustomSelect
                       colors={colors}
                       selectedColor={selectedColorHexa}
-                      handleColorsChange={(a: string,  c: number) =>
+                      handleColorsChange={(a: string, c: number) =>
                         handleColorsChange(a, c)
                       }
                     />
@@ -854,37 +909,11 @@ const NewClothes = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-40 xl:gap-[232px] items-center">
-              <h1 className="text-xl font-bold mt-8">Returnable</h1>
-              <div className="flex items-center gap-24 justify-center mt-10">
-                <div className="flex  gap-8">
-                  <div className="flex flex-col justify-center items-center">
-                    <label htmlFor="radio-1">Yes</label>
-                    <input
-                      type="radio"
-                      name="radio-1"
-                      id="radio-1"
-                      className="radio"
-                      defaultChecked
-                    />
-                  </div>
-                  <div className="flex flex-col justify-center items-center">
-                    <label htmlFor="radio-1">No</label>
-                    <input
-                      type="radio"
-                      id="radio-1"
-                      name="radio-1"
-                      className="radio"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
             {subClothes === "shoes" ? (
               <>
-                <div className="flex gap-40 mt-10">
+                <div className="flex mt-10" data-aos="fade-up">
                   <div>
-                    <div>
+                    <div className=" w-64 mr-10">
                       <h1 className="text-xl font-semibold">Size</h1>
                       <p className="text-[#47546780]">Pick available sizes</p>
                     </div>
@@ -895,7 +924,7 @@ const NewClothes = () => {
                       onSelectedSizes={(selectedSizes: any) =>
                         setShoesSizes(selectedSizes)
                       }
-                      shoesSizes={null}
+                      shoesSizes={shoesSizes}
                     />
                   </div>
                 </div>
@@ -909,6 +938,8 @@ const NewClothes = () => {
                       !proNameEn ||
                       !category ||
                       !brand ||
+                      !modalId ||
+                      !selectedColorID ||
                       !shoesSizes[0]?.sku ||
                       !shoesSizes[0]?.size ||
                       !shoesSizes[0]?.quantity
@@ -922,14 +953,13 @@ const NewClothes = () => {
               </>
             ) : subClothes === "clothes" ? (
               <>
-                <div className="flex gap-40 items-center mt-10">
-                  <div className="flex gap-40 mt-10">
-                    <div>
-                      <div>
-                        <h1 className="text-xl font-semibold">Size</h1>
-                        <p className="text-[#47546780]">Pick available sizes</p>
-                      </div>
+                <div className="flex  items-center mt-10" data-aos="fade-up">
+                  <div className="flex  mt-10">
+                    <div className="w-64 mr-10">
+                      <h1 className="text-xl font-semibold">Size</h1>
+                      <p className="text-[#47546780]">Pick available sizes</p>
                     </div>
+
                     <div>
                       <ClothsDynamicForm
                         sizes={sizes}
@@ -951,6 +981,8 @@ const NewClothes = () => {
                       !proNameEn ||
                       !category ||
                       !brand ||
+                      !modalId ||
+                      !selectedColorID ||
                       !clothesSizes[0]?.sku ||
                       !clothesSizes[0]?.quantity ||
                       !clothesSizes[0]?.size
@@ -964,55 +996,55 @@ const NewClothes = () => {
               </>
             ) : subClothes === "bags" ? (
               <>
-                <div className="flex items-center gap-32 mt-10">
-                  <div>
+                <div className="flex items-center mt-10" data-aos="fade-up">
+                  <div className="w-64 mr-10">
                     <h1 className="text-xl font-semibold">Size</h1>
                     <p className="text-[#47546780]">Pick available sizes</p>
                   </div>
-                  <div className="flex flex-col gap-4 flex-1">
-                    <label className="text-xl">SKU</label>
-                    <input
-                      // {...register("proBagSKU")}
-                      name="sku"
-                      value={bagObject.sku}
-                      className="input input-bordered"
-                      onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
-                          sku: e.currentTarget.value,
-                        });
-                      }}
-                      min={0}
-                      onKeyDown={handleKeyDown}
-                    />
-                  </div>
-                  <div>
-                    <h1>Size</h1>
-                    <input
-                      type="text"
-                      value="Standard Size"
-                      className="input input-bordered mt-2"
-                    />
-                  </div>
-                  <div>
-                    <h1>Quantity</h1>
-                    <input
-                      // {...register("proBagQuantity")}
-                      value={bagObject.quantity}
-                      type="text"
-                      className="input input-bordered mt-2"
-                      onChange={(e) => {
-                        setBagObject({
-                          ...bagObject,
-                          quantity: e.currentTarget.value,
-                        });
-                      }}
-                      min={0}
-                      onKeyDown={handleKeyDown}
-                    />
+                  <div className="flex gap-4 items-center">
+                    <div className="flex flex-col gap-2 ">
+                      <label className="text-xl">SKU</label>
+                      <input
+                        name="sku"
+                        value={bagObject.sku}
+                        className="input input-bordered"
+                        onChange={(e) => {
+                          setBagObject({
+                            ...bagObject,
+                            sku: e.currentTarget.value,
+                          });
+                        }}
+                        min={0}
+                        onKeyDown={handleKeyDown}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2  ">
+                      <h1>Size</h1>
+                      <input
+                        type="text"
+                        value="Standard Size"
+                        className="input input-bordered "
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h1>Quantity</h1>
+                      <input
+                        value={bagObject.quantity}
+                        type="text"
+                        className="input input-bordered "
+                        onChange={(e) => {
+                          setBagObject({
+                            ...bagObject,
+                            quantity: e.currentTarget.value,
+                          });
+                        }}
+                        min={0}
+                        onKeyDown={handleKeyDown}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-end mt-5">
+                <div className="flex justify-end ">
                   <button
                     type="button"
                     disabled={
@@ -1022,6 +1054,8 @@ const NewClothes = () => {
                       !proNameEn ||
                       !category ||
                       !brand ||
+                      !modalId ||
+                      !selectedColorID ||
                       !bagObject.sku ||
                       !bagObject.quantity
                     }
@@ -1081,6 +1115,31 @@ const NewClothes = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeEn(htmlContent)
                   }
+                />
+              </div>
+            </div>
+            <h1 className="text-xl font-bold mt-6">Return Order</h1>
+            <div className="flex justify-around items-center gap-20 mt-4">
+              <div className="grow flex flex-col">
+                <h1 className="mb-2">Return Order (Arabic)</h1>
+                <TextEditorForReturn
+                  localKey={"returnAr"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setReturnAr(htmlContent)
+                  }
+                  returnPolicy={returnableValue}
+                  lang="arabic"
+                />
+              </div>
+              <div className="grow flex flex-col">
+                <h1 className="mb-2">Return Order (English)</h1>
+                <TextEditorForReturn
+                  localKey={"returnEn"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setReturnEn(htmlContent)
+                  }
+                  returnPolicy={returnableValue}
+                  lang="english"
                 />
               </div>
             </div>

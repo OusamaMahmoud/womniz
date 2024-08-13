@@ -45,8 +45,19 @@ import NewClothes from "./components/products/clothes/NewClothes";
 import NewClothesEdit from "./components/products/clothes/NewClothesEdit";
 import NewJewelleryEdit from "./components/products/jewellery/NewJewelleryEdit";
 import NewCosmeticsEdit from "./components/products/cosmetics/NewCosmeticsEdit";
-
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { useEffect } from "react";
 function App() {
+  
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, // Animation duration in milliseconds
+      // once: true,     // Whether animation should happen only once
+    });
+  }, []);
+
+
   const { permissions } = usePermissions();
 
   const ADMINS_PERMISSIONS = permissions[0]?.permissions.map((_) => _.name);

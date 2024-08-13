@@ -22,10 +22,11 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (targetProduct) {
-      console.log(targetProduct.product_type);
+      console.log(targetProduct);
       setTargetCategory(targetProduct.product_type);
     }
   }, [targetProduct]);
+
 
   return (
     <div className="container mx-auto px-8 py-10 shadow-xl rounded-xl">
@@ -33,7 +34,7 @@ const ProductDetails = () => {
         <div>
           <div className="">
             <div className="flex justify-between items-center mb-10">
-              <h1 className="mb-2 text-2xl font-bold tracking-wider">
+              <h1 className="mb-2 text-3xl font-bold tracking-wider">
                 Product Details
               </h1>
               <Link
@@ -44,9 +45,9 @@ const ProductDetails = () => {
               </Link>
             </div>
 
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="max-w-[600px] xl:min-w-[600px] border p-6 rounded-md">
+            <div className="flex justify-between items-start"  >
+              <div className="flex flex-col ">
+                <div className="max-w-[600px] xl:min-w-[600px] border p-6 rounded-md" data-aos="fade-right">
                   <h1 className="text-2xl font-bold mb-4">Details</h1>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">
@@ -69,10 +70,29 @@ const ProductDetails = () => {
                     <span>{targetProduct?.brand?.name}</span>
                   </div>
                 </div>
+                <div className="max-w-2xl mt-8 border p-6 rounded-md" data-aos="fade-right">
+                  <h1 className="text-2xl font-bold mb-4">Pricing Details</h1>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xl text-[#00000066]">Price</span>
+                    <span className="font-bold">{targetProduct?.price}$</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xl text-[#00000066]">
+                      Womniz Sale
+                    </span>
+                    <span className="font-bold">
+                      {targetProduct?.discount}%
+                    </span>
+                  </div>
+                </div>
               </div>
-              {targetProduct.thumbnail && targetProduct.images && (
-                <div className=" max-w-2xl border flex flex-col items-center p-4 mt-20 h-fit w-fit rounded-xl">
-                  <div className="w-[50%] h-60 mb-2">
+
+              {targetProduct.thumbnail && targetProduct.images ? (
+                <div
+                  className=" max-w-2xl border flex flex-col pt-4 items-center h-fit w-fit rounded-xl"
+                  data-aos="fade-in"
+                >
+                  <div className="w-[80%] h-60 mb-2">
                     {targetProduct.thumbnail && (
                       <img
                         src={targetProduct.thumbnail}
@@ -80,21 +100,27 @@ const ProductDetails = () => {
                       />
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center justify-center gap-10  mt-6 rounded-lg ">
+                  <div className="flex flex-wrap items-start justify-start gap-10  mt-6 rounded-lg w-full px-4">
                     {targetProduct.images &&
                       targetProduct.images.map((item, idx) => (
-                        <div key={idx} className="">
-                          <img
-                            src={item.image}
-                            className="w-32 h-32 rounded-lg"
-                          />
-                        </div>
+                        <img
+                          key={idx}
+                          src={item.image}
+                          className="w-32 h-32 rounded-lg"
+                        />
                       ))}
                   </div>
                 </div>
+              ) : (
+                <p>
+                  <div className="skeleton"></div>
+                  <div className="skeleton"></div>
+                  <div className="skeleton"></div>
+                  <div className="skeleton"></div>
+                </p>
               )}
             </div>
-            <div className="max-w-5xl mt-8 border p-6 rounded-md ">
+            <div className="max-w-5xl mt-8 border p-6 rounded-md " data-aos="fade-up">
               <h1 className="text-2xl font-bold mb-4">Sizes</h1>
               <table className="max-w-xl border-collapse border border-gray-300 rounded-lg overflow-hidden">
                 <thead className="bg-gray-100">
@@ -142,7 +168,7 @@ const ProductDetails = () => {
                 </tbody>
               </table>
             </div>
-            <div className="max-w-5xl mt-8 border p-8 rounded-md ">
+            <div className="max-w-5xl mt-8 border p-8 rounded-md " data-aos="fade-up">
               <h1 className="text-2xl font-bold mb-4">Details</h1>
               <div className=" flex gap-36 ">
                 <div className="flex flex-col gap-4">
@@ -167,21 +193,10 @@ const ProductDetails = () => {
                   )}
                   {targetProduct && (
                     <p>
-                      {extractContent(targetProduct?.ship_information_desc)}
+                      {extractContent(targetProduct?.return_order_desc)}
                     </p>
                   )}
                 </div>
-              </div>
-            </div>
-            <div className="max-w-2xl mt-8 border p-6 rounded-md">
-              <h1 className="text-2xl font-bold mb-4">Pricing Details</h1>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xl text-[#00000066]">Price</span>
-                <span className="font-bold">{targetProduct?.price}$</span>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xl text-[#00000066]">Womniz Sale</span>
-                <span className="font-bold">{targetProduct?.discount}%</span>
               </div>
             </div>
           </div>

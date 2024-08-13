@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BiAddToQueue } from "react-icons/bi";
 
-const ClothsDynamicForm = ({ onSelectedSizes, sizes ,clothesSizes}) => {
+const ClothsDynamicForm = ({
+  onSelectedSizes,
+  sizes,
+  clothesSizes,
+}) => {
   const [fields, setFields] = useState([{ size: "", quantity: "", sku: "" }]);
 
   useEffect(() => {
@@ -11,12 +15,14 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes ,clothesSizes}) => {
       setFields(JSON.parse(savedFields));
     }
   }, []);
+
   
   useEffect(() => {
     if (clothesSizes) {
       setFields(clothesSizes);
     }
   }, [clothesSizes]);
+
 
   // Function to handle the change in input fields
   const handleChange = (index, event) => {
@@ -79,7 +85,7 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes ,clothesSizes}) => {
                 onChange={(event) => handleChange(index, event)}
                 className="select select-bordered"
               >
-                <option value="" disabled selected>
+                <option value="" disabled defaultValue={""}>
                   Select Size
                 </option>
                 {sizes.map((s) => (
@@ -116,7 +122,7 @@ const ClothsDynamicForm = ({ onSelectedSizes, sizes ,clothesSizes}) => {
         </div>
       ))}
       <button type="button" onClick={addField} className="btn ">
-       <BiAddToQueue /> Add
+        <BiAddToQueue /> Add
       </button>
     </div>
   );

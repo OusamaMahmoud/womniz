@@ -4,7 +4,11 @@ import "easymde/dist/easymde.min.css";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
-const TextEditor = ({ onHtmlContent, localKey, prodDesc = "" }) => {
+const TextEditor = ({
+  onHtmlContent,
+  localKey,
+  prodDesc = "",
+}) => {
   const [content, setContent] = useState(() => {
     return localStorage.getItem(localKey) || "";
   });
@@ -37,7 +41,7 @@ const TextEditor = ({ onHtmlContent, localKey, prodDesc = "" }) => {
   }, [content]);
 
   return (
-    <div className="text-editor">
+    <div className="text-editor ">
       <SimpleMDE value={content} onChange={handleChange} />
     </div>
   );

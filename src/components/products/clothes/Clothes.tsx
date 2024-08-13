@@ -18,7 +18,7 @@ const Clothes = () => {
   // Filters
   const [statusFilter, setStatusFilter] = useState("");
   const [searchFilters, setSearchFilters] = useState("");
-
+  
   const [file, setFile] = useState<File | null>(null);
   // NOTE tHAT
   const [selectedProducts, setSelectedProducts] = useState<Set<number>>(
@@ -155,16 +155,20 @@ const Clothes = () => {
         await apiClient.post("/products/delete", data);
         toast.success("Products have been deleted successfully.");
         setSelectAll(false);
+
         // Update the local products list
         const remainingProducts = products.filter(
           (product) => !selectedProducts.has(product.id)
         );
         setProducts(remainingProducts);
         setProductsDeleted(false);
+        setIsDeleteEnabled(false);
       } catch (error) {
-        toast.error("Failed to delete admins");
+        toast.error("Failed to delete clothes");
         setProducts(products);
         setProductsDeleted(false);
+        setIsDeleteEnabled(false);
+        setSelectedProducts(new Set());
       }
     }
   };
@@ -193,9 +197,7 @@ const Clothes = () => {
           <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-10">
             <li>The URL was mistyped</li>
             <li>The page has moved or no longer exists</li>
-            <li>
-              You found a broken link
-            </li>
+            <li>You found a broken link</li>
           </ul>
         </div>
       ) : (
@@ -217,7 +219,7 @@ const Clothes = () => {
               to={"/products/clothes/new-clothes"}
               className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
             >
-              <IoAdd className="text-white text-2xl hover:text-black" /> 
+              <IoAdd className="text-white text-2xl hover:text-black" />
               Add New Product
             </Link>
             <label
@@ -326,7 +328,7 @@ const Clothes = () => {
           </div>
         </>
       )}
-      
+
       {!isLoading ? (
         <ClothesTable
           handleCheckAll={handleCheckAll}

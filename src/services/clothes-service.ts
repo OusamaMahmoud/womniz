@@ -28,8 +28,9 @@ export interface Product {
   chain_length: string;
   dimension: string;
   color: { id: number; color: string; hexa: string };
-  ingredients_desc_en:string
-  about_product_desc_ar:string
+  ingredients_desc_en: string;
+  about_product_desc_ar: string;
+  vendor: { id: number; name: string };
 }
 
 export default create("/products");
