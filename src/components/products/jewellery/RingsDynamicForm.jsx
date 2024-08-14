@@ -54,7 +54,7 @@ const RingsDynamicForm = ({ onSelectedSizes, sizes , ringsSizes}) => {
           key={index}
           className="flex flex-col gap-4 xl:max-w-[800px] mb-4 border-b pb-4"
         >
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex  justify-center items-center gap-4">
             <div className="flex flex-col gap-4 flex-1">
               <label className="text-xl">SKU</label>
               <input

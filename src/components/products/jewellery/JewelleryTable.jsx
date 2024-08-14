@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useProducts from "../../../hooks/useProducts";
 import { DotIcon } from "lucide-react";
 
@@ -9,7 +9,7 @@ const JewelleryTable = ({
   handleCheckAll,
   selectedObjects,
   handleCheckboxChange,
-  products
+  products,
 }) => {
   const [data, setData] = useState(products);
   const [sortBy, setSortBy] = useState(null);
@@ -20,6 +20,7 @@ const JewelleryTable = ({
   }, [products]);
 
   const handleSort = (key) => {
+    ``;
     if (key === sortBy) {
       setSortDesc(!sortDesc);
     } else {
@@ -46,6 +47,10 @@ const JewelleryTable = ({
     }
     return 0;
   });
+
+  const navigate = useNavigate();
+
+
   return (
     <div className="overflow-x-auto overflow-y-auto ">
       <table className="min-w-full bg-white border">
@@ -107,7 +112,8 @@ const JewelleryTable = ({
           {sortedData?.map((row) => (
             <tr
               key={row.id}
-              className="border-b border-gray-200 hover:bg-gray-100"
+              className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
+              onClick={() => navigate(`/products/product-details/${row?.id}`)}
             >
               <td className="py-3 px-6 text-left">
                 <label>
@@ -123,12 +129,12 @@ const JewelleryTable = ({
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.model_id}
               </td>
-              <Link to={`/products/product-details/${row?.id}`}>
-                <p className="py-3 px-6 text-left xl:text-lg capitalize">
-                  {row?.name}
-                </p>
-              </Link>
-              <td className="py-3 px-6 text-left xl:text-lg ">Vendor</td>
+              <p className="py-3 px-6 text-left xl:text-lg capitalize">
+                {row?.name}
+              </p>
+              <td className="py-3 px-6 text-left xl:text-lg ">
+                {row?.vendor?.name}
+              </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.brand?.name}
               </td>
@@ -146,13 +152,15 @@ const JewelleryTable = ({
                 <td
                   className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
               ) : row?.status === "deactivated" ? (
                 <td
                   className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
               ) : (
                 <td

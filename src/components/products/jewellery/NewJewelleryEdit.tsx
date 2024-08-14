@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BiArrowToBottom } from "react-icons/bi";
-import {  MdDelete, MdDrafts } from "react-icons/md";
+import { MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import useSizes from "../../../hooks/useSizes";
@@ -15,6 +15,7 @@ import { Product } from "../../../services/clothes-service";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomSelect from "../CustomSelect";
 import useColorPalette from "../../../hooks/useColorPalette";
+import TextEditorForReturn from "../TextEditorForReturn";
 
 interface ProductImage {
   file: File;
@@ -32,7 +33,6 @@ const NewJewelleryEdit = () => {
       .get<{ data: Product }>(`products/${id}`)
       .then((res) => {
         setTargetProduct(res.data.data);
-        console.log(res.data.data);
       })
       .catch((err: any) => console.log(err.message));
   }, []);
@@ -105,27 +105,10 @@ const NewJewelleryEdit = () => {
 
   // TAPS And SUB_TAPS
   const [activeTab, setActiveTab] = useState("productInfo");
-  const [subJewelry, setSubJewelry] = useState("ring");
+  const [subJewelry, setSubJewelry] = useState(targetProduct?.product_sub_type);
   const [, setPreviousThumbnail] = useState("");
   const [, setPreviousImage] = useState("");
 
-  const removePreviousFile = (imageId: string) => {
-    try {
-      apiClient
-        .delete(`thumbnail/${imageId}`)
-        .then(() => setPreviousImage(""))
-        .catch((err) => console.log(err));
-    } catch (error) {}
-  };
-
-  const handleRemovePreviousImage = () => {
-    try {
-      apiClient
-        .delete("thumbnail/id")
-        .then(() => setPreviousThumbnail(""))
-        .catch((err) => console.log(err));
-    } catch (error) {}
-  };
   const [clothesSizes] = useState<
     | {
         size: string;
@@ -164,48 +147,29 @@ const NewJewelleryEdit = () => {
     }
   }, [brand]);
 
-  TODO: useEffect(() => {
-    if (localStorage.getItem("ring")) {
-      localStorage.removeItem("ring");
-      setRingsSizes([]);
-    }
-    if (localStorage.getItem("necklace")) {
-      localStorage.removeItem("necklace");
-      setNecklaceObject({ sku: "", neckLength: "", quantity: "" });
-    }
-    if (localStorage.getItem("earing")) {
-      localStorage.removeItem("earing");
-      setEaringObject({ sku: "", quantity: "", earingLength: "" });
-    }
-    if (localStorage.getItem("bracelet")) {
-      localStorage.removeItem("bracelet");
-      setBraceletsObject({ sku: "", quantity: "", braceletLength: "" });
-    }
+  useEffect(() => {
+    console.log(targetProduct);
+  }, [targetProduct]);
 
-    if (localStorage.getItem("prodDescripEn")) {
-      localStorage.removeItem("prodDescripEn");
+  useEffect(() => {
+    if (modalId !== null) {
+      setModalId(targetProduct?.model_id?.toString());
     }
-    if (localStorage.getItem("prodDescripAr")) {
-      localStorage.removeItem("prodDescripAr");
-    }
-    if (localStorage.getItem("fitSizeAr")) {
-      localStorage.removeItem("fitSizeAr");
-    }
-    if (localStorage.getItem("fitSizeEn")) {
-      localStorage.removeItem("fitSizeEn");
-    }
-
-    setModalId(targetProduct?.model_id?.toString());
     setProNameEn(targetProduct?.name_en);
     setProNameAr(targetProduct?.name_ar);
-    setSelectedColorHexa(targetProduct?.color?.hexa)
+    setSelectedColorHexa(targetProduct?.color?.hexa);
     setBrand(targetProduct?.brand?.id?.toString());
+    setSelectedColorID(targetProduct?.color?.id);
+    setSelectedColorHexa(targetProduct?.color?.hexa);
+    setTargetThumbnailImage(targetProduct.thumbnail);
+    setTargetImages(targetProduct?.images);
 
     if (targetProduct.categories) {
       setCategory(targetProduct?.categories[0]?.id?.toString());
       setSubBrandCategory(targetProduct?.categories[1]?.id);
     }
     setSubJewelry(targetProduct?.product_sub_type?.toLowerCase());
+    console.log("sub",subJewelry)
 
     setMaterialAr(targetProduct.material_ar);
     setMaterialEn(targetProduct.material_en);
@@ -214,7 +178,6 @@ const NewJewelleryEdit = () => {
     setPercentage(targetProduct?.discount);
 
     if (subJewelry?.toLowerCase() === "ring") {
-      console.log("okay!!ring");
       if (targetProduct.variants) {
         setRingsSizes([
           ...targetProduct?.variants?.map((va) => ({
@@ -227,9 +190,8 @@ const NewJewelleryEdit = () => {
     }
 
     if (subJewelry?.toLowerCase() === "necklace") {
-      console.log("okay!!necklace");
       if (targetProduct?.variants) {
-        const {  sku, stock } = targetProduct?.variants[0];
+        const { sku, stock } = targetProduct?.variants[0];
         setNecklaceObject({
           neckLength: targetProduct.chain_length,
           quantity: stock.toString(),
@@ -239,7 +201,6 @@ const NewJewelleryEdit = () => {
     }
 
     if (subJewelry?.toLowerCase() === "earing") {
-      console.log("okay!!earing");
       if (targetProduct?.variants) {
         const { sku, stock } = targetProduct?.variants[0];
         setEaringObject({
@@ -251,17 +212,31 @@ const NewJewelleryEdit = () => {
     }
 
     if (subJewelry?.toLowerCase() === "bracelet") {
-      console.log("bracelet!!");
+      console.log("bracelet");
       if (targetProduct?.variants) {
         const { sku, stock } = targetProduct?.variants[0];
         setBraceletsObject({
-          braceletLength: targetProduct.chain_length,
-          quantity: stock.toString(),
+          braceletLength: targetProduct?.chain_length,
+          quantity: stock?.toString(),
           sku,
         });
       }
     }
   }, [targetProduct]);
+
+  const handleDeleteTargetImages = async (id: number) => {
+    setTargetImages((prev) => [...prev.filter((item) => item.id !== id)]);
+
+    try {
+      await apiClient.delete(`/product-images/${id}`);
+      toast.success("🎉 Previous Image is Deleted Successfully!");
+    } catch (error: any) {
+      setErrorRemovePreviousFile(error);
+      setTargetImages(targetProduct?.images);
+      toast.error("❌ Oops!, Something went wrong!");
+    }
+  };
+  const [errorRemovePreviousFile, setErrorRemovePreviousFile] = useState("");
 
   // SUBMIT FUNCTION
 
@@ -341,7 +316,8 @@ const NewJewelleryEdit = () => {
     formData.append(`desc_ar`, prodDescripAr);
     formData.append(`fit_size_desc_en`, fitSizeEn);
     formData.append(`fit_size_desc_ar`, fitSizeAr);
-
+    formData.append(`return_order_desc_en`, returnEn);
+    formData.append(`return_order_desc_ar`, returnAr);
     // PRICE
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
@@ -382,6 +358,8 @@ const NewJewelleryEdit = () => {
       setPercentage(0);
       setMaterialAr("");
       setMaterialEn("");
+      setModalId("");
+      setSelectedColorHexa("");
 
       if (localStorage.getItem("ring")) {
         localStorage.removeItem("ring");
@@ -417,10 +395,11 @@ const NewJewelleryEdit = () => {
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
-      console.log(error.response.data.data.error);
     }
   };
-
+  const [returnableValue, setReturnableValue] = useState("yes");
+  const [returnAr, setReturnAr] = useState("");
+  const [returnEn, setReturnEn] = useState("");
   // Handle Product Images.
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -432,7 +411,9 @@ const NewJewelleryEdit = () => {
       fileInputRef.current.value = ""; // Reset the file input
     }
   };
-
+  const handleRemoveThumbnailImage = async () => {
+    setTargetThumbnailImage("");
+  };
   const removeFile = (image: ProductImage) => {
     setProductImages((prevImages) => prevImages.filter((img) => img !== image));
     setProductFiles((prev) => prev.filter((file) => file !== image.file));
@@ -441,6 +422,7 @@ const NewJewelleryEdit = () => {
       filesInputRef.current.value = ""; // Reset the file input
     }
   };
+  const [targetImages, setTargetImages] = useState(targetProduct?.images);
 
   // THUMBNAIL IMAGE
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -527,13 +509,14 @@ const NewJewelleryEdit = () => {
   const [selectedColorHexa, setSelectedColorHexa] = useState("");
   const [selectedColorID, setSelectedColorID] = useState(0);
 
-  const handleColorsChange = (
-    colorHexa: string,
-    colorId: number
-  ) => {
+  const handleColorsChange = (colorHexa: string, colorId: number) => {
     setSelectedColorHexa(colorHexa);
     setSelectedColorID(colorId);
   };
+
+  const [targetThumbnailImage, setTargetThumbnailImage] = useState(
+    targetProduct.thumbnail
+  );
 
   return (
     <form
@@ -681,145 +664,184 @@ const NewJewelleryEdit = () => {
       {activeTab === "productInfo" && (
         <div className="flex flex-col mt-8">
           <div>
-            <h1 className="text-2xl font-bold mb-8">
-              {targetProduct.thumbnail
-                ? "Previous Thumbnail Image"
-                : "Thumbnail Image"}
-            </h1>
-            {targetProduct.thumbnail && (
-              <>
-                <div className="relative w-[200px]">
-                  <img
-                    src={targetProduct?.thumbnail}
-                    alt="Thumbnail Preview"
-                    className="object-cover h-[100%] w-[100%]"
-                  />
-                  <button
-                    type="button"
-                    className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
-                    onClick={handleRemovePreviousImage}
-                  >
-                    <MdDelete className="text-5xl text-white" />
-                  </button>
-                </div>
-              </>
-            )}
+            <div>
+              <h1 className="text-2xl font-bold mb-8">
+                {targetThumbnailImage
+                  ? "Previous Thumbnail Image"
+                  : "Thumbnail Image"}
+              </h1>
 
-            <div className="flex flex-col gap-4 items-center  w-fit p-4 my-6">
-              {thumbnailImg && (
-                <div className="relative w-[200px]">
-                  <img
-                    src={URL.createObjectURL(thumbnailImg)}
-                    alt="Thumbnail Preview"
-                    className="object-cover h-[100%] w-[100%]"
-                  />
-                  <button
-                    type="button"
-                    className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
-                    onClick={handleRemoveImage}
-                  >
-                    <MdDelete className="text-5xl text-white" />
-                  </button>
-                </div>
+              {targetThumbnailImage && (
+                <>
+                  <div className="relative w-[200px]" data-aos="fade-out">
+                    <img
+                      src={targetThumbnailImage}
+                      alt="Thumbnail Preview"
+                      className="object-cover h-[100%] w-[100%]"
+                    />
+                    <button
+                      type="button"
+                      className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
+                      onClick={handleRemoveThumbnailImage}
+                    >
+                      <MdDelete className="text-5xl text-white" />
+                    </button>
+                  </div>
+                </>
               )}
-              <div className=" ">
-                {!targetProduct.thumbnail && (
-                  <>
-                    <div className="relative ">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleThumbnailChange}
-                        hidden
-                        id="thumbnail"
-                        ref={fileInputRef}
-                      />
-                      {!thumbnailImg && (
-                        <label
-                          className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
-                          htmlFor="thumbnail"
-                        >
-                          <CameraIcon
-                            width={100}
-                            className="absolute top-5 left-10"
-                          />
-                        </label>
-                      )}
-                    </div>
-                  </>
+
+              <div className="flex flex-col gap-4 items-center  w-fit p-4 my-6">
+                {thumbnailImg && (
+                  <div className="relative w-[200px]" data-aos="fade-out">
+                    <img
+                      src={URL.createObjectURL(thumbnailImg)}
+                      alt="Thumbnail Preview"
+                      className="object-cover h-[100%] w-[100%]"
+                    />
+                    <button
+                      type="button"
+                      className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
+                      onClick={handleRemoveImage}
+                    >
+                      <MdDelete className="text-5xl text-white" />
+                    </button>
+                  </div>
                 )}
+
+                <div className=" ">
+                  {!targetThumbnailImage && (
+                    <>
+                      <div className="relative ">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleThumbnailChange}
+                          hidden
+                          id="thumbnail"
+                          ref={fileInputRef}
+                        />
+                        {!thumbnailImg && (
+                          <label
+                            className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
+                            htmlFor="thumbnail"
+                          >
+                            <CameraIcon
+                              width={100}
+                              className="absolute top-5 left-10"
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* handle images */}
-          <div>
-            {targetProduct?.images?.length > 0 && (
-              <>
-                <h1 className="text-2xl font-bold mt-8">Previous Images</h1>
+            {/* handle images */}
+            <div>
+              {targetImages?.length > 0 && (
+                <>
+                  <h1 className="text-2xl font-bold mt-8 mb-4">
+                    Previous Images
+                  </h1>
+                  <div
+                    className="flex gap-4 flex-wrap items-center"
+                    data-aos="fade-out"
+                  >
+                    {targetProduct &&
+                      targetImages?.map((item, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={item.image}
+                            alt={`Product Preview ${index}`}
+                            className="max-w-xs max-h-40"
+                          />
+                          <button
+                            type="button"
+                            className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
+                            onClick={() => handleDeleteTargetImages(item.id)}
+                          >
+                            <MdDelete className="text-5xl text-white" />
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                </>
+              )}
+              <h1 className="text-2xl font-bold mt-8">Images</h1>
+              <div className="flex border w-fit my-6 p-4" data-aos="fade-in">
                 <div className="flex gap-4 flex-wrap items-center">
-                  {targetProduct &&
-                    targetProduct?.images?.map((item, index) => (
+                  {productImages &&
+                    productImages.map((image, index) => (
                       <div key={index} className="relative">
                         <img
-                          src={item.image}
+                          src={image.preview}
                           alt={`Product Preview ${index}`}
                           className="max-w-xs max-h-40"
                         />
                         <button
                           type="button"
                           className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
-                          onClick={() => removePreviousFile(item.id.toString())}
+                          onClick={() => removeFile(image)}
                         >
                           <MdDelete className="text-5xl text-white" />
                         </button>
                       </div>
                     ))}
                 </div>
-              </>
-            )}
-            <h1 className="text-2xl font-bold mt-8">Images</h1>
-            <div className="flex border w-fit my-6 p-4">
-              <div className="flex gap-4 flex-wrap items-center">
-                {productImages &&
-                  productImages.map((image, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={image.preview}
-                        alt={`Product Preview ${index}`}
-                        className="max-w-xs max-h-40"
-                      />
-                      <button
-                        type="button"
-                        className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
-                        onClick={() => removeFile(image)}
-                      >
-                        <MdDelete className="text-5xl text-white" />
-                      </button>
-                    </div>
-                  ))}
-              </div>
-              <div className="relative">
-                <input
-                  id="images"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleProductImagesChange}
-                  hidden
-                  ref={filesInputRef}
-                />
-                <label
-                  className="relative cursor-pointer flex flex-wrap gap-8 border-4 border-dashed border-[#BFBFBF] items-center justify-center"
-                  htmlFor="images"
-                >
-                  <CameraIcon width={100} className="ml-8 mr-4 my-8" />
-                </label>
+                <div className="relative">
+                  <input
+                    id="images"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleProductImagesChange}
+                    hidden
+                    ref={filesInputRef}
+                  />
+                  <label
+                    className="relative cursor-pointer flex flex-wrap gap-8 border-4 border-dashed border-[#BFBFBF] items-center justify-center"
+                    htmlFor="images"
+                  >
+                    <CameraIcon width={100} className="ml-8 mr-4 my-8" />
+                  </label>
+                </div>
               </div>
             </div>
           </div>
           <div className="mt-10">
             <h1 className="text-2xl font-bold">General Information</h1>
+            <div className="flex  items-center" data-aos="fade-up">
+              <h1 className="text-xl font-bold mt-8 w-64 mr-10 ">Returnable</h1>
+              <div className="flex items-center gap-24 justify-center mt-10">
+                <div className="flex gap-8">
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-yes">Yes</label>
+                    <input
+                      type="radio"
+                      name="returnable"
+                      id="radio-yes"
+                      className="radio"
+                      value="yes" // Value for Yes
+                      defaultChecked
+                      onClick={(e) => setReturnableValue(e.currentTarget.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-no">No</label>
+                    <input
+                      type="radio"
+                      id="radio-no"
+                      name="returnable"
+                      className="radio"
+                      value="no" // Value for No
+                      onClick={(e) => setReturnableValue(e.currentTarget.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="flex items-center gap-[220px] mt-10">
               <label className="text-xl font-bold">Model ID</label>
               <input
@@ -867,13 +889,14 @@ const NewJewelleryEdit = () => {
                 )}
               </div>
             </div>
-            <div className="flex gap-20 items-center">
-              <h1 className="text-xl font-bold mt-8">Sub Category & Brand</h1>
+            <div className="flex  items-center">
+              <h1 className="text-xl font-bold mt-8 w-64 mr-10">
+                Sub Category & Brand
+              </h1>
               <div className="flex items-center gap-10 justify-center mt-10">
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Select App sub categories</label>
                   <select
-                    // {...register("appSubCategory")}
                     id="category"
                     value={category}
                     className="select select-bordered w-full grow"
@@ -890,16 +913,10 @@ const NewJewelleryEdit = () => {
                       </option>
                     ))}
                   </select>
-                  {/* {errors.appSubCategory && (
-                    <p className="text-red-600">
-                      {errors.appSubCategory.message}
-                    </p>
-                  )} */}
                 </div>
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Brand</label>
                   <select
-                    // {...register("brand")}
                     value={brand}
                     id="brand"
                     className="select select-bordered w-full  grow"
@@ -914,11 +931,8 @@ const NewJewelleryEdit = () => {
                       </option>
                     ))}
                   </select>
-                  {/* {errors.brand && (
-                    <p className="text-red-600">{errors.brand.message}</p>
-                  )} */}
                 </div>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 ">
                   <label className="text-xl">Select Brand sub categories</label>
                   <select
                     id="subBrandCategory"
@@ -944,8 +958,8 @@ const NewJewelleryEdit = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-[232px] items-center">
-              <h1 className="text-xl font-bold mt-8">Colors</h1>
+            <div className="flex  items-center">
+              <h1 className="text-xl font-bold mt-8 w-64 mr-10">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
                 <div className="flex flex-col gap-4">
                   <div>
@@ -960,8 +974,8 @@ const NewJewelleryEdit = () => {
                 </div>
               </div>
             </div>
-            <div className="flex  gap-32 xl:gap-60  items-center my-20">
-              <h1 className="text-xl font-semibold">Material</h1>
+            <div className="flex  items-center my-20">
+              <h1 className="text-xl font-semibold w-64 mr-10">Material</h1>
               <div className="flex gap-24">
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Material (English)</label>
@@ -1263,6 +1277,33 @@ const NewJewelleryEdit = () => {
                 />
               </div>
             </div>
+            <div>
+              <h1 className="text-xl font-bold mt-6">Return Order</h1>
+              <div className="flex justify-around items-center gap-20 mt-4">
+                <div className="grow flex flex-col xl:min-w-[680px]">
+                  <h1 className="mb-2">Return Order (Arabic)</h1>
+                  <TextEditorForReturn
+                    localKey={"returnAr"}
+                    onHtmlContent={(htmlContent: string) =>
+                      setReturnAr(htmlContent)
+                    }
+                    returnPolicy={returnableValue}
+                    lang="arabic"
+                  />
+                </div>
+                <div className="grow flex flex-col">
+                  <h1 className="mb-2">Return Order (English)</h1>
+                  <TextEditorForReturn
+                    localKey={"returnEn"}
+                    onHtmlContent={(htmlContent: string) =>
+                      setReturnEn(htmlContent)
+                    }
+                    returnPolicy={returnableValue}
+                    lang="english"
+                  />
+                </div>
+              </div>
+            </div>
             <div className="mt-10">
               <h1 className="text-xl">Price</h1>
               <div className="mt-5 flex flex-col gap-4 max-w-72">
@@ -1457,7 +1498,7 @@ const NewJewelleryEdit = () => {
                       Description (Arabic)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("prodDescripAr")}
+                      {targetProduct?.desc_ar}
                     </div>
                   </div>
                   <div className="flex flex-col gap-3">
@@ -1465,7 +1506,7 @@ const NewJewelleryEdit = () => {
                       Description (English)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("prodDescripEn")}
+                      {targetProduct?.desc_ar}
                     </div>
                   </div>
                 </div>
@@ -1480,7 +1521,7 @@ const NewJewelleryEdit = () => {
                       Fit & Size (Arabic)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("fitSizeAr")}
+                      {targetProduct.fit_size_desc_ar}
                     </div>
                   </div>
                   <div className="flex flex-col gap-3">
@@ -1488,7 +1529,7 @@ const NewJewelleryEdit = () => {
                       Fit & Size (English)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("fitSizeEn")}
+                      {targetProduct.fit_size_desc_en}
                     </div>
                   </div>
                 </div>

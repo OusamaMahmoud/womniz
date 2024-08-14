@@ -162,10 +162,13 @@ const Jewellery = () => {
         );
         setProducts(remainingProducts);
         setProductsDeleted(false);
+        setIsDeleteEnabled(false);
       } catch (error) {
         toast.error("Failed to delete admins");
         setProducts(products);
         setProductsDeleted(false);
+        setIsDeleteEnabled(false);
+        setSelectedProducts(new Set());
       }
     }
   };
@@ -245,6 +248,7 @@ const Jewellery = () => {
               <MdDelete className="text-2xl text-red-700 " />{" "}
               {isProductsDeleted ? "Deleting..." : "Delete"}
             </button>
+
             <button
               onClick={exportToExcel}
               className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg"

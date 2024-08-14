@@ -13,6 +13,7 @@ import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import RingsDynamicForm from "./RingsDynamicForm";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
+import TextEditorForReturn from "../TextEditorForReturn";
 
 interface ProductImage {
   file: File;
@@ -241,7 +242,8 @@ const NewJewellery = () => {
     formData.append(`desc_ar`, prodDescripAr);
     formData.append(`fit_size_desc_en`, fitSizeEn);
     formData.append(`fit_size_desc_ar`, fitSizeAr);
-
+    formData.append(`return_order_desc_en`, returnEn);
+    formData.append(`return_order_desc_ar`, returnAr);
     // PRICE
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
@@ -275,7 +277,9 @@ const NewJewellery = () => {
       setPercentage(0);
       setMaterialAr("");
       setMaterialEn("");
-
+      setModalId("")
+      setSelectedColorHexa("")
+      
       if (localStorage.getItem("ring")) {
         localStorage.removeItem("ring");
         setRingsSizes([{ size: "", sku: "", quantity: "" }]);
@@ -310,7 +314,6 @@ const NewJewellery = () => {
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
-      console.log(error.response.data.data.error);
     }
   };
 
@@ -373,6 +376,8 @@ const NewJewellery = () => {
       setError("");
     }
   };
+  const [returnAr, setReturnAr] = useState("");
+  const [returnEn, setReturnEn] = useState("");
 
   const [bagObject] = useState({ sku: "", quantity: "" });
 
@@ -459,7 +464,7 @@ const NewJewellery = () => {
     setPercentage(0);
     setSelectedColor("");
     setModalId("");
-
+    setSelectedColorHexa("")
     setNecklaceObject({ sku: "", neckLength: "", quantity: "" });
     setEaringObject({ sku: "", earingLength: "", quantity: "" });
     setBraceletsObject({ sku: "", braceletLength: "", quantity: "" });
@@ -482,6 +487,7 @@ const NewJewellery = () => {
       modal.showModal();
     }
   };
+  const [returnableValue, setReturnableValue] = useState("yes");
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "-" || event.key === "e") {
@@ -587,7 +593,7 @@ const NewJewellery = () => {
         </button>
 
         {/* ICON */}
-        <IoIosArrowForward className="mx-3" />
+        <IoIosArrowForward className="mx-3 animate-pulse" />
 
         {/* Description & Price Button */}
         {subJewelry === "ring" && ringSizes && (
@@ -719,7 +725,7 @@ const NewJewellery = () => {
         )}
 
         {/* ICON */}
-        <IoIosArrowForward className="mx-3" />
+        <IoIosArrowForward className="mx-3 animate-pulse" />
 
         <button
           type="button"
@@ -757,7 +763,7 @@ const NewJewellery = () => {
                   </button>
                 </div>
               )}
-              <div className="relative">
+              <div className="relative" data-aos="zoom-out">
                 <input
                   type="file"
                   accept="image/*"
@@ -804,7 +810,7 @@ const NewJewellery = () => {
                     </div>
                   ))}
               </div>
-              <div className="relative">
+              <div className="relative" data-aos="zoom-out">
                 <input
                   id="images"
                   type="file"
@@ -825,8 +831,38 @@ const NewJewellery = () => {
           </div>
           <div className="mt-10">
             <h1 className="text-2xl font-bold">General Information</h1>
-            <div className="flex items-center gap-[220px] mt-10">
-              <label className="text-xl font-bold">Model ID</label>
+            <div className="flex  items-center" data-aos="fade-up">
+              <h1 className="text-xl font-bold mt-8 w-64 mr-10 ">Returnable</h1>
+              <div className="flex items-center gap-24 justify-center mt-10">
+                <div className="flex gap-8">
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-yes">Yes</label>
+                    <input
+                      type="radio"
+                      name="returnable"
+                      id="radio-yes"
+                      className="radio"
+                      value="yes" // Value for Yes
+                      defaultChecked
+                      onClick={(e) => setReturnableValue(e.currentTarget.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center items-center">
+                    <label htmlFor="radio-no">No</label>
+                    <input
+                      type="radio"
+                      id="radio-no"
+                      name="returnable"
+                      className="radio"
+                      value="no" // Value for No
+                      onClick={(e) => setReturnableValue(e.currentTarget.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">Model ID</label>
               <input
                 name="modalId"
                 value={modalId}
@@ -836,49 +872,52 @@ const NewJewellery = () => {
                 onKeyDown={handleKeyDown}
               />
             </div>
-            <div className="flex gap-40 items-center mt-10">
-              <p className="text-xl font-semibold">Product Name</p>
-              <div className="flex flex-col gap-4">
-                <label className="text-xl">Product Name (English)</label>
-                <input
-                  id="proNameEn"
-                  type="text"
-                  value={proNameEn}
-                  className="input input-bordered"
-                  onChange={(e) =>
-                    handleNamesChange(e, setProNameEn, setProNameEnError)
-                  }
-                />
-                {proNameEnError && (
-                  <p className="text-xl underline text-red-600">
-                    {proNameEnError}
-                  </p>
-                )}
-              </div>
-              <div className="flex flex-col gap-4">
-                <label className="text-xl">Product Name (Arabic)</label>
-                <input
-                  value={proNameAr}
-                  id="proNameAr"
-                  className="input input-bordered"
-                  onChange={(e) =>
-                    handleNamesChange(e, setProNameAr, setProNameArError)
-                  }
-                />
-                {proNameArError && (
-                  <p className="text-xl underline text-red-600">
-                    {proNameArError}
-                  </p>
-                )}
+            <div className="flex  items-center mt-10" data-aos="fade-up">
+              <p className="text-xl font-semibold w-64 mr-10">Product Name</p>
+              <div className="flex gap-20">
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Product Name (English)</label>
+                  <input
+                    id="proNameEn"
+                    type="text"
+                    value={proNameEn}
+                    className="input input-bordered"
+                    onChange={(e) =>
+                      handleNamesChange(e, setProNameEn, setProNameEnError)
+                    }
+                  />
+                  {proNameEnError && (
+                    <p className="text-xl underline text-red-600">
+                      {proNameEnError}
+                    </p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-4">
+                  <label className="text-xl">Product Name (Arabic)</label>
+                  <input
+                    value={proNameAr}
+                    id="proNameAr"
+                    className="input input-bordered"
+                    onChange={(e) =>
+                      handleNamesChange(e, setProNameAr, setProNameArError)
+                    }
+                  />
+                  {proNameArError && (
+                    <p className="text-xl underline text-red-600">
+                      {proNameArError}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="flex gap-20 items-center">
-              <h1 className="text-xl font-bold mt-8">Sub Category & Brand</h1>
+            <div className="flex  items-center" data-aos="fade-up">
+              <h1 className="text-xl font-bold mt-8 w-64 mr-10">
+                Sub Category & Brand
+              </h1>
               <div className="flex items-center gap-10 justify-center mt-10">
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Select App sub categories</label>
                   <select
-                    // {...register("appSubCategory")}
                     id="category"
                     value={category}
                     className="select select-bordered w-full grow"
@@ -895,11 +934,6 @@ const NewJewellery = () => {
                       </option>
                     ))}
                   </select>
-                  {/* {errors.appSubCategory && (
-                    <p className="text-red-600">
-                      {errors.appSubCategory.message}
-                    </p>
-                  )} */}
                 </div>
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Brand</label>
@@ -944,10 +978,10 @@ const NewJewellery = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-[232px] items-center">
-              <h1 className="text-xl font-bold mt-8">Colors</h1>
+            <div className="flex items-center mb-20" >
+              <h1 className="text-xl font-bold mt-8 w-64 mr-10 ">Colors</h1>
               <div className="flex items-center gap-24 justify-center mt-10">
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col ">
                   <div>
                     <CustomSelect
                       colors={colors}
@@ -960,8 +994,11 @@ const NewJewellery = () => {
                 </div>
               </div>
             </div>
-            <div className="flex  gap-32 xl:gap-60  items-center my-20">
-              <h1 className="text-xl font-semibold">Material</h1>
+            <div
+              className="flex items-center my-20"
+              data-aos="fade-up"
+            >
+              <h1 className="text-xl font-semibold  w-64 mr-10 ">Material</h1>
               <div className="flex gap-24">
                 <div className="flex flex-col gap-4">
                   <label className="text-xl">Material (English)</label>
@@ -987,7 +1024,7 @@ const NewJewellery = () => {
 
             {subJewelry === "ring" ? (
               <>
-                <div className="flex gap-40 mt-10">
+                <div className="flex gap-40 mt-10" data-aos="fade-up">
                   <div>
                     <div>
                       <h1 className="text-xl font-semibold">Size</h1>
@@ -1030,7 +1067,10 @@ const NewJewellery = () => {
               </>
             ) : subJewelry === "necklace" ? (
               <>
-                <div className="flex items-center gap-32 mt-10">
+                <div
+                  className="flex items-center gap-32 mt-10"
+                  data-aos="fade-up"
+                >
                   <div>
                     <h1 className="text-xl font-semibold">Size</h1>
                     <p className="text-[#47546780]">Pick available sizes</p>
@@ -1108,7 +1148,10 @@ const NewJewellery = () => {
               </>
             ) : subJewelry === "earing" ? (
               <>
-                <div className="flex items-center gap-32 mt-10">
+                <div
+                  className="flex items-center gap-32 mt-10"
+                  data-aos="fade-up"
+                >
                   <div>
                     <h1 className="text-xl font-semibold">Size</h1>
                     <p className="text-[#47546780]">Pick available sizes</p>
@@ -1186,7 +1229,10 @@ const NewJewellery = () => {
               </>
             ) : subJewelry === "bracelet" ? (
               <>
-                <div className="flex items-center gap-32 mt-10">
+                <div
+                  className="flex items-center gap-32 mt-10"
+                  data-aos="fade-up"
+                >
                   <div>
                     <h1 className="text-xl font-semibold">Size</h1>
                     <p className="text-[#47546780]">Pick available sizes</p>
@@ -1312,6 +1358,31 @@ const NewJewellery = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeEn(htmlContent)
                   }
+                />
+              </div>
+            </div>
+            <h1 className="text-xl font-bold mt-6">Return Order</h1>
+            <div className="flex justify-around items-center gap-20 mt-4">
+              <div className="grow flex flex-col">
+                <h1 className="mb-2">Return Order (Arabic)</h1>
+                <TextEditorForReturn
+                  localKey={"returnAr"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setReturnAr(htmlContent)
+                  }
+                  returnPolicy={returnableValue}
+                  lang="arabic"
+                />
+              </div>
+              <div className="grow flex flex-col">
+                <h1 className="mb-2">Return Order (English)</h1>
+                <TextEditorForReturn
+                  localKey={"returnEn"}
+                  onHtmlContent={(htmlContent: string) =>
+                    setReturnEn(htmlContent)
+                  }
+                  returnPolicy={returnableValue}
+                  lang="english"
                 />
               </div>
             </div>
