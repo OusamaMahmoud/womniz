@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useProducts from "../../../hooks/useProducts";
 import { DotIcon } from "lucide-react";
 
@@ -9,7 +9,7 @@ const CosmeticsTable = ({
   handleCheckAll,
   selectedObjects,
   handleCheckboxChange,
-  products
+  products,
 }) => {
   const [data, setData] = useState(products);
   const [sortBy, setSortBy] = useState(null);
@@ -46,6 +46,8 @@ const CosmeticsTable = ({
     }
     return 0;
   });
+
+  const navigate = useNavigate();
   return (
     <div className="overflow-x-auto overflow-y-auto ">
       <table className="min-w-full bg-white border">
@@ -107,7 +109,8 @@ const CosmeticsTable = ({
           {sortedData?.map((row) => (
             <tr
               key={row.id}
-              className="border-b border-gray-200 hover:bg-gray-100"
+              className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
+              onClick={() => navigate(`/products/product-details/${row.id}`)}
             >
               <td className="py-3 px-6 text-left">
                 <label>
@@ -123,12 +126,11 @@ const CosmeticsTable = ({
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.model_id}
               </td>
-              <Link to={`/products/product-details/${row.id}`}>
-                <td className="py-3 px-6 text-left xl:text-lg capitalize">
-                  {row?.name}
-                </td>
-              </Link>
-              <td className="py-3 px-6 text-left xl:text-lg ">Vendor</td>
+
+              <td className="py-3 px-6 text-left xl:text-lg capitalize">
+                {row?.name}
+              </td>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row?.vendor?.name}</td>
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row.brand?.name}
               </td>
@@ -138,25 +140,27 @@ const CosmeticsTable = ({
               <td className="py-3 px-6 text-left xl:text-lg ">{row?.price}</td>
               {row?.status === "live" ? (
                 <td
-                  className={`badge bg-[#ECFDF3] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#ECFDF3] py-3 px-6 text-left xl:text-lg mt-3`}
                 >
                   <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row?.status}
                 </td>
               ) : row?.status === "rejected" ? (
                 <td
-                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg mt-3 `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
               ) : row?.status === "deactivated" ? (
                 <td
-                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg mt-3 `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
               ) : (
                 <td
-                  className={`badge bg-[#EDEDED] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#EDEDED] py-3 px-6 text-left xl:text-lg mt-3 `}
                 >
                   <GoDotFill className={`mr-1 text-[#636366]`} /> {row.status}
                 </td>
@@ -180,4 +184,4 @@ const SortableHeader = ({ label, onClick, sorted }) => (
   </th>
 );
 
-export default CosmeticsTable
+export default CosmeticsTable;

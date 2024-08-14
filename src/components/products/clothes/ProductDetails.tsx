@@ -27,7 +27,6 @@ const ProductDetails = () => {
     }
   }, [targetProduct]);
 
-
   return (
     <div className="container mx-auto px-8 py-10 shadow-xl rounded-xl">
       {targetProduct ? (
@@ -38,16 +37,25 @@ const ProductDetails = () => {
                 Product Details
               </h1>
               <Link
-                to={`/products/${targetCategory}/edit/${targetProduct?.id}`}
+                to={`/products/${
+                  targetCategory?.toLowerCase() === "shoes"
+                    ? "clothes"
+                    : targetCategory?.toLowerCase() === "bags"
+                    ? "clothes"
+                    : targetCategory?.toLowerCase()
+                }/edit/${targetProduct?.id}`}
                 className="flex items-center gap-2 border p-4 rounded-md"
               >
                 <BiEdit /> Edit
               </Link>
             </div>
 
-            <div className="flex justify-between items-start"  >
+            <div className="flex justify-between items-start">
               <div className="flex flex-col ">
-                <div className="max-w-[600px] xl:min-w-[600px] border p-6 rounded-md" data-aos="fade-right">
+                <div
+                  className="max-w-[600px] xl:min-w-[600px] border p-6 rounded-md"
+                  data-aos="fade-right"
+                >
                   <h1 className="text-2xl font-bold mb-4">Details</h1>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">
@@ -70,7 +78,10 @@ const ProductDetails = () => {
                     <span>{targetProduct?.brand?.name}</span>
                   </div>
                 </div>
-                <div className="max-w-2xl mt-8 border p-6 rounded-md" data-aos="fade-right">
+                <div
+                  className="max-w-2xl mt-8 border p-6 rounded-md"
+                  data-aos="fade-right"
+                >
                   <h1 className="text-2xl font-bold mb-4">Pricing Details</h1>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xl text-[#00000066]">Price</span>
@@ -120,7 +131,10 @@ const ProductDetails = () => {
                 </p>
               )}
             </div>
-            <div className="max-w-5xl mt-8 border p-6 rounded-md " data-aos="fade-up">
+            <div
+              className="max-w-5xl mt-8 border p-6 rounded-md "
+              data-aos="fade-up"
+            >
               <h1 className="text-2xl font-bold mb-4">Sizes</h1>
               <table className="max-w-xl border-collapse border border-gray-300 rounded-lg overflow-hidden">
                 <thead className="bg-gray-100">
@@ -168,7 +182,10 @@ const ProductDetails = () => {
                 </tbody>
               </table>
             </div>
-            <div className="max-w-5xl mt-8 border p-8 rounded-md " data-aos="fade-up">
+            <div
+              className="max-w-5xl mt-8 border p-8 rounded-md "
+              data-aos="fade-up"
+            >
               <h1 className="text-2xl font-bold mb-4">Details</h1>
               <div className=" flex gap-36 ">
                 <div className="flex flex-col gap-4">
@@ -192,9 +209,7 @@ const ProductDetails = () => {
                     </p>
                   )}
                   {targetProduct && (
-                    <p>
-                      {extractContent(targetProduct?.return_order_desc)}
-                    </p>
+                    <p>{extractContent(targetProduct?.return_order_desc)}</p>
                   )}
                 </div>
               </div>

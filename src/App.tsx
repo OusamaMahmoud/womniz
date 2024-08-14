@@ -45,18 +45,17 @@ import NewClothes from "./components/products/clothes/NewClothes";
 import NewClothesEdit from "./components/products/clothes/NewClothesEdit";
 import NewJewelleryEdit from "./components/products/jewellery/NewJewelleryEdit";
 import NewCosmeticsEdit from "./components/products/cosmetics/NewCosmeticsEdit";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
 import { useEffect } from "react";
+import NewCelebritiesEdit from "./components/products/celebrities/NewCelebritiesEdit";
 function App() {
-  
   useEffect(() => {
     AOS.init({
       duration: 1000, // Animation duration in milliseconds
-      once: true,     // Whether animation should happen only once
+      once: true, // Whether animation should happen only once
     });
   }, []);
-
 
   const { permissions } = usePermissions();
 
@@ -66,6 +65,10 @@ function App() {
   const SPIN_PERMISSIONS = permissions[3]?.permissions.map((_) => _.name);
   const USERS_PERMISSIONS = permissions[4]?.permissions.map((_) => _.name);
   const VENDORS_PERMISSIONS = permissions[5]?.permissions.map((_) => _.name);
+
+  useEffect(() => {
+    console.log(ROLES_PERMISSIONS);
+  }, [permissions]);
 
   return (
     <Routes>
@@ -184,6 +187,10 @@ function App() {
         <Route
           path="products/celebrities/new-product"
           element={<NewCelebrities />}
+        />
+        <Route
+          path="/products/celebrities/edit/:id"
+          element={<NewCelebritiesEdit />}
         />
         {/* celebrities */}
 

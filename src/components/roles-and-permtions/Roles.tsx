@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {  BiPlus } from "react-icons/bi";
+import { BiPlus } from "react-icons/bi";
 import RoleTable from "./RoleTable";
 import usePermissions from "../../hooks/usePremissions";
 import { FieldValues, useForm } from "react-hook-form";
@@ -10,13 +10,15 @@ import apiClient from "../../services/api-client";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../contexts/AuthProvider";
+import ResponsiveRoleTable from "./ResponsiveRoleTable";
+import { Link } from "react-router-dom";
 
 const Roles: React.FC = () => {
   const { permissions, setPermissions } = usePermissions();
   const { roles, setRoles } = useRoles();
   const [targetRole, setTargetRole] = useState<Role | null>({} as Role);
   const [isCreatingRolePageShow, setCreatingRolePageShow] = useState(false);
-  const [selectAll, setSelectAll] = useState(true);
+  const [selectAll, setSelectAll] = useState(false);
   const [searchKey, setSearchKey] = useState<string>("");
   const [filteredRoles, setFilteredRoles] = useState<Role[]>(roles);
 
@@ -68,8 +70,9 @@ const Roles: React.FC = () => {
     setSelectAll(isChecked);
   };
 
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset, watch } = useForm();
 
+  const roleName = watch("ro");
   const onSubmit = (data: FieldValues) => {
     const selectedPermissions = permissions.flatMap((category) =>
       category.permissions
@@ -78,6 +81,7 @@ const Roles: React.FC = () => {
     );
 
     const formData = new FormData();
+
     formData.append("name", data.ro);
     selectedPermissions.map((per, idx) => {
       formData.append(`permissions[${idx}]`, per);
@@ -87,9 +91,21 @@ const Roles: React.FC = () => {
     try {
       apiClient.post("/roles", formData);
       toast.success(`${data.ro} Role is Successfully Created.`);
+      reset(); // Reset the form fields
+
+      // Reset permissions to the initial state (no selections)
+      const resetPermissions = permissions.map((category) => ({
+        ...category,
+        permissions: category.permissions.map((permission) => ({
+          ...permission,
+          checked: false,
+        })),
+      }));
+      // setRoles((prev) => [...prev, { id: 2, name: roleName, permissions: [] }]);
+      setPermissions(resetPermissions);
+      setSelectAll(false); // Reset the "Select All" toggle
       setCreatingRolePageShow(false);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
   const { auth } = useAuth();
 
@@ -136,7 +152,7 @@ const Roles: React.FC = () => {
                 </svg>
               </label>
               <div>
-                <RoleTable
+                <ResponsiveRoleTable
                   onEditRole={(role: Role) => setTargetRole(role)}
                   onDeleteRole={(role: Role) => setTargetRole(role)}
                   roles={filteredRoles}
@@ -157,8 +173,13 @@ const Roles: React.FC = () => {
                     {...register("ro")}
                     id="ro"
                     type="text"
-                    className="input input-bordered grow min-w-96"
+                    className="input input-bordered grow min-w-96 "
                   />
+                  {!roleName && (
+                    <p className="text-lg text-red-500 tracking-wider mt-2 ml-1">
+                      Please Write A Role Name!!
+                    </p>
+                  )}
                 </div>
                 <div className="form-control w-36">
                   <label className="cursor-pointer label">
@@ -226,12 +247,17 @@ const Roles: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <button className="btn btn-outline  text-lg mt-6 mr-4">
+              <button
+                type="button"
+                className="btn btn-outline  text-lg mt-6 mr-4"
+                onClick={() => setCreatingRolePageShow(false)}
+              >
                 Cancel
               </button>
               <button
                 className="btn bg-[#577656] text-white font-medium text-lg mt-6"
                 type="submit"
+                disabled={!roleName}
               >
                 Submit
               </button>

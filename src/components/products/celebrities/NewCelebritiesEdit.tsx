@@ -10,53 +10,15 @@ import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
-
-// type FormData = z.infer<typeof schema>;
-// interface Image {
-//   preview: string;
-//   name: string;
-// }
+import { Product } from "../../../services/clothes-service";
+import { useParams } from "react-router-dom";
 
 interface ProductImage {
   file: File;
   preview: string;
 }
 
-const NewCelebrities = () => {
-  useEffect(() => {
-    setProductImages([]);
-    setProductFiles([]);
-
-    setThumbnailImg(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (filesInputRef.current) {
-      filesInputRef.current.value = "";
-    }
-
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setSubBrandCategory("");
-    setShoesSizes([]);
-    setClothesSizes([]);
-    setBagObject({ quantity: "", sku: "" });
-    setPrice(0);
-    setPercentage(0);
-    setSelectedColorID(0);
-
-    localStorage.removeItem("formFields");
-    localStorage.removeItem("shoesFormFields");
-    localStorage.removeItem("bagFormFields");
-
-    localStorage.removeItem("prodDescripAr");
-    localStorage.removeItem("prodDescripEn");
-    localStorage.removeItem("fitSizeAr");
-    localStorage.removeItem("fitSizeEn");
-  }, []);
-
+const NewCelebritiesEdit = () => {
   // STATE VARIABLES
   const [productFiles, setProductFiles] = useState<File[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<Partial<Brand>>(
@@ -68,32 +30,70 @@ const NewCelebrities = () => {
   const [proNameEn, setProNameEn] = useState<string>("");
   const [proNameAr, setProNameAr] = useState<string>("");
   const [category, setCategory] = useState<string>("");
-  const [subBrandCategory, setSubBrandCategory] = useState<string>("");
+  const [subBrandCategory, setSubBrandCategory] = useState<number>(0);
   const [brand, setBrand] = useState<string>("");
-
-  const [, setClothesSizes] = useState<
-    | {
-        size: string;
-        quantity: string;
-        sku: string;
-      }[]
-  >([]);
-
-  const [shoesSizes, setShoesSizes] = useState<
-    {
-      size: string;
-      quantity: string;
-      sku: string;
-    }[]
-  >([]);
-
   const [prodDescripAr, setProdDescripAr] = useState("");
   const [prodDescripEn, setProdDescripEn] = useState("");
   const [fitSizeEn, setFitSizeEn] = useState("");
   const [fitSizeAr, setFitSizeAr] = useState("");
+  const [targetProduct, setTargetProduct] = useState<Product>({} as Product);
+  const [, setError] = useState("");
+  const { id } = useParams();
+  // const { colors } = useColorPalette();
+
+  useEffect(() => {
+    apiClient
+      .get<{ data: Product }>(`products/${id}`)
+      .then((res) => {
+        setTargetProduct(res.data.data);
+      })
+      .catch((err: any) => setError(err.message));
+  }, []);
+  const [errorRemovePreviousFile, setErrorRemovePreviousFile] = useState("");
 
   const [activeTab, setActiveTab] = useState("productInfo");
+  const [targetImages, setTargetImages] = useState(targetProduct?.images);
+  const handleDeleteTargetImages = async (id: number) => {
+    setTargetImages((prev) => [...prev.filter((item) => item.id !== id)]);
 
+    try {
+      await apiClient.delete(`/product-images/${id}`);
+      toast.success("🎉 Previous Image is Deleted Successfully!");
+    } catch (error: any) {
+      setErrorRemovePreviousFile(error);
+      setTargetImages(targetProduct?.images);
+      toast.error("❌ Oops!, Something went wrong!");
+    }
+  };
+
+  useEffect(() => {
+    setModalId(targetProduct?.model_id?.toString());
+    setProNameEn(targetProduct?.name_en);
+    setProNameAr(targetProduct?.name_ar);
+    if (targetProduct.categories) {
+      setCategory(targetProduct?.categories[0]?.id?.toString());
+      setSubBrandCategory(targetProduct?.categories[1]?.id);
+    }
+
+    setBrand(targetProduct?.brand?.id.toString());
+    setPrice(targetProduct.price);
+    setPercentage(targetProduct.discount);
+    setSelectedColorID(targetProduct?.color?.id);
+    setSelectedColorHexa(targetProduct?.color?.hexa);
+    setTargetThumbnailImage(targetProduct.thumbnail);
+    setTargetImages(targetProduct?.images);
+    if (targetProduct?.variants) {
+      const target = targetProduct?.variants[0];
+      setBagObject({
+        sku: target.sku?.toString(),
+        quantity: target.stock?.toString(),
+      });
+    }
+  }, [targetProduct]);
+
+  const [targetThumbnailImage, setTargetThumbnailImage] = useState(
+    targetProduct.thumbnail
+  );
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
 
@@ -156,7 +156,7 @@ const NewCelebrities = () => {
     // SUB CATEGORY & BRAND
     formData.append("brand_id", brand);
     formData.append("categories[0][id]", category);
-    formData.append("categories[1][id]", subBrandCategory);
+    formData.append("categories[1][id]", subBrandCategory.toString());
 
     if (bagObject.sku || bagObject.quantity) {
       formData.append(`variants[0][sku]`, bagObject.sku);
@@ -198,13 +198,12 @@ const NewCelebrities = () => {
       setProNameEn("");
       setCategory("");
       setBrand("");
-      setSubBrandCategory("");
+      setSubBrandCategory(0);
       setPrice(0);
       setPercentage(0);
       setModalId("");
       setSelectedColorID(0);
       setSelectedColorHexa("");
-      setBagObject({ sku: "", quantity: "" });
 
       if (localStorage.getItem("prodDescripEn")) {
         localStorage.removeItem("prodDescripEn");
@@ -224,6 +223,9 @@ const NewCelebrities = () => {
       console.log(error);
       toast.error(error.response.data.data.error);
     }
+  };
+  const handleRemoveThumbnailImage = async () => {
+    setTargetThumbnailImage("");
   };
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
   const filesInputRef = useRef<HTMLInputElement>(null);
@@ -340,7 +342,6 @@ const NewCelebrities = () => {
   };
   const { colors } = useColorPalette();
   const [selectedColorHexa, setSelectedColorHexa] = useState("");
-  const [selectedColorLabel, setSelectedColorLabel] = useState("");
   const [selectedColorID, setSelectedColorID] = useState(0);
 
   const handleColorsChange = (colorHexa: string, colorId: number) => {
@@ -353,43 +354,8 @@ const NewCelebrities = () => {
       className="container mx-auto px-8 shadow-2xl rounded-xl p-10"
     >
       <ToastContainer />
-      <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">
-          <p className="py-4 text-lg tracking-wider font-semibold">
-            You are sure ? All changes will be lost!
-          </p>
-
-          <div className="modal-action">
-            <button
-              type="button"
-              onClick={ignoreChanges}
-              className="btn font-semibold text-lg hover:bg-red-500 hover:text-white"
-            >
-              Discard Changes
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const modal = document.getElementById(
-                  "my_modal_3"
-                ) as HTMLDialogElement;
-                if (modal) {
-                  modal.close();
-                }
-              }}
-              className="btn"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </dialog>
-
       <div className="flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Adding New Product</h1>
-        <button type="button" onClick={cancelFunc} className="btn btn-outline">
-          <MdCancel /> Cancel
-        </button>
       </div>
       <div className="flex items-center">
         <button
@@ -410,14 +376,6 @@ const NewCelebrities = () => {
         <IoIosArrowForward className="mx-3" />
         <button
           type="button"
-          disabled={
-            !thumbnailImg ||
-            !productFiles ||
-            !proNameAr ||
-            !proNameEn ||
-            !category ||
-            !brand
-          }
           onClick={() => setActiveTab("descriptionPrice")}
           className={`btn btn-outline text-xl ${
             activeTab === "descriptionPrice"
@@ -439,7 +397,6 @@ const NewCelebrities = () => {
         <IoIosArrowForward className="mx-3" />
         <button
           type="button"
-          disabled={!proPrice || !percentage}
           onClick={() => setActiveTab("arPreview")}
           className={`btn btn-outline text-xl`}
         >
@@ -455,10 +412,34 @@ const NewCelebrities = () => {
       {activeTab === "productInfo" && (
         <div className="flex flex-col mt-8">
           <div>
-            <h1 className="text-2xl font-bold mb-8">Thumbnail Image</h1>
-            <div className="flex gap-4 items-center border w-fit p-4 my-6">
+            <h1 className="text-2xl font-bold mb-8">
+              {targetThumbnailImage
+                ? "Previous Thumbnail Image"
+                : "Thumbnail Image"}
+            </h1>
+
+            {targetThumbnailImage && (
+              <>
+                <div className="relative w-[200px]" data-aos="fade-out">
+                  <img
+                    src={targetThumbnailImage}
+                    alt="Thumbnail Preview"
+                    className="object-cover h-[100%] w-[100%]"
+                  />
+                  <button
+                    type="button"
+                    className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
+                    onClick={handleRemoveThumbnailImage}
+                  >
+                    <MdDelete className="text-5xl text-white" />
+                  </button>
+                </div>
+              </>
+            )}
+
+            <div className="flex flex-col gap-4 items-center  w-fit p-4 my-6">
               {thumbnailImg && (
-                <div className="relative w-[200px]">
+                <div className="relative w-[200px]" data-aos="fade-out">
                   <img
                     src={URL.createObjectURL(thumbnailImg)}
                     alt="Thumbnail Preview"
@@ -473,25 +454,32 @@ const NewCelebrities = () => {
                   </button>
                 </div>
               )}
-              <div className="relative">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleThumbnailChange}
-                  hidden
-                  id="thumbnail"
-                  ref={fileInputRef}
-                />
-                {!thumbnailImg && (
-                  <label
-                    className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
-                    htmlFor="thumbnail"
-                  >
-                    <CameraIcon
-                      width={100}
-                      className="absolute top-5 left-10"
-                    />
-                  </label>
+
+              <div className=" ">
+                {!targetThumbnailImage && (
+                  <>
+                    <div className="relative ">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailChange}
+                        hidden
+                        id="thumbnail"
+                        ref={fileInputRef}
+                      />
+                      {!thumbnailImg && (
+                        <label
+                          className="relative cursor-pointer flex flex-col gap-2 border-4 border-dashed border-[#BFBFBF] w-[160px] h-40 items-center justify-center"
+                          htmlFor="thumbnail"
+                        >
+                          <CameraIcon
+                            width={100}
+                            className="absolute top-5 left-10"
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -499,8 +487,37 @@ const NewCelebrities = () => {
 
           {/* handle images */}
           <div>
+            {targetImages?.length > 0 && (
+              <>
+                <h1 className="text-2xl font-bold mt-8 mb-4">
+                  Previous Images
+                </h1>
+                <div
+                  className="flex gap-4 flex-wrap items-center"
+                  data-aos="fade-out"
+                >
+                  {targetProduct &&
+                    targetImages?.map((item, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={item.image}
+                          alt={`Product Preview ${index}`}
+                          className="max-w-xs max-h-40"
+                        />
+                        <button
+                          type="button"
+                          className="transition-all duration-300 cursor-pointer top-0 absolute bg-[#00000033] opacity-0 hover:opacity-100 flex justify-center items-center text-center h-[100%] w-[100%]"
+                          onClick={() => handleDeleteTargetImages(item.id)}
+                        >
+                          <MdDelete className="text-5xl text-white" />
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </>
+            )}
             <h1 className="text-2xl font-bold mt-8">Images</h1>
-            <div className="flex border w-fit my-6 p-4">
+            <div className="flex border w-fit my-6 p-4" data-aos="fade-in">
               <div className="flex gap-4 flex-wrap items-center">
                 {productImages &&
                   productImages.map((image, index) => (
@@ -636,7 +653,9 @@ const NewCelebrities = () => {
                   <select
                     id="subBrandCategory"
                     value={subBrandCategory}
-                    onChange={(e) => setSubBrandCategory(e.currentTarget.value)}
+                    onChange={(e) =>
+                      setSubBrandCategory(Number(e.currentTarget.value))
+                    }
                     className="select select-bordered w-full grow"
                     disabled={brand ? false : true}
                   >
@@ -717,9 +736,6 @@ const NewCelebrities = () => {
             <div className="flex justify-end mt-5">
               <button
                 type="button"
-                disabled={
-                  !thumbnailImg || !productFiles || !proNameAr || !proNameEn
-                }
                 onClick={() => setActiveTab("descriptionPrice")}
                 className="btn mt-10 px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
               >
@@ -742,6 +758,7 @@ const NewCelebrities = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setProdDescripAr(htmlContent)
                   }
+                  prodDesc={targetProduct.desc_ar}
                 />
               </div>
               <div className="grow flex flex-col">
@@ -751,6 +768,7 @@ const NewCelebrities = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setProdDescripEn(htmlContent)
                   }
+                  prodDesc={targetProduct.desc_en}
                 />
               </div>
             </div>
@@ -763,6 +781,7 @@ const NewCelebrities = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeAr(htmlContent)
                   }
+                  prodDesc={targetProduct.fit_size_desc_ar}
                 />
               </div>
               <div className="grow flex flex-col">
@@ -772,6 +791,7 @@ const NewCelebrities = () => {
                   onHtmlContent={(htmlContent: string) =>
                     setFitSizeEn(htmlContent)
                   }
+                  prodDesc={targetProduct.fit_size_desc_en}
                 />
               </div>
             </div>
@@ -810,7 +830,6 @@ const NewCelebrities = () => {
             </button>
             <button
               type="button"
-              disabled={!proPrice || !percentage}
               onClick={() => setActiveTab("arPreview")}
               className="btn mt-10 self-end px-20 bg-[#577656] text-white text-xl hover:bg-[#87ae85]"
             >
@@ -876,37 +895,26 @@ const NewCelebrities = () => {
               </div>
               <div className="mt-8">
                 <h1 className="text-2xl font-bold tracking-wider">Size</h1>
-                {shoesSizes &&
-                  shoesSizes.map((i, idx) => {
-                    return (
-                      <div key={idx} className="mt-4 flex flex-wrap gap-10 ">
-                        <div className="flex flex-col gap-3">
-                          <h1 className="text-lg font-semibold tracking-wider">
-                            SKU
-                          </h1>
-                          <div className="border p-5 rounded-lg min-w-36">
-                            {i.sku}
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-3">
-                          <h1 className="text-lg font-semibold tracking-wider">
-                            Size
-                          </h1>
-                          <div className="border p-5 rounded-lg min-w-36">
-                            {i.size}
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-3">
-                          <h1 className="text-lg font-semibold tracking-wider">
-                            Quantity
-                          </h1>
-                          <div className="border p-5 rounded-lg min-w-36">
-                            {i.quantity}
-                          </div>
-                        </div>
+                {bagObject && (
+                  <div className="mt-4 flex flex-wrap gap-10 ">
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-lg font-semibold tracking-wider">
+                        SKU
+                      </h1>
+                      <div className="border p-5 rounded-lg min-w-36">
+                        {bagObject.sku}
                       </div>
-                    );
-                  })}
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-lg font-semibold tracking-wider">
+                        Quantity
+                      </h1>
+                      <div className="border p-5 rounded-lg min-w-36">
+                        {bagObject.quantity}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="mt-8">
                 <h1 className="text-2xl font-bold tracking-wider">
@@ -918,7 +926,7 @@ const NewCelebrities = () => {
                       Description (Arabic)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("prodDescripAr")}
+                      {targetProduct.desc_ar}
                     </div>
                   </div>
                   <div className="flex flex-col gap-3">
@@ -926,7 +934,8 @@ const NewCelebrities = () => {
                       Description (English)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("prodDescripEn")}
+                    {targetProduct.desc_en}
+
                     </div>
                   </div>
                 </div>
@@ -941,7 +950,7 @@ const NewCelebrities = () => {
                       Fit & Size (Arabic)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("fitSizeAr")}
+                      {targetProduct.fit_size_desc_ar}
                     </div>
                   </div>
                   <div className="flex flex-col gap-3">
@@ -949,7 +958,8 @@ const NewCelebrities = () => {
                       Fit & Size (English)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                      {localStorage.getItem("fitSizeEn")}
+                    {targetProduct.fit_size_desc_en}
+
                     </div>
                   </div>
                 </div>
@@ -1049,4 +1059,4 @@ const NewCelebrities = () => {
   );
 };
 
-export default NewCelebrities;
+export default NewCelebritiesEdit;

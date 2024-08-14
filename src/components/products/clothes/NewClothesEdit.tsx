@@ -98,6 +98,7 @@ const NewClothesEdit = () => {
     setTargetImages(targetProduct?.images);
 
     if (subClothes?.toLowerCase() === "shoes") {
+      console.log('hey!2')
       setShoesSizes([
         ...targetProduct?.variants?.map((va) => ({
           sku: va?.sku?.toString(),
@@ -112,7 +113,7 @@ const NewClothesEdit = () => {
         ...targetProduct?.variants?.map((va) => ({
           sku: va?.sku?.toString(),
           quantity: va?.stock?.toString(),
-          size: va?.size_id.toString(),
+          size: va?.size_id?.toString(),
         })),
       ]);
     }

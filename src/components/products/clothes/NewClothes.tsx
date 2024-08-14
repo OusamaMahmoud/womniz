@@ -236,7 +236,7 @@ const NewClothes = () => {
       setModalId("");
       setSelectedColorID(0);
       setSelectedColorHexa("");
-
+      
       if (localStorage.getItem("formFields")) {
         localStorage.removeItem("formFields");
         setClothesSizes([]);

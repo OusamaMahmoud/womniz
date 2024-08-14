@@ -139,27 +139,27 @@ const ClothesTable = ({
               <td className="py-3 px-6 text-left xl:text-lg ">{row?.price}</td>
               {row?.status === "live" ? (
                 <td
-                  className={`badge bg-[#ECFDF3] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#ECFDF3] py-3 px-6 text-left xl:text-lg mt-3 `}
                 >
                   <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row?.status}
                 </td>
               ) : row?.status === "rejected" ? (
                 <td
-                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg mt-3 `}
                 >
                   <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
                   {row?.status}
                 </td>
               ) : row?.status === "deactivated" ? (
                 <td
-                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg mt-3 `}
                 >
                   <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
                   {row?.status}
                 </td>
               ) : (
                 <td
-                  className={`badge bg-[#EDEDED] py-3 px-6 text-left xl:text-lg `}
+                  className={`badge bg-[#EDEDED] py-3 px-6 text-left xl:text-lg mt-3 `}
                 >
                   <GoDotFill className={`mr-1 text-[#636366]`} /> {row?.status}
                 </td>

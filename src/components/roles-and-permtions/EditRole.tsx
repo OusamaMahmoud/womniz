@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { Role } from "../../services/role-service";
 import { PermissionCategory } from "../../services/permission-service";
@@ -10,7 +10,7 @@ const EditRole = ({
   permissions,
   setPermissions,
   roles,
-  onCloseThisPage
+  onCloseThisPage,
 }: {
   targetRole: Role;
   permissions: PermissionCategory[];
@@ -47,7 +47,7 @@ const EditRole = ({
     }
   }, [targetRole, roles, setPermissions]);
 
-  const [selectAll, setSelectAll] = useState(true);
+  const [selectAll, setSelectAll] = useState(false);
 
   const handleCheckboxChange = (
     categoryIndex: number,
@@ -93,17 +93,16 @@ const EditRole = ({
     );
     const formData = new FormData();
     formData.append("name", data.ro);
-    formData.append("_method", 'put');
+    formData.append("_method", "put");
 
     selectedPermissions.map((per, idx) => {
       formData.append(`permissions[${idx}]`, per);
     });
     try {
-       apiClient.post(`/roles/${targetRole.id}`, formData);
-       toast.success(`${data.ro} Role is Successfully Edited.`)
-       onCloseThisPage(null)
-    } catch (error) {
-    }
+      apiClient.post(`/roles/${targetRole.id}`, formData);
+      toast.success(`${data.ro} Role is Successfully Edited.`);
+      onCloseThisPage(null);
+    } catch (error) {}
   };
 
   return (
@@ -181,7 +180,13 @@ const EditRole = ({
           ))}
         </div>
         <div className="flex gap-6 items-center mt-8">
-          <button className="btn px-10">Cancel</button>
+          <button
+            onClick={() => onCloseThisPage(null)}
+            type="button"
+            className="btn px-10"
+          >
+            Cancel
+          </button>
           <button className="btn  px-10 bg-[#577656] text-white text-lg hover:bg-[#7ca77a]">
             Edit
           </button>
