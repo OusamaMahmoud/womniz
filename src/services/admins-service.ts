@@ -8,6 +8,7 @@ export interface Admin {
   birthdate: string;
   address: string;
   country: string;
+  countryId: string;
   category: string[];
   status: string;
   password: string;

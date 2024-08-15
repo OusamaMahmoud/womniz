@@ -130,7 +130,7 @@ const CosmeticsTable = ({
               <td className="py-3 px-6 text-left xl:text-lg capitalize">
                 {row?.name}
               </td>
-              <td className="py-3 px-6 text-left xl:text-lg ">{row?.vendor?.name}</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row?.vendor?.contactName}</td>
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row.brand?.name}
               </td>

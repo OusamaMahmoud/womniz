@@ -14,6 +14,7 @@ import RingsDynamicForm from "./RingsDynamicForm";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
 import TextEditorForReturn from "../TextEditorForReturn";
+import useVendors from "../../../hooks/useVendors";
 
 interface ProductImage {
   file: File;
@@ -248,6 +249,8 @@ const NewJewellery = () => {
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
     formData.append(`color_id`, selectedColorID.toString());
+    formData.append(`vendor_id`, selectedVendorId.toString());
+
 
     try {
       setSubmitButton(true);
@@ -381,7 +384,7 @@ const NewJewellery = () => {
 
   const [bagObject] = useState({ sku: "", quantity: "" });
 
-  // Set Necklace in local_storage
+  // Set Necklace in local_storagex
   useEffect(() => {
     if (necklaceObject.sku !== "") {
       localStorage.setItem("necklace", JSON.stringify(necklaceObject));
@@ -480,7 +483,9 @@ const NewJewellery = () => {
 
     setActiveTab("productInfo");
   };
+  const { vendors } = useVendors({});
 
+  const [selectedVendorId, setSelectedVendorId] = useState("");
   const cancelFunc = () => {
     const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
     if (modal) {
@@ -871,6 +876,20 @@ const NewJewellery = () => {
                 min={0}
                 onKeyDown={handleKeyDown}
               />
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id}>{v.contactName}</option>
+                ))}
+              </select>
             </div>
             <div className="flex  items-center mt-10" data-aos="fade-up">
               <p className="text-xl font-semibold w-64 mr-10">Product Name</p>

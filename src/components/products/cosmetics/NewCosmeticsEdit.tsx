@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {  MdDelete, MdDrafts } from "react-icons/md";
+import { MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import { CameraIcon } from "@heroicons/react/24/solid";
@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import { Product } from "../../../services/clothes-service";
 import { useNavigate, useParams } from "react-router-dom";
+import useVendors from "../../../hooks/useVendors";
 
 // type FormData = z.infer<typeof schema>;
 // interface Image {
@@ -23,8 +24,6 @@ interface ProductImage {
 }
 
 const NewCosmeticsEdit = () => {
-
-
   useEffect(() => {
     setModalId(targetProduct?.model_id?.toString());
     setProNameEn(targetProduct?.name_en);
@@ -40,6 +39,8 @@ const NewCosmeticsEdit = () => {
       const { sku, stock } = targetProduct?.variants[0];
       setBagObject({ sku, quantity: stock?.toString() });
     }
+    setSelectedVendorId(targetProduct?.vendor?.id?.toString());
+
   }, []);
 
   // STATE VARIABLES
@@ -90,8 +91,7 @@ const NewCosmeticsEdit = () => {
   const [, setProductFilesError] = useState(false);
   const [isSetSubmitButton, setSubmitButton] = useState(false);
 
-
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // SUBMIT FUNCTION
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -148,7 +148,8 @@ const navigate = useNavigate();
     // PRICE
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
-    formData.append(`_method`, 'PUT');
+    formData.append(`vendor_id`, selectedVendorId.toString());
+    formData.append(`_method`, "PUT");
 
     try {
       setSubmitButton(true);
@@ -198,11 +199,10 @@ const navigate = useNavigate();
       if (localStorage.getItem("ingredientsEn")) {
         localStorage.removeItem("ingredientsEn");
       }
-
     } catch (error: any) {
       setSubmitButton(false);
       toast.error(error.response.data.data.error);
-      console.log("=>",error.response.data.data.error);
+      console.log("=>", error.response.data.data.error);
     }
   };
 
@@ -301,19 +301,25 @@ const navigate = useNavigate();
       })
       .catch((err: any) => console.log(err.message));
   }, []);
+  const { vendors } = useVendors({});
 
+  useEffect(() => {
+    console.log("these are the vendors names => ", vendors);
+  }, [vendors]);
+
+  const [selectedVendorId, setSelectedVendorId] = useState(
+    targetProduct?.vendor?.id?.toString()
+  );
   useEffect(() => {
     setModalId(targetProduct?.model_id?.toString());
     setProNameEn(targetProduct?.name_en);
     setProNameAr(targetProduct?.name_ar);
     setBrand(targetProduct?.brand?.id?.toString());
 
-
     if (targetProduct.categories) {
       setCategory(targetProduct?.categories[0]?.id?.toString());
       setSubBrandCategory(targetProduct?.categories[1]?.id);
     }
-
 
     setPrice(targetProduct?.price);
     setPercentage(targetProduct?.discount);
@@ -322,8 +328,6 @@ const navigate = useNavigate();
       setBagObject({ sku, quantity: stock?.toString() });
     }
   }, [targetProduct]);
-
-
 
   const [, setPreviousThumbnail] = useState("");
   const [, setPreviousImage] = useState("");
@@ -561,6 +565,23 @@ const navigate = useNavigate();
                 onKeyDown={handleKeyDown}
               />
             </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                value={selectedVendorId}
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id} defaultValue={selectedVendorId}>
+                    {v.contactName}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex gap-40 items-center mt-10">
               <p className="text-xl font-semibold">Product Name</p>
               <div className="flex flex-col gap-4">
@@ -758,7 +779,6 @@ const navigate = useNavigate();
                     setIngredientsAr(htmlContent)
                   }
                   prodDesc={targetProduct?.ingredients_desc_en}
-
                 />
               </div>
               <div className="grow flex flex-col">
@@ -782,7 +802,6 @@ const navigate = useNavigate();
                     setFitSizeAr(htmlContent)
                   }
                   prodDesc={targetProduct?.about_product_desc_ar}
-
                 />
               </div>
               <div className="grow flex flex-col">

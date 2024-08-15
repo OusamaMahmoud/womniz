@@ -3,7 +3,7 @@ import create from "./http-service";
 export interface Vendor {
   id: number;
   name: string;
-  contact_name: string;
+  contactName: string;
   email: string;
   image: string;
   phone: string;

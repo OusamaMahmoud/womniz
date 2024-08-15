@@ -133,7 +133,7 @@ const JewelleryTable = ({
                 {row?.name}
               </p>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row?.vendor?.name}
+                {row?.vendor?.contactName}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.brand?.name}

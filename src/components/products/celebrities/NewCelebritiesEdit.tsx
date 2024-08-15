@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
+import { MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import { CameraIcon } from "@heroicons/react/24/solid";
@@ -12,6 +12,7 @@ import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
 import { Product } from "../../../services/clothes-service";
 import { useParams } from "react-router-dom";
+import useVendors from "../../../hooks/useVendors";
 
 interface ProductImage {
   file: File;
@@ -49,7 +50,7 @@ const NewCelebritiesEdit = () => {
       })
       .catch((err: any) => setError(err.message));
   }, []);
-  const [errorRemovePreviousFile, setErrorRemovePreviousFile] = useState("");
+  const [, setErrorRemovePreviousFile] = useState("");
 
   const [activeTab, setActiveTab] = useState("productInfo");
   const [targetImages, setTargetImages] = useState(targetProduct?.images);
@@ -82,6 +83,8 @@ const NewCelebritiesEdit = () => {
     setSelectedColorHexa(targetProduct?.color?.hexa);
     setTargetThumbnailImage(targetProduct.thumbnail);
     setTargetImages(targetProduct?.images);
+    setSelectedVendorId(targetProduct?.vendor?.id?.toString());
+
     if (targetProduct?.variants) {
       const target = targetProduct?.variants[0];
       setBagObject({
@@ -175,6 +178,8 @@ const NewCelebritiesEdit = () => {
     formData.append(`discount`, percentage.toString());
     formData.append("model_id", modalId);
     formData.append(`color_id`, selectedColorID.toString());
+    formData.append(`vendor_id`, selectedVendorId.toString());
+
 
     try {
       setSubmitButton(true);
@@ -224,6 +229,10 @@ const NewCelebritiesEdit = () => {
       toast.error(error.response.data.data.error);
     }
   };
+  const { vendors } = useVendors({});
+  const [selectedVendorId, setSelectedVendorId] = useState(
+    targetProduct?.vendor?.id?.toString()
+  );
   const handleRemoveThumbnailImage = async () => {
     setTargetThumbnailImage("");
   };
@@ -297,41 +306,8 @@ const NewCelebritiesEdit = () => {
     }
   }, [bagObject]);
 
-  const ignoreChanges = () => {
-    localStorage.removeItem("prodDescripAr");
-    localStorage.removeItem("prodDescripEn");
-    localStorage.removeItem("fitSizeAr");
-    localStorage.removeItem("fitSizeEn");
-
-    setProductImages([]);
-    setProductFiles([]);
-
-    setThumbnailImg(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    if (filesInputRef.current) {
-      filesInputRef.current.value = "";
-    }
-
-    setProNameAr("");
-    setProNameEn("");
-    setCategory("");
-    setBrand("");
-    setPrice(0);
-    setPercentage(0);
-    setModalId("");
-    setBagObject({ sku: "", quantity: "" });
-    setActiveTab("productInfo");
-  };
   const [modalId, setModalId] = useState("");
 
-  const cancelFunc = () => {
-    const modal = document.getElementById("my_modal_3") as HTMLDialogElement;
-    if (modal) {
-      modal.showModal();
-    }
-  };
   const [proNameArError, setProNameArError] = useState("");
   const [proNameEnError, setProNameEnError] = useState("");
 
@@ -568,6 +544,23 @@ const NewCelebritiesEdit = () => {
                 min={0}
                 onKeyDown={handleKeyDown}
               />
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                value={selectedVendorId}
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id} defaultValue={selectedVendorId}>
+                    {v.contactName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex gap-40 items-center mt-10">
               <p className="text-xl font-semibold">Product Name</p>
@@ -934,8 +927,7 @@ const NewCelebritiesEdit = () => {
                       Description (English)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                    {targetProduct.desc_en}
-
+                      {targetProduct.desc_en}
                     </div>
                   </div>
                 </div>
@@ -958,8 +950,7 @@ const NewCelebritiesEdit = () => {
                       Fit & Size (English)
                     </h1>
                     <div className="border p-5 rounded-lg min-w-36">
-                    {targetProduct.fit_size_desc_en}
-
+                      {targetProduct.fit_size_desc_en}
                     </div>
                   </div>
                 </div>

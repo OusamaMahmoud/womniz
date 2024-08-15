@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { BiPlus } from "react-icons/bi";
-import RoleTable from "./RoleTable";
 import usePermissions from "../../hooks/usePremissions";
 import { FieldValues, useForm } from "react-hook-form";
 import { Role } from "../../services/role-service";
@@ -11,7 +10,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../contexts/AuthProvider";
 import ResponsiveRoleTable from "./ResponsiveRoleTable";
-import { Link } from "react-router-dom";
 
 const Roles: React.FC = () => {
   const { permissions, setPermissions } = usePermissions();

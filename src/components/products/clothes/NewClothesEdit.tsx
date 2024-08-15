@@ -17,6 +17,7 @@ import { Product } from "../../../services/clothes-service";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
 import TextEditorForReturn from "../TextEditorForReturn";
+import useVendors from "../../../hooks/useVendors";
 
 interface ProductImage {
   file: File;
@@ -55,7 +56,7 @@ const NewClothesEdit = () => {
   const filesInputRef = useRef<HTMLInputElement>(null);
   const [thumbnailImg, setThumbnailImg] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [errorRemovePreviousFile, setErrorRemovePreviousFile] = useState("");
+  const [, setErrorRemovePreviousFile] = useState("");
   const [bagObject, setBagObject] = useState({ sku: "", quantity: "" });
   const [, setNextSubCloths] = useState("");
   const [modalId, setModalId] = useState("");
@@ -96,9 +97,13 @@ const NewClothesEdit = () => {
     setSelectedColorHexa(targetProduct?.color?.hexa);
     setTargetThumbnailImage(targetProduct.thumbnail);
     setTargetImages(targetProduct?.images);
+    setSelectedVendorId(targetProduct?.vendor?.id?.toString());
+    
+    console.log("llloook=>", targetProduct);
+    console.log(targetProduct?.vendor?.id?.toString());
 
     if (subClothes?.toLowerCase() === "shoes") {
-      console.log('hey!2')
+      console.log("hey!2");
       setShoesSizes([
         ...targetProduct?.variants?.map((va) => ({
           sku: va?.sku?.toString(),
@@ -239,6 +244,7 @@ const NewClothesEdit = () => {
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
     formData.append(`color_id`, selectedColorID.toString());
+    formData.append(`vendor_id`, selectedVendorId.toString());
 
     formData.append(`_method`, "PUT");
 
@@ -301,6 +307,15 @@ const NewClothesEdit = () => {
       toast.error(error.response.data.data.error);
     }
   };
+  const { vendors } = useVendors({});
+
+  useEffect(() => {
+    console.log("these are the vendors names => ", vendors);
+  }, [vendors]);
+
+  const [selectedVendorId, setSelectedVendorId] = useState(
+    targetProduct?.vendor?.id?.toString()
+  );
 
   const handleRemoveThumbnailImage = async () => {
     setTargetThumbnailImage("");
@@ -674,6 +689,23 @@ const NewClothesEdit = () => {
                 min={0}
                 onKeyDown={handleKeyDown}
               />
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                value={selectedVendorId}
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id} defaultValue={selectedVendorId}>
+                    {v.contactName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex  items-center mt-10" data-aos="fade-up">
               <label className="text-xl font-semibold w-64 mr-10">

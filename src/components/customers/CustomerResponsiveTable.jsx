@@ -105,7 +105,7 @@ const CustomerResponsiveTable = ({
         <tbody className="text-gray-600 text-sm font-light">
           {sortedData.map((row) => (
             <tr
-              key={row.id}
+              key={row?.id}
               className="border-b border-gray-200 hover:bg-gray-100"
             >
               <td className="py-3 px-6 text-left">
@@ -113,36 +113,34 @@ const CustomerResponsiveTable = ({
                   <input
                     type="checkbox"
                     className="checkbox"
-                    checked={selectedObjects.has(row.id)}
-                    onChange={() => handleCheckboxChange(row.id)}
+                    checked={selectedObjects.has(row?.id)}
+                    onChange={() => handleCheckboxChange(row?.id)}
                   />
                 </label>
               </td>
-              <td className="py-3 px-6 text-left">{row.id}</td>
+              <td className="py-3 px-6 text-left">{row?.id}</td>
               <td className="py-3 px-6 text-left">
                 {auth?.permissions.find((per) => per === "user-show") ? (
-                  <Link to={`/accounts/customers/${row.id}`} className="py-5">
-                    {row.name}
+                  <Link to={`/accounts/customers/${row?.id}`} className="py-5">
+                    {row?.name}
                   </Link>
                 ) : (
-                  <p className="py-5">{row.name}</p>
+                  <p className="py-5">{row?.name}</p>
                 )}
               </td>
-              <td className="py-3 px-6 text-left">{row.email}</td>
-              <td className="py-3 px-6 text-left">{row.phone}</td>
-              <td className="py-3 px-6 text-left">{row.age}</td>
-              <td className="py-3 px-6 text-left">{row.city}</td>
-              <td className="py-3 px-6 text-left">{row.gender}</td>
-              <td className="py-3 px-6 text-left">
-                {
-                  <span>
-                    {row.addresses[0]}-{row.addresses[1]}
-                  </span>
-                }
+              <td className="py-3 px-6 text-left">{row?.email}</td>
+              <td className="py-3 px-6 text-left">{row?.phone}</td>
+              <td className="py-3 px-6 text-left">{row?.age}</td>
+              <td className="py-3 px-6 text-left">{row?.city}</td>
+              <td className="py-3 px-6 text-left">{row?.gender}</td>
+              <td>
+                {row?.addresses &&
+                  row?.addresses?.length > 0 &&
+                  row?.addresses?.map((add) => <p className="text-center flex justify-center items-center pr-10">{add?.label}</p>)}
               </td>
-              <td className="py-3 px-6 text-left">{row.category}</td>
+              <td className="py-3 px-6 text-left">{row?.numOfOrders}</td>
               <td className="py-3 px-6 text-center">
-                {row.status === 1 ? (
+                {row?.status === 1 ? (
                   <p className="badge p-4 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
                     <GoDotFill className="text-[#14BA6D] text-lg" /> Active
                   </p>

@@ -589,7 +589,7 @@ const VendorProfile = () => {
                 <div className="flex flex-col gap-1 mt-5">
                   <span className="font-bold">Contact Person Name</span>
                   <span className="text-[gray]">
-                    {targetAdmin.contact_name}
+                    {targetAdmin.contactName}
                   </span>
                 </div>
               </div>

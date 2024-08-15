@@ -8,6 +8,7 @@ import { Brand } from "../../../services/vendor-category-sevice";
 import apiClient from "../../../services/api-client";
 import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
+import useVendors from "../../../hooks/useVendors";
 
 // type FormData = z.infer<typeof schema>;
 // interface Image {
@@ -24,7 +25,6 @@ const NewCosmetics = () => {
   useEffect(() => {
     setProductImages([]);
     setProductFiles([]);
-
     setThumbnailImg(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -167,6 +167,7 @@ const NewCosmetics = () => {
     // PRICE
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
+    formData.append(`vendor_id`, selectedVendorId.toString());
 
     try {
       setSubmitButton(true);
@@ -242,6 +243,9 @@ const NewCosmetics = () => {
       filesInputRef.current.value = ""; // Reset the file input
     }
   };
+  const { vendors } = useVendors({});
+
+  const [selectedVendorId, setSelectedVendorId] = useState("");
 
   // THUMBNAIL IMAGE
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -553,6 +557,20 @@ const NewCosmetics = () => {
                 min={0}
                 onKeyDown={handleKeyDown}
               />
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id}>{v.contactName}</option>
+                ))}
+              </select>
             </div>
             <div className="flex gap-40 items-center mt-10">
               <p className="text-xl font-semibold">Product Name</p>

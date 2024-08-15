@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
+import useVendors from "../../../hooks/useVendors";
 
 // type FormData = z.infer<typeof schema>;
 // interface Image {
@@ -175,6 +176,7 @@ const NewCelebrities = () => {
     formData.append(`discount`, percentage.toString());
     formData.append("model_id", modalId);
     formData.append(`color_id`, selectedColorID.toString());
+    formData.append(`vendor_id`, selectedVendorId.toString());
 
     try {
       setSubmitButton(true);
@@ -225,6 +227,10 @@ const NewCelebrities = () => {
       toast.error(error.response.data.data.error);
     }
   };
+  const { vendors } = useVendors({});
+
+  const [selectedVendorId, setSelectedVendorId] = useState("");
+
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
   const filesInputRef = useRef<HTMLInputElement>(null);
 
@@ -340,7 +346,6 @@ const NewCelebrities = () => {
   };
   const { colors } = useColorPalette();
   const [selectedColorHexa, setSelectedColorHexa] = useState("");
-  const [selectedColorLabel, setSelectedColorLabel] = useState("");
   const [selectedColorID, setSelectedColorID] = useState(0);
 
   const handleColorsChange = (colorHexa: string, colorId: number) => {
@@ -551,6 +556,20 @@ const NewCelebrities = () => {
                 min={0}
                 onKeyDown={handleKeyDown}
               />
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id}>{v.contactName}</option>
+                ))}
+              </select>
             </div>
             <div className="flex gap-40 items-center mt-10">
               <p className="text-xl font-semibold">Product Name</p>

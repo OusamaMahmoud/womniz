@@ -9,7 +9,7 @@ const AllProductsTable = ({
   handleCheckAll,
   selectedObjects,
   handleCheckboxChange,
-  products
+  products,
 }) => {
   const [data, setData] = useState(products);
   const [sortBy, setSortBy] = useState(null);
@@ -128,7 +128,9 @@ const AllProductsTable = ({
                   {row?.name}
                 </td>
               </Link>
-              <td className="py-3 px-6 text-left xl:text-lg ">Vendor</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">
+                {row?.vendor?.contactName}
+              </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.brand?.name}
               </td>
@@ -146,13 +148,15 @@ const AllProductsTable = ({
                 <td
                   className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
               ) : row?.status === "deactivated" ? (
                 <td
                   className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row?.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
               ) : (
                 <td

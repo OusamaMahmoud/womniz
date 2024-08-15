@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
-import { Admin } from "../services/admins-service";
 import _ from "lodash";
+import { Vendor } from "../services/vendors-service";
 
 interface MetaObject {
   current_page: number;
@@ -10,11 +10,11 @@ interface MetaObject {
   to: number;
 }
 interface AdminsFilter {
-  categories: string;
-  status: string;
-  search: string;
-  isFetching: boolean;
-  page: string;
+  categories?: string;
+  status?: string;
+  search?: string;
+  isFetching?: boolean;
+  page?: string;
 }
 
 const useVendors = ({
@@ -22,9 +22,9 @@ const useVendors = ({
   status,
   search,
   isFetching,
-  page,
+  page
 }: AdminsFilter) => {
-  const [vendors, setVendors] = useState<Admin[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
   const [next, setNext] = useState<string | null>("");
   const [prev, setPrev] = useState<string | null>("");
@@ -36,7 +36,7 @@ const useVendors = ({
     const controller = new AbortController();
     const request = apiClient.get<{
       data: {
-        data: Admin[];
+        data: Vendor[];
         meta: MetaObject;
         links: { next: string | null; prev: string | null };
       };
@@ -60,17 +60,17 @@ const useVendors = ({
     return () => controller.abort();
   }, [categories, status, search, isFetching, page]);
 
- // Debounce the fetchAdmins function
- const debouncedFetchVendors = useCallback(
-  _.debounce(fetchVendors, 500), // 500ms delayx
-  [fetchVendors]
-);
+  // Debounce the fetchAdmins function
+  const debouncedFetchVendors = useCallback(
+    _.debounce(fetchVendors, 500), // 500ms delayx
+    [fetchVendors]
+  );
 
-useEffect(() => {
-  debouncedFetchVendors();
-  // Clean up the debounced function on unmount
-  return debouncedFetchVendors.cancel;
-}, [debouncedFetchVendors]);
+  useEffect(() => {
+    debouncedFetchVendors();
+    // Clean up the debounced function on unmount
+    return debouncedFetchVendors.cancel;
+  }, [debouncedFetchVendors]);
 
   const buildUrl = () => {
     const baseUrl = `/vendors`;

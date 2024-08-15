@@ -16,6 +16,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CustomSelect from "../CustomSelect";
 import useColorPalette from "../../../hooks/useColorPalette";
 import TextEditorForReturn from "../TextEditorForReturn";
+import useVendors from "../../../hooks/useVendors";
 
 interface ProductImage {
   file: File;
@@ -106,8 +107,6 @@ const NewJewelleryEdit = () => {
   // TAPS And SUB_TAPS
   const [activeTab, setActiveTab] = useState("productInfo");
   const [subJewelry, setSubJewelry] = useState(targetProduct?.product_sub_type);
-  const [, setPreviousThumbnail] = useState("");
-  const [, setPreviousImage] = useState("");
 
   const [clothesSizes] = useState<
     | {
@@ -163,6 +162,7 @@ const NewJewelleryEdit = () => {
     setSelectedColorHexa(targetProduct?.color?.hexa);
     setTargetThumbnailImage(targetProduct.thumbnail);
     setTargetImages(targetProduct?.images);
+    setSelectedVendorId(targetProduct?.vendor?.id?.toString());
 
     if (targetProduct.categories) {
       setCategory(targetProduct?.categories[0]?.id?.toString());
@@ -236,7 +236,7 @@ const NewJewelleryEdit = () => {
       toast.error("❌ Oops!, Something went wrong!");
     }
   };
-  const [errorRemovePreviousFile, setErrorRemovePreviousFile] = useState("");
+  const [, setErrorRemovePreviousFile] = useState("");
 
   // SUBMIT FUNCTION
 
@@ -322,6 +322,7 @@ const NewJewelleryEdit = () => {
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
     formData.append(`color_id`, selectedColorID.toString());
+    formData.append(`vendor_id`, selectedVendorId.toString());
 
     formData.append(`_method`, "PUT");
 
@@ -498,6 +499,15 @@ const NewJewelleryEdit = () => {
   //     modal.showModal();
   //   }
   // };
+  const { vendors } = useVendors({});
+
+  useEffect(() => {
+    console.log("these are the vendors names => ", vendors);
+  }, [vendors]);
+
+  const [selectedVendorId, setSelectedVendorId] = useState(
+    targetProduct?.vendor?.id?.toString()
+  );
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "-" || event.key === "e") {
@@ -852,6 +862,23 @@ const NewJewelleryEdit = () => {
                 min={0}
                 onKeyDown={handleKeyDown}
               />
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                value={selectedVendorId}
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id} defaultValue={selectedVendorId}>
+                    {v.contactName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex gap-40 items-center mt-10">
               <p className="text-xl font-semibold">Product Name</p>

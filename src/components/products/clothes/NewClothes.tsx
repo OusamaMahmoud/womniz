@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BiArrowToBottom } from "react-icons/bi";
 import { MdCancel, MdDelete, MdDrafts } from "react-icons/md";
 import { FaCheckCircle, FaDraft2Digital } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
@@ -15,6 +14,8 @@ import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
 import TextEditorForReturn from "../TextEditorForReturn";
+import { number } from "zod";
+import useVendors from "../../../hooks/useVendors";
 
 interface ProductImage {
   file: File;
@@ -136,6 +137,9 @@ const NewClothes = () => {
   const [, setProductFilesError] = useState(false);
   const [isSetSubmitButton, setSubmitButton] = useState(false);
   const { sizes } = useSizes({ productType: subClothes });
+  const { vendors } = useVendors({});
+
+  const [selectedVendorId, setSelectedVendorId] = useState("");
 
   // SUBMIT FUNCTION
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -208,6 +212,7 @@ const NewClothes = () => {
     formData.append(`price`, proPrice.toString());
     formData.append(`discount`, percentage.toString());
     formData.append(`color_id`, selectedColorID.toString());
+    formData.append(`vendor_id`, selectedVendorId.toString());
 
     try {
       setSubmitButton(true);
@@ -236,7 +241,7 @@ const NewClothes = () => {
       setModalId("");
       setSelectedColorID(0);
       setSelectedColorHexa("");
-      
+
       if (localStorage.getItem("formFields")) {
         localStorage.removeItem("formFields");
         setClothesSizes([]);
@@ -787,6 +792,20 @@ const NewClothes = () => {
                 min={0}
                 onKeyDown={handleKeyDown}
               />
+            </div>
+            <div className="flex items-center  mt-10" data-aos="fade-up">
+              <label className="text-xl font-bold w-64 mr-10">
+                Vendor Name
+              </label>
+              <select
+                onChange={(e) => setSelectedVendorId(e.currentTarget.value)}
+                className="select select-bordered"
+              >
+                <option value={""}>Select Vendor Name</option>
+                {vendors?.map((v) => (
+                  <option value={v.id}>{v.contactName}</option>
+                ))}
+              </select>
             </div>
             <div className="flex  items-center mt-10" data-aos="fade-up">
               <label className="text-xl font-semibold w-64 mr-10">
