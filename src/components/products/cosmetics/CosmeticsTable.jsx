@@ -118,7 +118,11 @@ const CosmeticsTable = ({
                     type="checkbox"
                     className="checkbox"
                     checked={selectedObjects.has(row.id)}
-                    onChange={() => handleCheckboxChange(row.id)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleCheckboxChange(row?.id);
+                    }}
+                    onClick={(e) => e.stopPropagation()} // Prevents the row click event
                   />
                 </label>
               </td>
@@ -130,7 +134,9 @@ const CosmeticsTable = ({
               <td className="py-3 px-6 text-left xl:text-lg capitalize">
                 {row?.name}
               </td>
-              <td className="py-3 px-6 text-left xl:text-lg ">{row?.vendor?.contactName}</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">
+                {row?.vendor?.contactName}
+              </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row.brand?.name}
               </td>

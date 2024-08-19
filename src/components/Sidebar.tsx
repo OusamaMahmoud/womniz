@@ -127,7 +127,7 @@ const Sidebar = () => {
       },
       {
         name: "Failed",
-        link: "/orders/failed",
+        link: "/orders/delivery_failed",
       },
       {
         name: "Canceled",

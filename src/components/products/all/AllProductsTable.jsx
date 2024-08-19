@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useProducts from "../../../hooks/useProducts";
 import { DotIcon } from "lucide-react";
 
@@ -27,6 +27,7 @@ const AllProductsTable = ({
       setSortDesc(false);
     }
   };
+  const navigate = useNavigate();
 
   const sortedData = [...data].sort((a, b) => {
     if (sortBy) {
@@ -107,7 +108,8 @@ const AllProductsTable = ({
           {sortedData?.map((row) => (
             <tr
               key={row.id}
-              className="border-b border-gray-200 hover:bg-gray-100"
+              onClick={() => navigate(`product-details/${row?.id}`)}
+              className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
             >
               <td className="py-3 px-6 text-left">
                 <label>
@@ -115,7 +117,11 @@ const AllProductsTable = ({
                     type="checkbox"
                     className="checkbox"
                     checked={selectedObjects.has(row.id)}
-                    onChange={() => handleCheckboxChange(row.id)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleCheckboxChange(row?.id);
+                    }}
+                    onClick={(e) => e.stopPropagation()} // Prevents the row click event
                   />
                 </label>
               </td>
@@ -123,11 +129,11 @@ const AllProductsTable = ({
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.model_id}
               </td>
-              <Link to={`product-details/${row?.id}`}>
-                <td className="py-3 px-6 text-left xl:text-lg capitalize">
-                  {row?.name}
-                </td>
-              </Link>
+
+              <td className="py-3 px-6 text-left xl:text-lg capitalize">
+                {row?.name}
+              </td>
+
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.vendor?.contactName}
               </td>

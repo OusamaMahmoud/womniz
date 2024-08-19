@@ -3,6 +3,7 @@ import useSpinGame from "../../hooks/useSpinGame";
 import { FieldValues, useForm, UseFormRegister } from "react-hook-form";
 import { Spin } from "../../services/spinGame-service";
 import apiClient from "../../services/api-client";
+import { toast, ToastContainer } from "react-toastify";
 
 interface IFormInput {
   [key: string]: string | number;
@@ -26,30 +27,30 @@ const SpinTheWheel: React.FC = () => {
   const { spinGameInform } = useSpinGame() as { spinGameInform: Spin };
   const { register, handleSubmit } = useForm<IFormInput>({
     defaultValues: {
-      spinInput_0: spinGameInform.digit_one,
-      spinInput_1: spinGameInform.digit_two,
-      spinInput_2: spinGameInform.digit_three,
-      spinInput_3: spinGameInform.digit_four,
-      spinInput_4: spinGameInform.digit_five,
-      spinInput_5: spinGameInform.digit_six,
-      spinInput_6: spinGameInform.digit_seven,
-      spinInput_7: spinGameInform.digit_eight,
-      spinInput_8: spinGameInform.digit_nine,
+      spinInput_0: spinGameInform?.digit_one,
+      spinInput_1: spinGameInform?.digit_two,
+      spinInput_2: spinGameInform?.digit_three,
+      spinInput_3: spinGameInform?.digit_four,
+      spinInput_4: spinGameInform?.digit_five,
+      spinInput_5: spinGameInform?.digit_six,
+      spinInput_6: spinGameInform?.digit_seven,
+      spinInput_7: spinGameInform?.digit_eight,
+      spinInput_8: spinGameInform?.digit_nine,
     },
   });
   const [isGameSpinAgain, setGameSpinAgain] = useState<
     { name: string; bool: boolean }[]
   >([]);
 
-
   const onSubmit = async (data: FieldValues) => {
     const formData = new FormData();
     Object.entries(data).forEach(([, value], idx) => {
       const digitKey = `digit_${numberToWord(idx + 1)}` as keyof Spin;
       const inputName = `spinInput_${idx}`; // Get the input name
+      
       // Check if the inputName is in isGameSpinAgain and if it is checked
       const isSpinAgain = isGameSpinAgain.some(
-        (input) => input.name === inputName && input.bool
+        (input) => input?.name === inputName && input?.bool
       );
       formData.append(
         digitKey,
@@ -65,7 +66,12 @@ const SpinTheWheel: React.FC = () => {
       );
     });
 
-    await apiClient.post("/spin/information/update", formData);
+    try {
+      await apiClient.post("/spin/information/update", formData);
+      toast.success("Boom! Success just dropped the mic! 🎤💥");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -73,6 +79,7 @@ const SpinTheWheel: React.FC = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="container mx-auto px-6 flex flex-col"
     >
+      <ToastContainer />
       <div className="flex justify-between items-center my-10">
         <h1 className="text-4xl text-[#577656]">Spin the Wheel</h1>
         <p className="text-4xl text-[#6A6868]">59 : 00</p>

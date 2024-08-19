@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useProducts from "../../hooks/useProducts";
 import { DotIcon } from "lucide-react";
 import Pagination from "../Pagination";
@@ -16,7 +16,6 @@ const OrdersTable = ({
   const [data, setData] = useState(products);
   const [sortBy, setSortBy] = useState(null);
   const [sortDesc, setSortDesc] = useState(false);
-
 
   useEffect(() => {
     setData(products);
@@ -49,6 +48,7 @@ const OrdersTable = ({
     }
     return 0;
   });
+  const navigate = useNavigate();
   return (
     <div className="overflow-x-auto overflow-y-auto ">
       <table className="min-w-full bg-white border">
@@ -106,78 +106,84 @@ const OrdersTable = ({
         <tbody className="text-gray-600 text-sm font-light">
           {sortedData.map((row) => (
             <tr
-              key={row.id}
-              className="border-b border-gray-200 hover:bg-gray-100"
+              key={row?.id}
+              onClick={() => navigate(`/orders/orders-details/${row?.id}`)}
+              className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
             >
               <td className="py-3 px-6 text-left">
                 <label>
                   <input
                     type="checkbox"
                     className="checkbox"
-                    checked={selectedObjects.has(row.id)}
-                    onChange={() => handleCheckboxChange(row.id)}
+                    checked={selectedObjects.has(row?.id)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleCheckboxChange(row?.id);
+                    }}
+                    onClick={(e) => e.stopPropagation()} // Prevents the row click event
                   />
                 </label>
               </td>
-              <td className="py-3 px-6 text-left xl:text-lg ">{row.date}</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row?.date}</td>
 
-              <Link to={`/orders/orders-details/${row.id}`}>
-                <td className="py-3 px-6 text-left xl:text-lg ">{row.id}</td>
-              </Link>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row?.id}</td>
 
               <td className="py-3 px-6 text-left xl:text-lg capitalize">
-                {row.customer}
+                {row?.customer}
               </td>
 
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row.numberOfItems}
+                {row?.numberOfItems}
               </td>
-              <td className="py-3 px-6 text-left xl:text-lg ">{row.total}</td>
+              <td className="py-3 px-6 text-left xl:text-lg ">{row?.total}</td>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row.discount}
+                {row?.discount}
               </td>
 
-              {row.status === "pending" ? (
+              {row?.status === "pending" ? (
                 <td
-                  className={`badge bg-[#ECFDF3] my-3 py-3 px-3 text-left xl:text-lg `}
+                  className={`badge bg-[#ECFDF3] my-3 py-5 px-3 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row?.status}
                 </td>
-              ) : row.status === "canceled" ? (
+              ) : row?.status === "canceled" ? (
                 <td
-                  className={`badge bg-[#E2000029] my-3 py-3 px-3 text-left xl:text-lg `}
+                  className={`badge bg-[#E2000029] my-3 py-5 px-3 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
-              ) : row.status === "delivery_failed" ? (
+              ) : row?.status === "delivery_failed" ? (
                 <td
-                  className={`badge bg-[#E2000029] my-3 py-3 px-3 text-left xl:text-lg `}
+                  className={`badge bg-[#E2000029] my-3 py-5 px-3 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
+                  {row?.status}
                 </td>
-              ) : row.status === "returned" ? (
+              ) : row?.status === "returned" ? (
                 <td
-                  className={`badge bg-[#ECFDF3] text-[#F0CC4E] my-3 py-3 px-3 text-left xl:text-lg `}
+                  className={`badge bg-[#ECFDF3] text-[#F0CC4E] my-3 py-5 px-3 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#F0CC4E99]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#F0CC4E99]`} />{" "}
+                  {row?.status}
                 </td>
               ) : row.status === "delivered" ? (
                 <td
-                  className={`badge bg-#ECFDF3] text-[#037847] my-3 py-3 px-3 text-left xl:text-lg `}
+                  className={`badge bg-#ECFDF3] text-[#037847] my-3 py-5 px-3 text-left xl:text-lg `}
                 >
                   <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row.status}
                 </td>
-              ) : row.status === "ready_to_ship" ? (
+              ) : row?.status === "ready_to_ship" ? (
                 <td
-                  className={`badge bg-[#7F9B8D29] text-[#7F9B8D] my-3 py-3 px-3 text-left xl:text-lg `}
+                  className={`badge bg-[#7F9B8D29] text-[#7F9B8D] my-3 py-5 px-3 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#7F9B8D]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#7F9B8D]`} /> {row?.status}
                 </td>
               ) : (
                 <td
-                  className={`badge bg-#ECFDF3] text-[#037847] my-3 py-3 px-3 text-left xl:text-lg `}
+                  className={`badge bg-#ECFDF3] text-[#037847] my-3 py-5 px-3 text-left xl:text-lg `}
                 >
-                  <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row.status}
+                  <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row?.status}
                 </td>
               )}
             </tr>

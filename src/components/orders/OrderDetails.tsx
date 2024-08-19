@@ -24,6 +24,7 @@ const OrdersDetails = () => {
 
   useEffect(() => {
     setSelectStatus(targetOrder?.status);
+    console.log(targetOrder);
   }, [targetOrder]);
 
   useEffect(() => {
@@ -32,12 +33,16 @@ const OrdersDetails = () => {
         try {
           setChangeStatusError("");
           setLoading(true);
-          await apiClient.get(`/orders/changeStatus/${targetOrder.id}/${selectStatus}`);
+          await apiClient.get(
+            `/orders/changeStatus/${targetOrder.id}/${selectStatus}`
+          );
           toast.success("Status has been changed successfully.");
         } catch (error: any) {
           setChangeStatusError(error.message);
-          setSelectStatus(targetOrder?.status)
-          toast.error("Oops! You can't change status for that order. Something went wrong!");
+          setSelectStatus(targetOrder?.status);
+          toast.error(
+            "Oops! You can't change status for that order. Something went wrong!"
+          );
         } finally {
           setLoading(false);
         }
@@ -66,6 +71,10 @@ const OrdersDetails = () => {
             <li>You found a broken link</li>
           </ul>
         </div>
+      ) : error.includes("500") ? (
+        <p className="my-4 text-lg text-red-500 tracking-wider">
+          "Oops!! Something Went Wrong."
+        </p>
       ) : (
         <p className="my-4 text-lg text-red-500 tracking-wider">{error}</p>
       )}
@@ -147,11 +156,36 @@ const OrdersDetails = () => {
                       <span className="text-lg font-bold">Phone Num:</span>
                       <span>{targetOrder?.user?.phone}</span>
                     </div>
-                    <div className="flex justify-between items-center gap-2 mt-2">
-                      <span className="text-lg font-bold">Address</span>
-                      <span className="">
-                        {targetOrder?.user?.addresses[0]?.description}
-                      </span>
+                    <div className="flex justify-between items-center gap-8 mt-4">
+                      <p className="text-lg font-bold">Address:</p>
+                      {targetOrder?.address && (
+                        <div className="flex flex-wrap gap-10 border rounded-lg p-4 xl:max-w-lg  overflow-y-scroll">
+                          <div className="flex justify-start  gap-2 items-center">
+                            <span>Label:</span>
+                            <span>{targetOrder?.address?.label}</span>
+                          </div>
+                          <div className="flex justify-start  gap-2 items-center">
+                            <span>Lat:</span>
+                            <span>{targetOrder?.address?.lat}</span>
+                          </div>
+                          <div className="flex justify-start  gap-2 items-center">
+                            <span>Long:</span>
+                            <span>{targetOrder?.address?.long}</span>
+                          </div>
+                          <div className="flex justify-start  gap-2 items-center">
+                            <span>apt_floor:</span>
+                            <span>{targetOrder?.address?.apt_floor}</span>
+                          </div>
+                          <div className="flex justify-start  gap-2 items-center">
+                            <span>street_address:</span>
+                            <span>{targetOrder?.address?.street_address}</span>
+                          </div>
+                          <div className="flex justify-start  gap-2 items-center">
+                            <span>map_address:</span>
+                            <span>{targetOrder?.address?.map_address}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -175,23 +209,21 @@ const OrdersDetails = () => {
                     <tbody>
                       {targetOrder?.orderDetails?.map((order, idx) => (
                         <tr key={idx}>
-                          <td>{order.product_information.id}</td>
-                          <td>{order.sku}</td>
+                          <td>{order?.product_information?.id}</td>
+                          <td>{order?.sku}</td>
                           <td className=" flex gap-2 items-center text-sm">
                             <img
                               src={order?.product_information?.thumbnail}
                               className="w-10 h-10 object-cover rounded-sm"
                             />
-                            <span>{order.product_information.name}</span>
+                            <span>{order?.product_information?.name}</span>
                           </td>
                           <td>vendor</td>
-                          <td>{order?.product_information?.brand.name}</td>
+                          <td>{order?.product_information?.brand?.name}</td>
                           <td>{order?.quantity}</td>
                           <td>{order?.price}</td>
-                          <td>{order?.product_information.discount}</td>
-                          <td>
-                            {order?.quantity} * {order?.price}{" "}
-                          </td>
+                          <td>{order?.product_information?.discount}</td>
+                          <td>{order?.quantity * order?.price} </td>
                         </tr>
                       ))}
                     </tbody>
@@ -201,19 +233,30 @@ const OrdersDetails = () => {
                   <div className="flex justify-between">
                     <div className="flex flex-col gap-4 ">
                       <span className="font-bold text-lg mb-2">Shipping</span>
-                      <span>{targetOrder.shipping}</span>
+                      <span>{targetOrder?.shipping}</span>
                     </div>
                   </div>
                   <div>
                     <h1 className="font-bold text-lg mb-2">Sub total Price</h1>
-                    <span>{targetOrder.totalsub}</span>
+                    {targetOrder?.orderDetails?.length > 0 && (
+                      <span>
+                        {targetOrder?.orderDetails[0]?.quantity *
+                          targetOrder?.orderDetails[0]?.price}{" "}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <h1 className="font-bold text-lg mb-2">Total Price</h1>
-                    <span>{targetOrder.total}</span>
+                    {targetOrder?.orderDetails?.length > 0 && (
+                      <span>
+                        {targetOrder?.orderDetails[0]?.quantity *
+                          targetOrder?.orderDetails[0]?.price +
+                          targetOrder?.shipping}
+                      </span>
+                    )}
                   </div>
                 </div>
-              </div>
+              </div>{" "}
             </div>
           ) : (
             <div className="flex w-full flex-col gap-4">
