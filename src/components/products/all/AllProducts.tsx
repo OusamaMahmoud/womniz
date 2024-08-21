@@ -1,10 +1,7 @@
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
-import apiClient from "../../../services/api-client";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import useProducts from "../../../hooks/useProducts";
@@ -107,34 +104,6 @@ const AllProducts = () => {
     }
     setSelectedProducts(newSelectedProducts);
   };
-
-  // const handleDelete = async () => {
-  //   if (selectedProducts.size > 0) {
-  //     const data = new FormData();
-  //     Array.from(selectedProducts).forEach((id, index) => {
-  //       data.append(`ids[${index}]`, id.toString());
-  //     });
-  //     try {
-  //       setProductsDeleted(true);
-  //       await apiClient.post("/products/delete", data);
-  //       toast.success("Products have been deleted successfully.");
-  //       setSelectAll(false);
-  //       // Update the local products list
-  //       const remainingProducts = products.filter(
-  //         (product) => !selectedProducts.has(product.id)
-  //       );
-  //       setProducts(remainingProducts);
-  //        setProductsDeleted(false);
-
-  // setIsDeleteEnabled(false);
-  //     } catch (error) {
-  //       toast.error("Failed to delete admins");
-  //       setProducts(products);
-  //       setProductsDeleted(false);
-  // setIsDeleteEnabled(false);
-  //     }
-  //   }
-  // };
 
   const { deleteProducts, isProductsDeleted } = useDeleteProducts({
     selectedProducts,

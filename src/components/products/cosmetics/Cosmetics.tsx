@@ -13,6 +13,9 @@ import useVendorCategories from "../../../hooks/useVendorCategories";
 import useAllProducts from "../../../hooks/useAllProducts";
 import Pagination from "../../Pagination";
 import CosmeticsTable from "./CosmeticsTable";
+import { handleBulkUpload } from "../../methods/handleBulkUpload";
+import useDeleteProducts from "../../../hooks/useDeleteProducts";
+import { exportToExcel } from "../../methods/exportToExcel";
 
 const Cosmetics = () => {
   // Filters
@@ -32,31 +35,6 @@ const Cosmetics = () => {
   // Export products as excel sheet
   const { allProducts } = useAllProducts();
 
-  const exportToExcel = () => {
-    // Create a new workbook and a sheet
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(allProducts);
-
-    // Append the sheet to the workbook
-    XLSX.utils.book_append_sheet(wb, ws, "Products");
-
-    // Generate a binary string representation of the workbook
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
-
-    // Convert the binary string to an array buffer
-    const buf = new ArrayBuffer(wbout.length);
-    const view = new Uint8Array(buf);
-    for (let i = 0; i < wbout.length; i++) {
-      view[i] = wbout.charCodeAt(i) & 0xff;
-    }
-
-    // Create a Blob from the array buffer and trigger the download
-    saveAs(
-      new Blob([buf], { type: "application/octet-stream" }),
-      "products.xlsx"
-    );
-  };
-
   //CATEGORIES
   const { vendorCategories } = useVendorCategories();
   const cosmeticsCategory = vendorCategories.find(
@@ -64,7 +42,7 @@ const Cosmetics = () => {
   );
 
   useEffect(() => {
-    console.log("look here => ",cosmeticsCategory?.id);
+    console.log("look here => ", cosmeticsCategory?.id);
   }, [cosmeticsCategory]);
 
   useEffect(() => {
@@ -79,32 +57,9 @@ const Cosmetics = () => {
 
   useEffect(() => {
     if (file !== null) {
-      handleUpload();
+      handleBulkUpload({ bulkFile: file });
     }
   }, [file]);
-
-  const handleUpload = async () => {
-    if (!file) {
-      alert("Please select a file first.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      await apiClient.post("/products/bulk/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      toast.success("File uploaded successfully");
-      setFile(null);
-    } catch (error) {
-      toast.error("Failed to upload file");
-      setFile(null);
-    }
-  };
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
@@ -147,32 +102,14 @@ const Cosmetics = () => {
     }
     setSelectedProducts(newSelectedProducts);
   };
-  const [isProductsDeleted, setProductsDeleted] = useState(false);
 
-  const handleDelete = async () => {
-    if (selectedProducts.size > 0) {
-      const data = new FormData();
-      Array.from(selectedProducts).forEach((id, index) => {
-        data.append(`ids[${index}]`, id.toString());
-      });
-      try {
-        setProductsDeleted(true);
-        await apiClient.post("/products/delete", data);
-        toast.success("Products have been deleted successfully.");
-        setSelectAll(false);
-        // Update the local products list
-        const remainingProducts = products.filter(
-          (product) => !selectedProducts.has(product.id)
-        );
-        setProducts(remainingProducts);
-        setProductsDeleted(false);
-      } catch (error) {
-        toast.error("Failed to delete admins");
-        setProducts(products);
-        setProductsDeleted(false);
-      }
-    }
-  };
+  const { deleteProducts, isProductsDeleted } = useDeleteProducts({
+    selectedProducts,
+    products,
+    setSelectAll,
+    setProducts,
+    setIsDeleteEnabled,
+  });
   // Inside your component
   const navigate = useNavigate();
 
@@ -225,7 +162,6 @@ const Cosmetics = () => {
             </Link>
             <label
               htmlFor="excel"
-              // onClick={handleUpload}
               className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
             >
               <BiUpload /> Bulk Upload
@@ -240,7 +176,7 @@ const Cosmetics = () => {
           </div>
           <div className="flex items-center gap-8 justify-end mb-6">
             <button
-              onClick={handleDelete}
+              onClick={deleteProducts}
               className={`btn btn-outline text-[#E20000B2] text-[10px] lg:text-lg ${
                 !isDeleteEnabled && "cursor-not-allowed"
               }`}
@@ -250,7 +186,9 @@ const Cosmetics = () => {
               {isProductsDeleted ? "Deleting..." : "Delete"}
             </button>
             <button
-              onClick={exportToExcel}
+              onClick={() =>
+                exportToExcel({ products: allProducts, label: "Cosmetics" })
+              }
               className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg"
             >
               <FaFileExport className="text-2xl " /> Export
