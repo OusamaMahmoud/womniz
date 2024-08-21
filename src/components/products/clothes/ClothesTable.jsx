@@ -111,7 +111,10 @@ const ClothesTable = ({
               className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
               onClick={() => navigate(`/products/product-details/${row?.id}`)}
             >
-              <td className="py-3 px-6 text-left">
+              <td
+                onClick={(e) => e.stopPropagation()} // Prevents the row click event
+                className="py-3 px-6 text-left"
+              >
                 <label>
                   <input
                     type="checkbox"

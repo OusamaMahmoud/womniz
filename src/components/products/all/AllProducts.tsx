@@ -12,6 +12,10 @@ import useVendorCategories from "../../../hooks/useVendorCategories";
 import useAllProducts from "../../../hooks/useAllProducts";
 import Pagination from "../../Pagination";
 import AllProductsTable from "./AllProductsTable";
+import { exportToExcel } from "../../methods/exportToExcel";
+import NotFound from "../../error-page/NotFound";
+import { handleBulkUpload } from "../../methods/handleBulkUpload";
+import useDeleteProducts from "../../../hooks/useDeleteProducts";
 
 const AllProducts = () => {
   // Filters
@@ -23,49 +27,14 @@ const AllProducts = () => {
   const [selectedProducts, setSelectedProducts] = useState<Set<number>>(
     new Set()
   );
+
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
-
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
-  // Export products as excel sheet
-  const { allProducts } = useAllProducts();
+  // const [isProductsDeleted, setProductsDeleted] = useState(false);
 
-  const exportToExcel = () => {
-    // Create a new workbook and a sheet
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(allProducts);
-
-    // Append the sheet to the workbook
-    XLSX.utils.book_append_sheet(wb, ws, "Products");
-
-    // Generate a binary string representation of the workbook
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
-
-    // Convert the binary string to an array buffer
-    const buf = new ArrayBuffer(wbout.length);
-    const view = new Uint8Array(buf);
-    for (let i = 0; i < wbout.length; i++) {
-      view[i] = wbout.charCodeAt(i) & 0xff;
-    }
-
-    // Create a Blob from the array buffer and trigger the download
-    saveAs(
-      new Blob([buf], { type: "application/octet-stream" }),
-      "products.xlsx"
-    );
-  };
-
-  //CATEGORIES
-  const { vendorCategories } = useVendorCategories();
-
-  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
-  // const clothesCategoryChields = clothesCategory?.childs;
-
-  useEffect(() => {
-    setIsDeleteEnabled(selectedProducts.size > 0);
-  }, [selectedProducts]);
-
+  // Bulk Upload!!
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setFile(event.target.files[0]);
@@ -74,33 +43,24 @@ const AllProducts = () => {
 
   useEffect(() => {
     if (file !== null) {
-      handleUpload();
+      try {
+        handleBulkUpload({ bulkFile: file });
+        setFile(null);
+      } catch (error) {
+        setFile(null);
+      }
     }
   }, [file]);
 
-  const handleUpload = async () => {
-    if (!file) {
-      alert("Please select a file first.");
-      return;
-    }
+  // Export products as excel sheet
+  const { allProducts } = useAllProducts();
 
-    const formData = new FormData();
-    formData.append("file", file);
+  //CATEGORIES
+  const { vendorCategories } = useVendorCategories();
 
-    try {
-      await apiClient.post("/products/bulk/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      toast.success("File uploaded successfully");
-      setFile(null);
-    } catch (error) {
-      toast.error("Failed to upload file");
-      setFile(null);
-    }
-  };
+  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
 
+  // Handle Pagination.
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
 
@@ -119,6 +79,7 @@ const AllProducts = () => {
     status: statusFilter,
   });
 
+  // Handle Pagination.
   const recordsPerPage = meta.per_page || 5;
   const nPages = Math.ceil(products.length / recordsPerPage);
 
@@ -132,6 +93,11 @@ const AllProducts = () => {
     }
   };
 
+  // Handle Delete Button!!
+  useEffect(() => {
+    setIsDeleteEnabled(selectedProducts.size > 0);
+  }, [selectedProducts]);
+
   const handleCheckboxChange = (id: number) => {
     const newSelectedProducts = new Set(selectedProducts);
     if (newSelectedProducts.has(id)) {
@@ -141,32 +107,43 @@ const AllProducts = () => {
     }
     setSelectedProducts(newSelectedProducts);
   };
-  const [isProductsDeleted, setProductsDeleted] = useState(false);
 
-  const handleDelete = async () => {
-    if (selectedProducts.size > 0) {
-      const data = new FormData();
-      Array.from(selectedProducts).forEach((id, index) => {
-        data.append(`ids[${index}]`, id.toString());
-      });
-      try {
-        setProductsDeleted(true);
-        await apiClient.post("/products/delete", data);
-        toast.success("Products have been deleted successfully.");
-        setSelectAll(false);
-        // Update the local products list
-        const remainingProducts = products.filter(
-          (product) => !selectedProducts.has(product.id)
-        );
-        setProducts(remainingProducts);
-        setProductsDeleted(false);
-      } catch (error) {
-        toast.error("Failed to delete admins");
-        setProducts(products);
-        setProductsDeleted(false);
-      }
-    }
-  };
+  // const handleDelete = async () => {
+  //   if (selectedProducts.size > 0) {
+  //     const data = new FormData();
+  //     Array.from(selectedProducts).forEach((id, index) => {
+  //       data.append(`ids[${index}]`, id.toString());
+  //     });
+  //     try {
+  //       setProductsDeleted(true);
+  //       await apiClient.post("/products/delete", data);
+  //       toast.success("Products have been deleted successfully.");
+  //       setSelectAll(false);
+  //       // Update the local products list
+  //       const remainingProducts = products.filter(
+  //         (product) => !selectedProducts.has(product.id)
+  //       );
+  //       setProducts(remainingProducts);
+  //        setProductsDeleted(false);
+
+  // setIsDeleteEnabled(false);
+  //     } catch (error) {
+  //       toast.error("Failed to delete admins");
+  //       setProducts(products);
+  //       setProductsDeleted(false);
+  // setIsDeleteEnabled(false);
+  //     }
+  //   }
+  // };
+
+  const { deleteProducts, isProductsDeleted } = useDeleteProducts({
+    selectedProducts,
+    products,
+    setSelectAll,
+    setProducts,
+    setIsDeleteEnabled,
+  });
+
   // Inside your component
   const navigate = useNavigate();
 
@@ -182,34 +159,19 @@ const AllProducts = () => {
     <div className="flex flex-col ">
       <ToastContainer />
       {productServerError.includes("404") ? (
-        <div className="p-4">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Oops! Page Not Found
-          </h2>
-          <p className="text-gray-600 mb-4">
-            The page you requested couldn't be found. This might be because:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-10">
-            <li>The URL was mistyped</li>
-            <li>The page has moved or no longer exists</li>
-            <li>
-              You found a broken link
-            </li>
-          </ul>
-        </div>
+        <NotFound />
       ) : (
         <p className="my-4 text-lg text-red-500 tracking-wider">
           {productServerError}
         </p>
       )}
-      
+
       {!productServerError && (
         <>
           {" "}
           <div className="flex items-center gap-8 justify-end mb-8">
             <label
               htmlFor="excel"
-              // onClick={handleUpload}
               className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
             >
               <BiUpload /> Bulk Upload
@@ -224,7 +186,7 @@ const AllProducts = () => {
           </div>
           <div className="flex items-center gap-8 justify-end mb-6">
             <button
-              onClick={handleDelete}
+              onClick={deleteProducts}
               className={`btn btn-outline text-[#E20000B2] text-[10px] lg:text-lg ${
                 !isDeleteEnabled && "cursor-not-allowed"
               }`}
@@ -234,7 +196,9 @@ const AllProducts = () => {
               {isProductsDeleted ? "Deleting..." : "Delete"}
             </button>
             <button
-              onClick={exportToExcel}
+              onClick={() =>
+                exportToExcel({ products: allProducts, label: "All_Products" })
+              }
               className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg"
             >
               <FaFileExport className="text-2xl " /> Export

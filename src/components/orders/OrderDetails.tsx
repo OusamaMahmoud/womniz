@@ -156,34 +156,16 @@ const OrdersDetails = () => {
                       <span className="text-lg font-bold">Phone Num:</span>
                       <span>{targetOrder?.user?.phone}</span>
                     </div>
-                    <div className="flex justify-between items-center gap-8 mt-4">
+                    <div className="flex justify-between items-center  mt-4">
                       <p className="text-lg font-bold">Address:</p>
                       {targetOrder?.address && (
-                        <div className="flex flex-wrap gap-10 border rounded-lg p-4 xl:max-w-lg  overflow-y-scroll">
-                          <div className="flex justify-start  gap-2 items-center">
-                            <span>Label:</span>
-                            <span>{targetOrder?.address?.label}</span>
-                          </div>
-                          <div className="flex justify-start  gap-2 items-center">
-                            <span>Lat:</span>
-                            <span>{targetOrder?.address?.lat}</span>
-                          </div>
-                          <div className="flex justify-start  gap-2 items-center">
-                            <span>Long:</span>
-                            <span>{targetOrder?.address?.long}</span>
-                          </div>
-                          <div className="flex justify-start  gap-2 items-center">
-                            <span>apt_floor:</span>
-                            <span>{targetOrder?.address?.apt_floor}</span>
-                          </div>
-                          <div className="flex justify-start  gap-2 items-center">
-                            <span>street_address:</span>
-                            <span>{targetOrder?.address?.street_address}</span>
-                          </div>
-                          <div className="flex justify-start  gap-2 items-center">
-                            <span>map_address:</span>
-                            <span>{targetOrder?.address?.map_address}</span>
-                          </div>
+                        <div className="flex flex-wrap gap-1  rounded-lg  xl:max-w-[250px]">
+                          <span>{targetOrder?.address?.label}</span>,
+                          <span>{targetOrder?.address?.map_address}</span>,
+                          <span>apartment_floor: {targetOrder?.address?.apt_floor}</span>,
+                          <span>{targetOrder?.address?.street_address}</span>,
+                          <span>{targetOrder?.address?.lat}</span>,
+                          <span>{targetOrder?.address?.long}</span>
                         </div>
                       )}
                     </div>

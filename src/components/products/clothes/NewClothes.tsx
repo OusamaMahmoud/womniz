@@ -14,7 +14,6 @@ import TextEditor from "../../text-editor/simpleMDE/TextEditor";
 import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
 import TextEditorForReturn from "../TextEditorForReturn";
-import { number } from "zod";
 import useVendors from "../../../hooks/useVendors";
 
 interface ProductImage {

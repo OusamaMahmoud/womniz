@@ -111,19 +111,20 @@ const AllProductsTable = ({
               onClick={() => navigate(`product-details/${row?.id}`)}
               className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
             >
-              <td className="py-3 px-6 text-left">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    checked={selectedObjects.has(row.id)}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      handleCheckboxChange(row?.id);
-                    }}
-                    onClick={(e) => e.stopPropagation()} // Prevents the row click event
-                  />
-                </label>
+              <td
+                onClick={(e) => e.stopPropagation()} // Prevents the row click event>
+                className="py-3 px-6 text-left"
+              >
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={selectedObjects.has(row.id)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleCheckboxChange(row?.id);
+                  }}
+                  onClick={(e) => e.stopPropagation()} // Prevents the row click event
+                />
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">{row?.id}</td>
               <td className="py-3 px-6 text-left xl:text-lg ">
