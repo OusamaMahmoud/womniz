@@ -1,13 +1,10 @@
 import { MdDelete } from "react-icons/md";
 import { IoAdd } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
-import apiClient from "../../../services/api-client";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer} from "react-toastify";
 import ClothesTable from "./ClothesTable";
 import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
@@ -16,6 +13,7 @@ import Pagination from "../../Pagination";
 import useDeleteProducts from "../../../hooks/useDeleteProducts";
 import { exportToExcel } from "../../methods/exportToExcel";
 import { handleBulkUpload } from "../../methods/handleBulkUpload";
+import NotFound from "../../error-page/NotFound";
 
 const Clothes = () => {
   // Filters
@@ -120,19 +118,7 @@ const Clothes = () => {
     <div className="flex flex-col ">
       <ToastContainer />
       {clothesServerError.includes("404") ? (
-        <div className="p-4">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Oops! Page Not Found
-          </h2>
-          <p className="text-gray-600 mb-4">
-            The page you requested couldn't be found. This might be because:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-10">
-            <li>The URL was mistyped</li>
-            <li>The page has moved or no longer exists</li>
-            <li>You found a broken link</li>
-          </ul>
-        </div>
+        <NotFound />
       ) : (
         <p className="my-4 text-lg text-red-500 tracking-wider">
           {clothesServerError}

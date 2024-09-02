@@ -16,6 +16,7 @@ import CosmeticsTable from "./CelebritiesTable";
 import { handleBulkUpload } from "../../methods/handleBulkUpload";
 import useDeleteProducts from "../../../hooks/useDeleteProducts";
 import { exportToExcel } from "../../methods/exportToExcel";
+import NotFound from "../../error-page/NotFound";
 
 const Celebrities = () => {
   // Filters
@@ -120,19 +121,7 @@ const Celebrities = () => {
     <div className="flex flex-col ">
       <ToastContainer />
       {clothesServerError.includes("404") ? (
-        <div className="p-4">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Oops! Page Not Found
-          </h2>
-          <p className="text-gray-600 mb-4">
-            The page you requested couldn't be found. This might be because:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-10">
-            <li>The URL was mistyped</li>
-            <li>The page has moved or no longer exists</li>
-            <li>You found a broken link</li>
-          </ul>
-        </div>
+        <NotFound />
       ) : (
         <p className="my-4 text-lg text-red-500 tracking-wider">
           {clothesServerError}
