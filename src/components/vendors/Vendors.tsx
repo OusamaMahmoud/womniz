@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiErrorWarningLine } from "react-icons/ri";
-// import { CgClose } from "react-icons/cg";
 import { FaEdit } from "react-icons/fa";
 import apiClient from "../../services/api-client";
 import vendorsService from "../../services/vendors-service";

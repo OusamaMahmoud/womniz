@@ -540,7 +540,7 @@ const SalonProfile = () => {
                 {targetAdmin.name}
               </p>
               <p className="capitalize">Vendor</p>
-              <p className="capitalize">{targetAdmin.shipping_address}</p>
+              <p className="capitalize">{targetAdmin.shippingAddress}</p>
             </div>
             {auth?.permissions.find(
               (per) => per === "vendor-change-status"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import apiClient from "../services/api-client";
 import { toast } from "react-toastify";
 import { Product } from "../services/clothes-service";

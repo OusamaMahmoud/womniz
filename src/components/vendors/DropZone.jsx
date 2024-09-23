@@ -2,8 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { IoCloseCircle } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
-const Dropzone = ({ className, onSubmit }) => {
+const Dropzone = ({ className, onSubmit, payload = "" }) => {
   const maxSize = 50 * 1024 * 1024; // 50MB
 
   const [files, setFiles] = useState([]);
@@ -107,13 +108,15 @@ const Dropzone = ({ className, onSubmit }) => {
           <h3 className="title text-sm font-semibold text-neutral-600 mt-2 border-b pb-3">
             Accepted Files
           </h3>
-         {files.length > '0' && <button
-            type="button"
-            onClick={removeAll}
-            className="mt-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-secondary-400 rounded-md px-3 hover:bg-secondary-400 transition-colors"
-          >
-            Remove all files
-          </button>}
+          {files.length > "0" && (
+            <button
+              type="button"
+              onClick={removeAll}
+              className="mt-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-secondary-400 rounded-md px-3 hover:bg-secondary-400 transition-colors"
+            >
+              Remove all files
+            </button>
+          )}
         </div>
 
         <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-10">
@@ -136,7 +139,7 @@ const Dropzone = ({ className, onSubmit }) => {
                   </button>
                 </div>
               ) : (
-                <>
+                <div className="">
                   <img
                     src={file.preview}
                     alt={file.name}
@@ -155,40 +158,24 @@ const Dropzone = ({ className, onSubmit }) => {
                   <p className="mt-2 text-neutral-500 text-[12px] font-medium">
                     {file.name}
                   </p>
-                </>
+                </div>
               )}
             </li>
           ))}
         </ul>
-
-        {/* Rejected Files */}
-        {/* <h3 className="title text-lg font-semibold text-neutral-600 mt-5 border-b pb-3">
-          Rejected Files
-        </h3>
-        <ul className="mt-6 flex flex-col">
-          {rejected.map(({ file, errors }) => (
-            <li key={file.name} className="flex items-start justify-between">
-              <div>
-                <p className="mt-2 text-neutral-500 text-sm font-medium">
-                  {file.name}
-                </p>
-                <ul className="text-[12px] text-red-400">
-                  {errors.map((error) => (
-                    <li key={error.code}>{error.message}</li>
-                  ))}
-                </ul>
-              </div>
-              <button
-                type="button"
-                className="mt-1 py-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-secondary-400 rounded-md px-3 hover:bg-secondary-400 hover:text-white transition-colors"
-                onClick={() => removeRejected(file.name)}
-              >
-                remove
-              </button>
-            </li>
-          ))}
-        </ul> */}
       </section>
+      {payload && (
+        <div className="mt-4 flex justify-end">
+          <Link
+            to={payload}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500"
+          >
+            View Previous Data
+          </Link>
+        </div>
+      )}
     </form>
   );
 };

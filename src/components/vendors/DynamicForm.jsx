@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import useVendorCategories from "../../hooks/useVendorCategories";
 
-const DynamicForm = ({ onSelectedCategories }) => {
+const DynamicForm = ({ onSelectedCategories, initailCategories = [] }) => {
   const { vendorCategories } = useVendorCategories();
   const [fields, setFields] = useState([{ category: "", id: "" }]);
+
+  useEffect(() => {
+    setFields(initailCategories.map((c) => ({ category: c.name, id: c.id })));
+  }, [initailCategories]);
 
   // Function to handle the change in select inputs
   const handleChange = (index, event) => {

@@ -3,19 +3,24 @@ import create from "./http-service";
 export interface Vendor {
   id: number;
   name: string;
+  birthdate: string;
+  bankName: string;
   contactName: string;
   email: string;
   image: string;
   phone: string;
-  hq_address: string;
-  shipping_address: string;
+  hqAddress: string;
+  shippingAddress: string;
   commission: number;
   transfer_method: string;
-  bank_account_name: string;
-  account_number: string;
-  swift_number: number;
-  iban_number: string;
+  bankAccountName: string;
+  accountNumber: string;
+  ibanNumber: number;
+  swiftNumber: string;
   status: string;
+  legalDocs: string;
+  commercialRegistration: string;
+  vatCertificate: string;
   categories: [
     {
       id: number;

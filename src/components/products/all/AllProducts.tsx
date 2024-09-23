@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
 import useAllProducts from "../../../hooks/useAllProducts";
