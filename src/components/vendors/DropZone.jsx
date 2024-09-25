@@ -69,19 +69,6 @@ const Dropzone = ({ className, onSubmit, payload = "" }) => {
     e.preventDefault();
 
     if (!files?.length) return;
-    // console.log(files);
-    // onSubmit(files);
-
-    // const formData = new FormData()
-    // files.forEach(file => formData.append('file', file))
-    // formData.append('upload_preset', 'friendsbook')
-
-    // const data = await fetch(URL, {
-    //   method: 'POST',
-    //   body: formData
-    // }).then(res => res.json())
-
-    // console.log(data)
   };
 
   return (
@@ -121,13 +108,13 @@ const Dropzone = ({ className, onSubmit, payload = "" }) => {
 
         <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-10">
           {files.map((file) => (
-            <li key={file.name} className="relative h-10 rounded-md shadow-lg">
+            <li key={file.name} className="relative rounded-md shadow-lg min-w-fit">
               {file.type === "application/pdf" ? (
                 <div className="flex flex-col items-center justify-center h-full">
                   <p className="text-neutral-500 text-[12px] font-medium">
                     PDF File
                   </p>
-                  <p className="mt-2 text-neutral-500 text-[12px] font-medium">
+                  <p className="mt-2 text-neutral-500 text-[12px] font-medium ">
                     {file.name}
                   </p>
                   <button
@@ -139,7 +126,7 @@ const Dropzone = ({ className, onSubmit, payload = "" }) => {
                   </button>
                 </div>
               ) : (
-                <div className="">
+                <>
                   <img
                     src={file.preview}
                     alt={file.name}
@@ -158,7 +145,7 @@ const Dropzone = ({ className, onSubmit, payload = "" }) => {
                   <p className="mt-2 text-neutral-500 text-[12px] font-medium">
                     {file.name}
                   </p>
-                </div>
+                </>
               )}
             </li>
           ))}

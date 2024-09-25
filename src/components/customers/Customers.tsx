@@ -17,7 +17,7 @@ import useCustomers from "../../hooks/useCustomers";
 import customerService from "../../services/customer-service";
 import useAllCustomers from "../../hooks/useAllCustomers";
 import { useAuth } from "../../contexts/AuthProvider";
-import CustomerResponsiveTable from "./CustomerResponsiveTable"
+import CustomerResponsiveTable from "./CustomerResponsiveTable";
 // ZOD SCHEMA
 
 const schema = z.object({
@@ -163,10 +163,11 @@ const Customers: React.FC = () => {
         data.append(`ids[${index}]`, id.toString());
       });
       try {
-         await apiClient.post("/users/delete", data);
+        await apiClient.post("/users/delete", data);
         toast.success("Customers deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
+        setIsDeleteEnabled(false);
       } catch (error) {
         toast.error("Failed to delete Customers");
       }
@@ -177,7 +178,6 @@ const Customers: React.FC = () => {
 
   // Handle Submit
   const onSubmit = async (data: FormData) => {
-
     const formData = new FormData();
 
     formData.append(`email`, data.email);
@@ -239,7 +239,9 @@ const Customers: React.FC = () => {
         {isAllCustomersError && (
           <p className="text-red-600 text-lg p-2">{isAllCustomersError}</p>
         )}
-        <h1 className="font-medium xl:text-4xl text-xl capitalize mb-3 lg:mb-0">Customers Details</h1>
+        <h1 className="font-medium xl:text-4xl text-xl capitalize mb-3 lg:mb-0">
+          Customers Details
+        </h1>
         <div className="flex items-center flex-wrap gap-2">
           {auth?.permissions.find((per) => per === "user-create") && (
             <button

@@ -24,28 +24,7 @@ const schema = z.object({
   email: z.string().email(),
   // password: z.string().min(8).max(50),
   password: z.union([z.string().length(0), z.string().min(8).max(50)]),
-  birthdate: z
-    .string()
-    .refine((value) => {
-      // Validate date format (YYYY-MM-DD)
-      const regex = /^\d{4}-\d{2}-\d{2}$/;
-      return regex.test(value);
-    }, "Invalid date format (YYYY-MM-DD)")
-    .refine((value) => {
-      // Validate age (must be 18 years or older)
-      const birthDate = new Date(value);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        return age - 1;
-      }
-      return age;
-    }, "Must be 18 years or older"),
-
+  birthdate: z.string().date(),
   address: z.string().min(3).max(255),
   phone: z
     .string()
@@ -62,9 +41,7 @@ type FormData = z.infer<typeof schema>;
 
 const AdminProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [, setPhotoPreview] = useState<string | null | undefined>(
-    null
-  );
+  const [, setPhotoPreview] = useState<string | null | undefined>(null);
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
   const [imageFile, setImageFile] = useState<any>(null);
   const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
@@ -76,7 +53,6 @@ const AdminProfile = () => {
 
   // ADMINS CATEGORIES
   const { categories } = useCategories();
-
 
   const options: OptionType[] = categories.map((item) => ({
     label: item.title,
@@ -123,11 +99,10 @@ const AdminProfile = () => {
     setStatus(e.target.value);
     const newStatus = parseInt(e.target.value);
     try {
-        apiClient.post(`/admins/${targetAdmin.id}/switchstatus`, {
+      apiClient.post(`/admins/${targetAdmin.id}/switchstatus`, {
         status: newStatus,
       });
-    } catch (err: any) {
-    }
+    } catch (err: any) {}
   };
 
   const handleEditButton = () => {

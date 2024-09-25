@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go"; // Assuming you're using react-icons for icons
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
 
 const VendorsResponsiveTable = ({
@@ -25,8 +25,8 @@ const VendorsResponsiveTable = ({
 
   const sortedData = [...data].sort((a, b) => {
     if (sortBy) {
-      const aValue = a[sortBy].toString().toLowerCase();
-      const bValue = b[sortBy].toString().toLowerCase();
+      const aValue = a[sortBy]?.toString()?.toLowerCase();
+      const bValue = b[sortBy]?.toString()?.toLowerCase();
       if (aValue < bValue) return sortDesc ? 1 : -1;
       if (aValue > bValue) return sortDesc ? -1 : 1;
     }
@@ -34,6 +34,7 @@ const VendorsResponsiveTable = ({
   });
 
   const { auth } = useAuth();
+  const navigate = useNavigate();
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white">
@@ -94,10 +95,17 @@ const VendorsResponsiveTable = ({
         <tbody className="text-gray-600 text-sm font-light">
           {sortedData.map((row) => (
             <tr
+              onClick={() => {
+                auth?.permissions.find((per) => per === "vendor-show") &&
+                  navigate(`/accounts/vendors/${row.id}`);
+              }}
               key={row.id}
-              className="border-b border-gray-200 hover:bg-gray-100"
+              className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
             >
-              <td className="py-3 px-6 text-left">
+              <td
+                onClick={(e) => e.stopPropagation()}
+                className="py-3 px-6 text-left"
+              >
                 <label>
                   <input
                     type="checkbox"

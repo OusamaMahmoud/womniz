@@ -6,7 +6,9 @@ const DynamicForm = ({ onSelectedCategories, initailCategories = [] }) => {
   const [fields, setFields] = useState([{ category: "", id: "" }]);
 
   useEffect(() => {
-    setFields(initailCategories.map((c) => ({ category: c.name, id: c.id })));
+    if (initailCategories && initailCategories?.length > 1) {
+      setFields(initailCategories.map((c) => ({ category: c.name, id: c.id })));
+    }
   }, [initailCategories]);
 
   // Function to handle the change in select inputs
