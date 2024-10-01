@@ -98,23 +98,39 @@ const Sidebar = () => {
         link: "/products",
       },
       {
-        name: "Clothes",
-        link: "/products/clothes",
+        name: "Categories",
+        link: "/products/categories",
       },
       {
-        name: "Jewellery",
-        link: "/products/jewellery",
-      },
-      {
-        name: "Cosmetics",
-        link: "/products/cosmetics",
-      },
-      {
-        name: "Celebrities",
-        link: "/products/celebrities",
+        name: "Brands",
+        link: "/products/brands",
       },
     ],
   };
+  // const productsLinks = {
+  //   links: [
+  //     {
+  //       name: "All",
+  //       link: "/products",
+  //     },
+  //     {
+  //       name: "Clothes",
+  //       link: "/products/clothes",
+  //     },
+  //     {
+  //       name: "Jewellery",
+  //       link: "/products/jewellery",
+  //     },
+  //     {
+  //       name: "Cosmetics",
+  //       link: "/products/cosmetics",
+  //     },
+  //     {
+  //       name: "Celebrities",
+  //       link: "/products/celebrities",
+  //     },
+  //   ],
+  // };
   const ordersLinks = {
     links: [
       {
@@ -151,7 +167,7 @@ const Sidebar = () => {
       },
     ],
   };
-  
+
   const activeLink =
     "flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-[#577656] hover:bg-[#BED3C4] hover:text-[#577656] text-md m-2";
   const normalLink =

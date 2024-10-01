@@ -1,88 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
-import avatar from "/assets/admin/avatar.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Controller, useForm } from "react-hook-form";
-import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { RiErrorWarningLine } from "react-icons/ri";
-import { FaEdit } from "react-icons/fa";
-import useAdmins from "../hooks/useAdmins";
-import apiClient from "../services/api-client";
-import adminService from "../services/admins-service";
-import useCategories from "../hooks/useCategories";
-import Select from "react-select";
-import { customStyles } from "../components/CustomSelect";
-import Pagination from "./Pagination";
-import useAllAdmins from "../hooks/useAllAdmins";
-import useRoles from "../hooks/useRoles";
-import { useAuth } from "../contexts/AuthProvider";
+import useAdmins from "../../hooks/useAdmins";
+import apiClient from "../../services/api-client";
+import useMainCategories from "../../hooks/useMainCategories";
+import Pagination from "../Pagination";
+import useAllAdmins from "../../hooks/useAllAdmins";
 import AdminsResponsiveTable from "./AdminsResponsiveTable";
-import { exportToExcel } from "./methods/exportToExcel";
-import AdminForm from "./admins/AdminForm";
-import { TableSkeleton } from "./reuse-components/TableSkeleton";
-import { StatusInput } from "./reuse-components/filteringInputs/StatusInput";
-import { SelectCategoryInput } from "./reuse-components/filteringInputs/SelectCategoryInput";
-import { SearchInput } from "./reuse-components/filteringInputs/SearchInput";
-import { useAuthGard } from "./reuse-hooks/AuthGard";
-import { ActionButton } from "./reuse-components/ActionButtons";
-import { HeadingOne } from "./reuse-components/HeadingOne";
+import { exportToExcel } from "../methods/exportToExcel";
+import AdminForm from "./AdminForm";
+import { TableSkeleton } from "../reuse-components/TableSkeleton";
+import { StatusInput } from "../reuse-components/filteringInputs/StatusInput";
+import { SelectCategoryInput } from "../reuse-components/filteringInputs/SelectCategoryInput";
+import { SearchInput } from "../reuse-components/filteringInputs/SearchInput";
+import { useAuthGard } from "../reuse-hooks/AuthGard";
+import { ActionButton } from "../reuse-components/ActionButtons";
+import { HeadingOne } from "../reuse-components/HeadingOne";
 
-// ZOD SCHEMA
-const schema = z.object({
-  name: z
-    .string()
-    .min(3)
-    .max(255)
-    .regex(/^[a-zA-Z\s]*$/),
-  email: z.string().email(),
-  password: z.string().min(8).max(50),
-  birthdate: z.string().date(),
-  address: z.string().min(3).max(255),
-  phone: z
-    .string()
-    .min(8)
-    .max(20)
-    .regex(/^\+?\d+$/),
-  jobs: z.array(z.string()).min(1),
-  status: z.enum(["0", "1"]).default("0"),
-  country_id: z.enum(["2", "1"]).default("2"),
-  role: z.string().min(3, { message: "Role Must Be Selected!" }),
-});
-
-export type FormData = z.infer<typeof schema>;
-export type OptionType = { label: string; value: string };
 const Admins: React.FC = () => {
-  const { auth } = useAuth();
-  const { roles } = useRoles();
-
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const [selectedAdmins, setSelectedAdmins] = useState<Set<number>>(new Set());
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
 
-  const [creatingAdminError, setCreatingAdminError] = useState<string>("");
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
-
-  const [imageFile, setImageFile] = useState<File>({} as File);
-  const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
 
-  const { categories } = useCategories();
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  const { categories } = useMainCategories();
 
   const {
     admins,
@@ -150,8 +103,6 @@ const Admins: React.FC = () => {
       }
     }
   };
-  // Toastify
-  const notify = () => toast.success("Create Admin Successfully!");
 
   const { alladmins, isAllAdminsError } = useAllAdmins();
 

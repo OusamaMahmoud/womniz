@@ -3,7 +3,8 @@ import { BiEdit, BiTrash } from "react-icons/bi";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { Vendor } from "../../services/vendors-service";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import avatar from "/assets/admin/avatar.svg";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -263,7 +264,7 @@ const VendorProfile = () => {
       await apiClient.post(`/vendors/${params.id}`, formData);
       setFormSubmitionLoading(false);
       setIsModalOpen(false);
-      toast.success("Create Vendor Account Successfully!");
+      toast.success("Your Account has been edited Successfully!");
       setTrigerFetch(!trigerFetch);
     } catch (error: any) {
       console.log("does it that => ", error.response.data.data.error);
@@ -274,6 +275,7 @@ const VendorProfile = () => {
 
   return (
     <>
+      <ToastContainer />
       {isModalOpen && (
         <div className="modal modal-open tracking-wide ">
           <div className="modal-box max-w-4xl px-10 ">

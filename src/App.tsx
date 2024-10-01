@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import AdminProfile from "./components/AdminProfile";
 import Login from "./components/Login";
 import CustomerProfile from "./components/customers/CustomerProfile";
 import CustomerOrders from "./components/customers/CustomerOrders";
@@ -49,6 +48,9 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import NewCelebritiesEdit from "./components/products/celebrities/NewCelebritiesEdit";
+import AdminProfile from "./components/admins/AdminProfile";
+import MainCategories from "./components/products/mainCategories/MainCategories";
+import MainBrands from "./components/products/mainBrands/MainBrands";
 function App() {
   useEffect(() => {
     AOS.init({
@@ -106,6 +108,10 @@ function App() {
 
         {/* all products */}
         <Route path="products" element={<AllProducts />} />
+        {/* categories */}
+        <Route path="products/categories" element={<MainCategories />} />
+        {/* brands */}
+        <Route path="products/brands" element={<MainBrands />} />
 
         <Route
           path="see-all-customers-orders/:id"

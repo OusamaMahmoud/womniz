@@ -3,7 +3,7 @@ import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import apiClient from "../../services/api-client";
-import useCategories from "../../hooks/useCategories";
+import useMainCategories from "../../hooks/useMainCategories";
 import Pagination from "../Pagination";
 import useVendors from "../../hooks/useVendors";
 import useAllVendors from "../../hooks/useAllVendors";
@@ -43,7 +43,7 @@ const Vendors = () => {
     isFetching: trigerFetch,
     page: paginationPage,
   });
-  const { categories } = useCategories();
+  const { categories } = useMainCategories();
   const { allVendors, isAllVendorsError } = useAllVendors();
 
   const recordsPerPage = meta.per_page || 5;

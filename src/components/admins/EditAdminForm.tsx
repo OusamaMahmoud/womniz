@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import adminsService from "../../services/admins-service";
-import { toast } from "react-toastify";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { RiErrorWarningLine } from "react-icons/ri";
+import { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
-import avatar from "/assets/admin/avatar.svg";
+import { RiErrorWarningLine } from "react-icons/ri";
+import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import {  z } from "zod";
+import { Admin } from "../../services/admins-service";
+import apiClient from "../../services/api-client";
+import { customStyles } from "../CustomSelect";
 import Select from "react-select";
-import useRoles from "../../hooks/useRoles";
-import useMainCategories from "../../hooks/useMainCategories";
-import { customStyles } from "../../components/CustomSelect";
 import useCategories from "../../hooks/useCategories";
 
 const schema = z.object({
@@ -20,7 +21,8 @@ const schema = z.object({
     .max(255)
     .regex(/^[a-zA-Z\s]*$/),
   email: z.string().email(),
-  password: z.string().min(8).max(50),
+  // password: z.string().min(8).max(50),
+  password: z.union([z.string().length(0), z.string().min(8).max(50)]),
   birthdate: z.string().date(),
   address: z.string().min(3).max(255),
   phone: z
@@ -28,133 +30,163 @@ const schema = z.object({
     .min(8)
     .max(20)
     .regex(/^\+?\d+$/),
-  jobs: z.array(z.string()).min(1),
   status: z.enum(["0", "1"]).default("0"),
   country_id: z.enum(["2", "1"]).default("2"),
-  role: z.string().min(3, { message: "Role Must Be Selected!" }),
+  role: z.string().min(3),
 });
 
-export type FormData = z.infer<typeof schema>;
-export type OptionType = { label: string; value: string };
-const AdminForm = ({
+type FormData = z.infer<typeof schema>;
+type OptionType = { label: string; value: number };
+
+const EditAdminForm = ({
   onModalOpen,
+  onSubmitEditForm
 }: {
-  onModalOpen: (modelState: boolean) => void;
+  onModalOpen: (state: boolean) => void;
+  onSubmitEditForm: (state: boolean) => void;
 }) => {
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [targetAdmin, setTargetAdmin] = useState<Admin>({} as Admin);
+  const params = useParams();
+  const [photoPreview, setPhotoPreview] = useState<string | null | undefined>(
+    null
+  );
+  const [targetAdminError, setTaretAdminError] = useState<string>("");
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
-  const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
-  const [imageFile, setImageFile] = useState<File>({} as File);
+  const [imageFile, setImageFile] = useState<any>(null);
   const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
-  const { roles } = useRoles();
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors, isValid },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-  const notify = () => toast.success("Create Admin Successfully!");
+  // FETCH THE TARGET ADMIN.
+  useEffect(() => {
+    apiClient
+      .get<{ data: Admin }>(`/admins/${params.id}`)
+      .then((res) => {
+        setTargetAdmin(res.data.data);
+        setPhotoPreview(res.data.data.image);
+      })
+      .catch((err) => setTaretAdminError(err.message));
+  }, []);
 
-  const getDefaultImageFile = async () => {
-    // Create a default image file (you can use any default image file)
-    // For example, create a new File object with a default image URL
-    const defaultImageUrl = "https://placehold.co/100x100";
-    const defaultImageFileName = "default-image.png";
-    try {
-      const response = await fetch(defaultImageUrl);
-      const blob = await response.blob();
-      return new File([blob], defaultImageFileName, { type: "image/png" });
-    } catch (error: any) {
-      throw new Error("Failed to fetch default image: " + error.message);
+  // Handle PHOTO IN EDIT FORM
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setPhotoPreview(URL.createObjectURL(file));
     }
   };
-  const openModal = () => {
-    onModalOpen(true);
-  };
+  const { categories } = useCategories();
+
+  const options: OptionType[] = categories.map((item) => ({
+    label: item.title,
+    value: item.id,
+  }));
 
   const closeModal = () => {
     onModalOpen(false);
     setPhotoPreview(null);
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      // If a file is uploaded
-      const file = e.target.files[0];
-      setImageFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
-    }
-  };
+  // UPDATE ADMIN FORM.
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    values: {
+      name: targetAdmin.name,
+      address: targetAdmin.address,
+      birthdate: targetAdmin.birthdate,
+      phone: targetAdmin.phone,
+      email: targetAdmin.email,
+      password: "",
+      role: targetAdmin.role,
+      country_id: "2",
+      status: "0",
+    },
+  });
 
-  const { categories } = useCategories();
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  const [adminSelectedCategories, setAdminSelectedCategories] = useState<
+    OptionType[]
+  >([]);
+  const [adminImage, setAdminImage] = useState("");
+
+  useEffect(() => {
+    setAdminSelectedCategories(
+      options?.filter((c) => targetAdmin.category.includes(c.label))
+    );
+    if (targetAdmin && targetAdmin.image) {
+      setPhotoPreview(targetAdmin.image);
+    }
+  }, [targetAdmin]);
+
+  useEffect(() => {
+    console.log(adminSelectedCategories);
+  }, [adminSelectedCategories]);
 
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
-
+    formData.append(`name`, data.name);
     formData.append(`address`, data.address);
     formData.append(`birthdate`, data.birthdate);
     formData.append(`country_id`, data.country_id);
     formData.append(`email`, data.email);
-    formData.append(`name`, data.name);
     formData.append(`password`, data.password);
     formData.append(`phone`, data.phone);
     formData.append(`status`, data.status);
     formData.append(`role`, data.role);
     formData.append(`jobs[0]`, `1`);
 
-    if (
-      imageFile &&
-      Object.keys(imageFile).length === 0 &&
-      imageFile.constructor === Object
-    ) {
-      try {
-        const defaultImageFile = await getDefaultImageFile();
-        formData.append(`image`, defaultImageFile);
-      } catch (error) {
-        console.error("Error fetching default image:", error);
-      }
-    } else {
+    // if (adminSelectedCategories && adminSelectedCategories.length > 1) {
+    //   adminSelectedCategories.map((adminCategory, idx) => {
+    //     formData.append(`jobs[${idx}]`, adminCategory?.value?.toString());
+    //   });
+    // }
+
+    if (imageFile !== null) {
       formData.append(`image`, imageFile);
     }
+    formData.append("_method", "PUT");
 
     try {
       setSubmitinLoading(true);
-      await adminsService.create<any>(formData);
+      const res = await apiClient.post(`/admins/${params.id}`, formData);
+      if (res.status === 200) {
+        setTargetAdmin((prev) => ({
+          ...prev,
+          ...data,
+          image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
+        }));
+        setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
+      }
+      onSubmitEditForm(true)
       setSubmitinLoading(false);
       onModalOpen(false);
-      notify();
-      reset();
-      setImageFile({} as File);
-      setPhotoPreview("");
-      setTrigerFetch(!trigerFetch);
-      setCreatingAdminError("");
     } catch (error: any) {
-      setCreatingAdminError(error.response.data.data.error);
-      setSubmitinLoading(false);
+      if (!error?.response) {
+        setCreatingAdminError("No Server Response!!");
+        setSubmitinLoading(false);
+      } else {
+        setCreatingAdminError(error.response.data.data.error);
+        setSubmitinLoading(false);
+        onModalOpen(false);
+      }
     }
   };
 
   return (
     <div className="modal modal-open tracking-wide">
+      <ToastContainer />
+
       <div className="modal-box max-w-3xl px-10">
         <h3 className="font-bold text-lg text-left">Add Regular Admin</h3>
         <div className="flex justify-center items-center my-8">
-          {photoPreview ? (
+          {photoPreview && (
             <img
               src={photoPreview}
               alt="Preview"
               className="w-36 h-36 object-cover rounded-full"
             />
-          ) : (
-            <img src={avatar} alt="" />
           )}
         </div>
         {creatingAdminError && (
@@ -162,7 +194,7 @@ const AdminForm = ({
         )}
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="py-4 grid grid-cols-1 lg:grid-cols-2 gap-8 ">
+          <div className="py-4 grid grid-cols-2 gap-8 ">
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Full Name</span>
@@ -171,10 +203,10 @@ const AdminForm = ({
                 <input
                   type="text"
                   id="name"
+                  {...register("name")}
                   className={`input input-bordered  grow ${
                     errors.name && "border-[red]"
                   }`}
-                  {...register("name")}
                 />
                 {errors.name && (
                   <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />
@@ -304,7 +336,7 @@ const AdminForm = ({
             </div>
 
             <label
-              className={`absolute top-[160px] z-100 right-[140px] sm:right-[300px] lg:right-[330px] xl:right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
+              className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
             >
               <span className="text-3xl">
                 <FaEdit />
@@ -319,7 +351,7 @@ const AdminForm = ({
               />
             </label>
           </div>
-          <div className="form-control">
+          <div className="form-control mb-6">
             <label className="label">
               <span className="label-text">Roles</span>
             </label>
@@ -329,17 +361,10 @@ const AdminForm = ({
                 className="select select-bordered grow"
                 {...register("role")}
               >
-                <option
-                  className="bg-gray-400 text-white"
-                  value=""
-                  disabled
-                  selected
-                >
+                <option className="bg-gray-400 text-white" value="" disabled>
                   Select Admin Role
                 </option>
-                {roles.map((role) => (
-                  <option value={`${role.name}`}>{role.name}</option>
-                ))}
+                <option value={"Super Admin"}>Super Admin</option>
               </select>
               {errors.role && (
                 <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />
@@ -351,42 +376,30 @@ const AdminForm = ({
           </div>
           {/* Category Multi-Selector */}
           <div className="form-control ">
-            <label className="mb-3 mt-5">Select Category</label>
-            <Controller
-              control={control}
-              defaultValue={options.map((c) => c.value)}
-              name="jobs"
-              render={({ field: { onChange, ref } }) => (
-                <Select
-                  isMulti
-                  ref={ref}
-                  // value={options.filter((c) => value.includes(c.value))}
-                  onChange={(val) => onChange(val.map((c) => c.value))}
-                  options={options}
-                  styles={customStyles}
-                />
-              )}
+            <Select
+              isMulti
+              value={adminSelectedCategories}
+              onChange={(val) => {
+                setAdminSelectedCategories([...val]);
+              }}
+              options={options}
+              styles={customStyles}
             />
-            {errors.jobs && (
-              <p className="text-red-500 ">{errors.jobs.message}</p>
-            )}
           </div>
-          <div className="modal-action flex justify-around items-center right-80 mt-20 mb-10 ">
+          <div className="modal-action flex justify-around items-center right-80 ">
             <button
               type="submit"
-              disabled={!isValid}
-              className={`btn px-10 lg:px-20 bg-[#577656] text-[white]`}
+              className={`btn px-20 bg-[#577656] text-white ${
+                !isValid && "opacity-50 cursor-not-allowed"
+              }`}
             >
               {isSubmittinLoading ? (
                 <span className="loading loading-spinner"></span>
               ) : (
-                `Save`
+                `Updata`
               )}
             </button>
-            <button
-              className={`btn bg-transparent px-10 lg:px-20`}
-              onClick={closeModal}
-            >
+            <button className={`btn bg-transparent px-20`} onClick={closeModal}>
               Cancel
             </button>
           </div>
@@ -396,4 +409,4 @@ const AdminForm = ({
   );
 };
 
-export default AdminForm;
+export default EditAdminForm;

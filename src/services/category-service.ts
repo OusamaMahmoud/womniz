@@ -1,8 +1,16 @@
 import create from "./http-service";
 
+export interface ChiledCategory {
+  id: string;
+}
+export interface ChiledBrand {
+  id: string;
+}
 export interface Category {
   id: number;
-  title: string;
+  name: string;
+  brands: ChiledBrand[];
+  childs: ChiledCategory[];
 }
 
-export default create('/data');
+export default create("/categories");

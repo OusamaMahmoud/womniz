@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { GoDotFill } from "react-icons/go";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthProvider";
+import { useAuth } from "../../contexts/AuthProvider";
 
 const AdminsResponsiveTable = ({
   tableData,

@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
-interface Category {
-  id: number;
-  title: string;
-}
+import { Category } from "../services/category-service";
 
-const useCategories = () => {
+const useMainCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
@@ -14,12 +11,12 @@ const useCategories = () => {
     setLoading(true);
     const controller = new AbortController();
     apiClient
-      .get("/data", {
+      .get("/categories", {
         signal: controller.signal,
       })
       .then((res) => {
         console.log(res.data.data);
-        setCategories(res.data.data.adminJobs);
+        setCategories(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -33,4 +30,4 @@ const useCategories = () => {
   return { categories, error, isLoading, setCategories, setError };
 };
 
-export default useCategories;
+export default useMainCategories;

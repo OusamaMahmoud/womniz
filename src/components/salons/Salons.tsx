@@ -11,7 +11,7 @@ import { FaEdit } from "react-icons/fa";
 import apiClient from "../../services/api-client";
 import vendorsService from "../../services/vendors-service";
 import * as XLSX from "xlsx";
-import useCategories from "../../hooks/useCategories";
+import useMainCategories from "../../hooks/useMainCategories";
 import { saveAs } from "file-saver";
 import Pagination from "../Pagination";
 import useVendors from "../../hooks/useVendors";
@@ -124,7 +124,7 @@ const Salons = () => {
     { category: string; id: number }[]
   >([]);
 
-  const { categories } = useCategories();
+  const { categories } = useMainCategories();
 
   // Fetch Admins ..
 

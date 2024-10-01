@@ -4,6 +4,7 @@ import { RxCross2 } from "react-icons/rx";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import avatar from "../../../public/assets/admin/avatar.svg";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,27 +19,7 @@ const schema = z.object({
   name: z.string().min(3).max(255),
   email: z.string().email(),
   password: z.union([z.string().length(0), z.string().min(8).max(50)]),
-  birthdate: z
-    .string()
-    .refine((value) => {
-      // Validate date format (YYYY-MM-DD)
-      const regex = /^\d{4}-\d{2}-\d{2}$/;
-      return regex.test(value);
-    }, "Invalid date format (YYYY-MM-DD)")
-    .refine((value) => {
-      // Validate age (must be 18 years or older)
-      const birthDate = new Date(value);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        return age - 1;
-      }
-      return age;
-    }, "Must be 18 years or older"),
+  birthdate: z.string().date(),
   phone: z
     .string()
     .min(8)
@@ -47,9 +28,8 @@ const schema = z.object({
   gender: z.enum(["Male", "Female"]),
 });
 type FormData = z.infer<typeof schema>;
-const CustomerProfile = () => {
-  //Discount Modal
 
+const CustomerProfile = () => {
   const { auth } = useAuth();
   const generateRandomCode = () => {
     return Math.random().toString(36).substr(2, 8).toUpperCase();
@@ -109,12 +89,6 @@ const CustomerProfile = () => {
   );
   const [targetCustomerError, setTaretCustomerError] = useState<string>("");
 
-  // const { categories } = useCategories();
-
-  // const options: OptionType[] = categories.map((item) => ({
-  //   label: item.title,
-  //   value: item.title,
-  // }));
   // Handle Photo Create
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -157,8 +131,7 @@ const CustomerProfile = () => {
       apiClient.get(`/users/${targetCustomer.id}/switchstatus`, {
         params: { status: newStatus },
       });
-    } catch (err: any) {
-    }
+    } catch (err: any) {}
   };
 
   const handleEditButton = () => {
@@ -193,9 +166,7 @@ const CustomerProfile = () => {
       });
   };
 
-  const notify = () => toast.success("Create Admin Successfully!");
-  const [, setIsProductsComponentExist] =
-    useState(false);
+  const [, setIsProductsComponentExist] = useState(false);
   const handleAddingOrderToCustomer = () => {
     setIsProductsComponentExist(true);
   };
@@ -235,8 +206,8 @@ const CustomerProfile = () => {
           image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
         }));
         setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
-        notify();
       }
+      toast.success("Your Account has been edited Successfully!");
       setSubmitinLoading(false);
       setIsModalOpen(false);
     } catch (error: any) {
