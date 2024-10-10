@@ -1,6 +1,14 @@
-export const HeadingOne = ({ label }: { label: string }) => {
+export const HeadingOne = ({
+  label,
+  marginBottom,
+}: {
+  label: string;
+  marginBottom: string;
+}) => {
   return (
-    <h1 className={`font-medium xl:text-4xl text-xl capitalize mb-10 `}>
+    <h1
+      className={`font-semibold xl:text-4xl text-xl capitalize mb-${marginBottom} `}
+    >
       {label}
     </h1>
   );

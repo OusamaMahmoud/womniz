@@ -98,6 +98,10 @@ const Sidebar = () => {
         link: "/products",
       },
       {
+        name: "New Product",
+        link: "/products/new-product",
+      },
+      {
         name: "Categories",
         link: "/products/categories",
       },

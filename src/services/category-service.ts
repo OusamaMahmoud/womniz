@@ -1,15 +1,26 @@
 import create from "./http-service";
 
 export interface ChiledCategory {
-  id: string;
+  id: number;
+  image: string;
+  name: string;
 }
-export interface ChiledBrand {
+export interface SubBrand {
+  id: number;
+  name: string;
+  image: string;
+}
+
+export interface BrandOfMainCategory {
   id: string;
+  name_en: string;
+  icon: string;
+  categories: SubBrand[];
 }
 export interface Category {
   id: number;
   name: string;
-  brands: ChiledBrand[];
+  brands: BrandOfMainCategory[];
   childs: ChiledCategory[];
 }
 

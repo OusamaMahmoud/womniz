@@ -51,6 +51,11 @@ import NewCelebritiesEdit from "./components/products/celebrities/NewCelebrities
 import AdminProfile from "./components/admins/AdminProfile";
 import MainCategories from "./components/products/mainCategories/MainCategories";
 import MainBrands from "./components/products/mainBrands/MainBrands";
+import NewProduct from "./components/products/new-product/NewProduct";
+
+
+
+
 function App() {
   useEffect(() => {
     AOS.init({
@@ -157,7 +162,7 @@ function App() {
           element={<ProductDetailsEditing />}
         />
         {/* Product details */}
-
+        <Route path="products/new-product" element={<NewProduct />} />
         {/* Salons */}
         <Route path="salons/salons-profiles" element={<Salons />} />
         <Route path="salons/salons-profiles/:id" element={<SalonProfile />} />

@@ -17,8 +17,8 @@ interface AuthObject {
   age: string;
   status: number;
   category: string;
-  role:string;
-  permissions:string[];
+  role: string;
+  permissions: string[];
 }
 
 interface AuthContextValues {
@@ -34,12 +34,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return storedAuth ? JSON.parse(storedAuth) : null;
   });
   const navigate = useNavigate();
+  
   useEffect(() => {
     if (auth) {
       localStorage.setItem("auth", JSON.stringify(auth));
     } else {
       localStorage.removeItem("auth");
-      navigate('/login')
+      navigate("/login");
     }
   }, [auth]);
 

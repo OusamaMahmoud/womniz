@@ -16,7 +16,7 @@ const MainCategories = () => {
 
   return (
     <div className="container px-20 shadow-xl pb-20">
-      <HeadingOne label="Main Categories" />
+      <HeadingOne marginBottom="3" label="Main Categories" />
       <div className="flex items-center mb-10 justify-end gap-4">
         <button className="btn btn-outline" onClick={toggleAddMainCategory}>
           Add Main Category
@@ -31,7 +31,7 @@ const MainCategories = () => {
             <TableSkeleton noOfElements={6} />
           </div>
         ) : (
-          <div className="flex justify-center items-center gap-10">
+          <div className="flex justify-center items-center gap-10 flex-wrap">
             {categories &&
               categories.map((mainCategory) => (
                 <div className="flex flex-col gap-4">
