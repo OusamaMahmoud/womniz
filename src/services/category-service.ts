@@ -20,6 +20,7 @@ export interface BrandOfMainCategory {
 export interface Category {
   id: number;
   name: string;
+  image: string;
   brands: BrandOfMainCategory[];
   childs: ChiledCategory[];
 }

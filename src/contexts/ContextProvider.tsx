@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-
 interface StateContextProps {
   chat: boolean;
   cart: boolean;
@@ -16,6 +15,8 @@ interface ContextProps {
   initialState: StateContextProps;
   setIsClicked: React.Dispatch<React.SetStateAction<StateContextProps>>;
   setActiveMenu: React.Dispatch<React.SetStateAction<boolean>>;
+  setLang:React.Dispatch<React.SetStateAction<string>>;
+  lang:string;
 }
 
 const StateContext = createContext<ContextProps | undefined>(
@@ -32,6 +33,7 @@ const initialState: StateContextProps = {
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [screenSize, setScreenSize] = useState<number | undefined>(undefined);
   const [activeMenu, setActiveMenu] = useState<boolean>(true);
+  const [lang, setLang] = useState<string>('');
   const [isClicked, setIsClicked] = useState<StateContextProps>(initialState);
 
   const handleClick = (clicked: keyof StateContextProps) =>
@@ -48,6 +50,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         initialState,
         setIsClicked,
         setActiveMenu,
+        setLang,
+        lang
       }}
     >
       {children}

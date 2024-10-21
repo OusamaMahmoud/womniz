@@ -11,13 +11,14 @@ import AddProductVariant from "./sub-components/AddProductVariant";
 import AddProductThumbnailImage from "./sub-components/AddProductThumbnailImage";
 import ProductMultipleImages from "./sub-components/ProductMultipleImages";
 import { ImageDownIcon } from "lucide-react";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import apiClient from "../../../services/api-client";
 import AddProductCategories, {
   ProductOptionType,
 } from "./sub-components/AddProductCategories";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 const NewProduct = () => {
   const {
     register,
@@ -43,23 +44,20 @@ const NewProduct = () => {
           subCategories: [] as ProductOptionType[],
         },
       ],
+      variants: [],
+      specifications: [],
     },
   });
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
 
   const [productImagesError, setProductImagesError] = useState("");
-  const [thumbnailImg, setThumbnailImg] = useState<File>();
   const [productImages, setProductImages] = useState<File[]>([]);
 
   const onSubmit = async (data: NewProductFormData) => {
+    console.log("is It Repeat !!");
     console.log(data);
-
-    if (productImages.length < 1) {
-      setProductImagesError("Please Add Your Product images");
-      return;
-    } else {
-      setProductImagesError("");
-    }
-
     const formData = new FormData();
 
     formData.append("name_en", data.name_en); // 1
@@ -74,8 +72,8 @@ const NewProduct = () => {
 
     // -----------------------------
 
-    if (thumbnailImg) {
-      formData.append("thumbnail", data.thumbnail);
+    if (data?.thumbnail !== null && data?.thumbnail?.length > 0) {
+      formData.append("thumbnail", data.thumbnail[0]);
     }
 
     // -----------------------------
@@ -86,16 +84,16 @@ const NewProduct = () => {
       });
     }
 
-    // -------------------------------
+    // // -------------------------------
     if (data.variants && data.variants.length > 0) {
       data?.variants.map((variant, idx) => {
         formData.append(
-          `variants[${idx}][size_id]`,
+          `variants[${idx}][size]`,
           variant?.size_id?.toString()
         );
 
         formData.append(
-          `variants[${idx}][color_id]`,
+          `variants[${idx}][color]`,
           variant?.color_id?.toString()
         );
 
@@ -147,6 +145,9 @@ const NewProduct = () => {
         position: "top-center",
         style: { width: "400px", height: "100px", fontSize: "18px" },
       });
+      setThumbnailPreview(null);
+      setImages([]);
+      setPreviews([]);
       reset();
     } catch (error: any) {
       if (error?.response?.status == 422) {
@@ -249,6 +250,7 @@ const NewProduct = () => {
       class: `input input-bordered grow ${errors.stock && "border-[red]"}`,
     },
   ];
+
   return (
     <Container horizontalPadding={"10"} verticalMargin={"10"}>
       <ToastContainer />
@@ -256,27 +258,25 @@ const NewProduct = () => {
       <p className="divider divider-vertical "></p>
 
       <AddProductThumbnailImage
-        onThumbnailImage={(thumbnailImg) => setThumbnailImg(thumbnailImg)}
         control={control}
         errors={errors}
         register={register}
+        onThumbnailPreview={(preview) => setThumbnailPreview(preview)}
+        thumbnailPreview={thumbnailPreview}
       />
-
+      
       <div className="max-w-xl mt-8 ">
         <p className="flex font-medium gap-2 p-3  bg-slate-50 rounded-md">
           Add Product Images <ImageDownIcon />
         </p>
         <ProductMultipleImages
-          onProductImagesErrorMessage={(text) => setProductImagesError(text)}
           onProductImages={(images) => setProductImages(images)}
+          images={images}
+          setImages={setImages}
+          previews={previews}
+          setPreviews={setPreviews}
         />
       </div>
-      {productImagesError && (
-        <p className="flex items-center text-red-600  w-fit rounded-lg mb-8">
-          {productImagesError}{" "}
-          <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />
-        </p>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* FormInputs */}

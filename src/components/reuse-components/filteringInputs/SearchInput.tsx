@@ -3,8 +3,10 @@ import { useEffect } from "react";
 export const SearchInput = ({
   searchText,
   onSearchText,
+  placeHolder,
 }: {
   searchText: string;
+  placeHolder: string;
   onSearchText: (text: string) => void;
 }) => {
   useEffect(() => {
@@ -26,7 +28,7 @@ export const SearchInput = ({
       </svg>
       <input
         type="text"
-        placeholder="Searching..."
+        placeholder={placeHolder}
         className="grow"
         value={searchText}
         onChange={(e) => onSearchText(e.target.value)}

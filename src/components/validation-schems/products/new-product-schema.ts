@@ -17,26 +17,32 @@ const NewProductSchema = z.object({
   stock: z
     .number({ invalid_type_error: "Stock must be a number" })
     .min(0, "Stock must be greater than or equal to 0"),
-  variants: z.array(
-    z.object({
-      size_id: z.string().min(1, "Size must be at least 3 characters."),
-      color_id: z.string().min(1, "Color must be at least 3 characters."),
-      sku: z.string().min(1, "SKU must be at least 1 characters"),
-      stock: z.number({ invalid_type_error: "Stock must be a number" }),
-      price: z.number({ invalid_type_error: "Price must be a number" }),
-      discount: z.number({ invalid_type_error: "Discount must be a number" }),
-    })
-  ),
-  specifications: z.array(
-    z.object({
-      name_en: z.string().min(3),
-      name_ar: z.string().min(3),
-      value_en: z.string().min(3),
-      value_ar: z.string().min(3),
-    })
-  ),
-  thumbnail: z.instanceof(File, {
-    message: "Add Your Product Thumbnail Image.",
+  variants: z.union([
+    z.array(
+      z.object({
+        size_id: z.string().min(1, "Size must be at least 3 characters."),
+        color_id: z.string().min(1, "Color must be at least 3 characters."),
+        sku: z.string().min(1, "SKU must be at least 1 characters"),
+        stock: z.number({ invalid_type_error: "Stock must be a number" }),
+        price: z.number({ invalid_type_error: "Price must be a number" }),
+        discount: z.number({ invalid_type_error: "Discount must be a number" }),
+      })
+    ),
+    z.null(),
+  ]),
+  specifications: z.union([
+    z.array(
+      z.object({
+        name_en: z.string().min(3),
+        name_ar: z.string().min(3),
+        value_en: z.string().min(3),
+        value_ar: z.string().min(3),
+      })
+    ),
+    z.null(),
+  ]),
+  thumbnail: z.instanceof(FileList).refine((fileList) => fileList.length > 0, {
+    message: "Please Provide Thumbnail image!",
   }),
   categories: z
     .array(
@@ -52,7 +58,9 @@ const NewProductSchema = z.object({
           .array(
             z.object({
               label: z.string().min(1, "Sub-category name is required"),
-              value: z.number({ invalid_type_error: "Sub-category is required" }),
+              value: z.number({
+                invalid_type_error: "Sub-category is required",
+              }),
             })
           )
           .min(1, { message: "At least one sub-category must be selected" }),

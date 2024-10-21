@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EyeIcon } from "@heroicons/react/24/solid";
+import { EyeOff } from "lucide-react";
 
 const schema = z.object({
   email: z.string().email({ message: "Email is required and must be valid!" }),
@@ -18,7 +20,7 @@ type LoginForm = z.infer<typeof schema>;
 
 const Login = () => {
   const { setAuth } = useAuth();
-  
+
   const [apiError, setApiError] = useState("");
   const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -45,8 +47,8 @@ const Login = () => {
       const response = await apiClient.post("/login", data);
 
       const user = response.data.data;
-      localStorage.setItem("auth", JSON.stringify(user));
-      localStorage.setItem("authToken", user.token);
+      localStorage.setItem("womnizAuth", JSON.stringify(user));
+      localStorage.setItem("womnizAuthToken", user.token);
 
       setAuth(user);
       navigate("/dashboard");
@@ -59,10 +61,9 @@ const Login = () => {
         err.response?.data?.data?.error || "An unexpected error occurred"
       );
       setLoading(false);
-      
     }
   };
-
+  const [isPasswordEyeOpen, setPasswordEyeOpen] = useState(false);
   return (
     <div className="container mx-auto px-8">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -92,30 +93,43 @@ const Login = () => {
                   <p className="text-[red] mt-2">{errors.email.message}</p>
                 )}
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 relative">
                 <label>Password</label>
+                {isPasswordEyeOpen ? (
+                  <EyeIcon
+                    width={20}
+                    className="absolute cursor-pointer top-1/2 mt-1 right-3"
+                    onClick={() => setPasswordEyeOpen((prev) => !prev)}
+                  />
+                ) : (
+                  <EyeOff
+                    width={20}
+                    className="absolute cursor-pointer top-1/2 mt-1 right-3"
+                    onClick={() => setPasswordEyeOpen((prev) => !prev)}
+                  />
+                )}
                 <input
                   {...register("password")}
                   id="password"
-                  className="input input-bordered"
-                  type="password"
+                  className="input input-bordered grow"
+                  type={isPasswordEyeOpen ? "text" : "password"}
                 />
-                {errors.password && (
-                  <p className="text-[red] mt-2">{errors.password.message}</p>
-                )}
               </div>
+              {errors.password && (
+                <p className="text-[red] mt-2">{errors.password.message}</p>
+              )}
               {apiError && (
                 <p className="text-[red] text-lg my-4">{apiError}</p>
               )}
-              <div className="flex justify-end mt-8 mb-4">
+              {/* <div className="flex justify-end mt-8 mb-4">
                 <p className="text-[#367AFF]">Forget Password?</p>
-              </div>
+              </div> */}
             </div>
-            <div className="mt-3 flex">
+            <div className="mt-6 flex">
               <button
                 type="submit"
                 disabled={!isValid}
-                className={`bg-[#577656] text-xl py-6 rounded-lg grow text-[white] ${
+                className={`bg-[#577656] text-xl py-3 rounded-lg grow text-white ${
                   !isValid && "opacity-50 cursor-not-allowed"
                 }`}
               >

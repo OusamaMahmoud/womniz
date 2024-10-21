@@ -1,0 +1,27 @@
+{
+    "admins": {
+      "header": "Admins Details",
+      "adminButtons": {
+        "add": "Add Admin Account",
+        "delete": "Delete",
+        "export": "Export"
+      }
+    },
+    "tableHeader": {
+      "adminId": "Admin Id",
+      "name": "Name",
+      "email":"Email",
+      "phone": "Phone",
+      "age": "Age",
+      "location": "Location",
+      "country": "Country",
+      "category": "Category",
+      "status": "Status"
+    },
+    "adminsPlaceholders": {
+      "search": "Searching...",
+      "category": "Select a category...",
+      "status": "Select a status..."
+    }
+  }
+  

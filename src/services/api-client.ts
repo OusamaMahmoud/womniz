@@ -8,7 +8,7 @@ export { CanceledError };
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("womnizAuthToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -29,8 +29,8 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       if (!isRedirecting && !window.location.pathname.includes("/login")) {
         isRedirecting = true;
-        localStorage.removeItem("auth");
-        localStorage.removeItem("authToken");
+        localStorage.removeItem("womnizAuth");
+        localStorage.removeItem("womnizAuthToken");
         window.location.href = "/login";
       }
     }

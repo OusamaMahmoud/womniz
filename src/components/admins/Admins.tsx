@@ -17,6 +17,7 @@ import { SearchInput } from "../reuse-components/filteringInputs/SearchInput";
 import { useAuthGard } from "../reuse-hooks/AuthGard";
 import { ActionButton } from "../reuse-components/ActionButtons";
 import { HeadingOne } from "../reuse-components/HeadingOne";
+import { useTranslation } from "react-i18next";
 
 const Admins: React.FC = () => {
   // Handle Filters
@@ -106,6 +107,9 @@ const Admins: React.FC = () => {
 
   const { alladmins, isAllAdminsError } = useAllAdmins();
 
+  const { t } = useTranslation()
+
+
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -115,13 +119,13 @@ const Admins: React.FC = () => {
         {isAllAdminsError && (
           <p className="text-red-600 text-lg p-2">{isAllAdminsError}</p>
         )}
-        <HeadingOne label="Admins Details" />
+        <HeadingOne label={t('admins:admins.header')} marginBottom="2" />
         <div className="flex items-center flex-wrap gap-2">
           {useAuthGard({ key: "admin-create" }) && (
             <ActionButton
               className="btn bg-[#577656] text-[white] text-[10px] lg:text-lg"
               icon={<BiPlusCircle className="xl:text-xl" />}
-              label=" Add Admin Account"
+              label={t("admins:admins.adminButtons.add")}
               method={openModal}
             />
           )}
@@ -131,7 +135,7 @@ const Admins: React.FC = () => {
                 !isDeleteEnabled && "cursor-not-allowed"
               }`}
               icon={<BiTrash className="xl:text-lg text-[#E20000B2]" />}
-              label="Delete"
+              label={t("admins:admins.adminButtons.delete")}
               method={handleDelete}
               isDisabled={!isDeleteEnabled}
             />
@@ -141,7 +145,7 @@ const Admins: React.FC = () => {
             <ActionButton
               className="btn text-[10px] lg:text-lg btn-outline"
               icon={<BiExport />}
-              label="Export"
+              label={t("admins:admins.adminButtons.export")}
               method={() =>
                 exportToExcel({ products: alladmins, label: "Admins" })
               }
@@ -155,17 +159,20 @@ const Admins: React.FC = () => {
         <SearchInput
           onSearchText={(text) => setSearchValue(text)}
           searchText={searchValue}
+          placeHolder={t('admins:adminsPlaceholders.search')}
         />
         {/* Category Bar */}
         <SelectCategoryInput
           categories={categories}
           onSelectCategory={(category) => setSelectedCategory(category)}
           selectedCategory={selectedCategory}
+          placeholder={t('admins:adminsPlaceholders.category')}
         />
         {/* Status Bar */}
         <StatusInput
           onSelectStatus={(status) => setSelectedStatus(status)}
           selectedStatus={selectedStatus}
+          placeHolder={t('admins:adminsPlaceholders.status')}
         />
       </div>
       {/* Table */}

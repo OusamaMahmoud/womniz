@@ -30,16 +30,16 @@ const AuthContext = createContext<AuthContextValues | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [auth, setAuth] = useState<AuthObject | null>(() => {
-    const storedAuth = localStorage.getItem("auth");
+    const storedAuth = localStorage.getItem("womnizAuth");
     return storedAuth ? JSON.parse(storedAuth) : null;
   });
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (auth) {
-      localStorage.setItem("auth", JSON.stringify(auth));
+      localStorage.setItem("womnizAuth", JSON.stringify(auth));
     } else {
-      localStorage.removeItem("auth");
+      localStorage.removeItem("womnizAuth");
       navigate("/login");
     }
   }, [auth]);

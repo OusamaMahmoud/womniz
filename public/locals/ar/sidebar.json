@@ -1,0 +1,45 @@
+{
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "home": "الرئيسية",
+    "accounts": {
+      "label": "الحسابات",
+      "admins": "المسؤولون",
+      "customers": "العملاء",
+      "restoreAccounts": "استعادة الحسابات",
+      "vendors": "البائعون"
+    },
+    "products": {
+      "label": "المنتجات",
+      "all": "كل المنتجات",
+      "newProduct": "منتج جديد",
+      "categories": "الفئات",
+      "brands": "العلامات التجارية"
+    },
+    "orders": {
+      "label": "الطلبات",
+      "all": "كل الطلبات",
+      "delivered": "تم التوصيل",
+      "failed": "فشل",
+      "canceled": "ملغى",
+      "returned": "عائد"
+    },
+    "salons": {
+      "label": "الصالونات",
+      "salonsProfiles": "ملفات الصالونات",
+      "professionals": "المحترفين"
+    },
+    "games": {
+      "label": "الألعاب",
+      "scratchCoupon": "كوبون الخدش",
+      "spinTheWheel": "دور العجلة"
+    },
+    "coupons": "القسائم والخصومات",
+    "roles": "الأدوار والصلاحيات",
+    "terms": "الشروط والأحكام",
+    "country": "الدولة",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  }
+}

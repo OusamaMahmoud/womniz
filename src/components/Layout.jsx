@@ -7,24 +7,14 @@ import { useAuth } from "../contexts/AuthProvider";
 
 const Layout = () => {
   const { activeMenu, setActiveMenu } = useStateContext();
-
   return (
     <div>
       <div className="flex relative">
-        {activeMenu ? (
-          <div className="w-72 fixed  bg-white z-[1000]  ">
-            <Sidebar />
-          </div>
-        ) : (
-          <div className="w-0">
-            <Sidebar />
-          </div>
-        )}
         <div
           className={
             activeMenu
-              ? " min-h-screen md:ml-72 w-full   "
-              : " w-full min-h-screen flex-2 "
+              ? " min-h-screen ltr:md:ml-72 rtl:md:mr-72 w-full   "
+              : " w-full min-h-screen "
           }
         >
           <div className="static w-full mt-8">
@@ -34,6 +24,15 @@ const Layout = () => {
             <Outlet />
           </div>
         </div>
+        {activeMenu ? (
+          <div className="w-72 fixed bg-white z-[1000]  ">
+            <Sidebar />
+          </div>
+        ) : (
+          <div className="w-0">
+            <Sidebar />
+          </div>
+        )}
       </div>
     </div>
   );

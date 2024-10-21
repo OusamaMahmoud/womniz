@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone, Accept } from "react-dropzone";
 import { MdDelete } from "react-icons/md";
-type Preview = string[];
 
 const ProductMultipleImages = ({
-  onProductImagesErrorMessage,
   onProductImages,
+  images,
+  setImages,
+  previews,
+  setPreviews,
 }: {
-  onProductImagesErrorMessage: (text: string) => void;
   onProductImages: (imgs: File[]) => void;
+  images: File[];
+  setImages: React.Dispatch<React.SetStateAction<File[]>>;
+  previews: string[];
+  setPreviews: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
-  const [images, setImages] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<Preview>([]);
-
   // Function to handle dropped files
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Update images state
@@ -41,6 +43,7 @@ const ProductMultipleImages = ({
     accept, // Accept only images
     multiple: true, // Enable multiple file selection
   });
+
   const handleDeleteProductImage = (idx: number) => {
     // Remove the image from the images state by filtering out the image at the given index
     setImages((prevImages) => prevImages.filter((_, index) => index !== idx));
@@ -50,6 +53,7 @@ const ProductMultipleImages = ({
       prevPreviews.filter((_, index) => index !== idx)
     );
   };
+
   return (
     <div className="w-full p-4 border border-dashed border-gray-400 my-5">
       <div

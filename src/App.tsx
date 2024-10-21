@@ -52,10 +52,10 @@ import AdminProfile from "./components/admins/AdminProfile";
 import MainCategories from "./components/products/mainCategories/MainCategories";
 import MainBrands from "./components/products/mainBrands/MainBrands";
 import NewProduct from "./components/products/new-product/NewProduct";
-
-
-
-
+import SubCategory from "./components/products/mainCategories/SubCategory";
+import EditProduct from "./components/products/new-product/updateProduct/EditProduct";
+import i18n from "../src/i18n/i18n";
+import { useStateContext } from "./contexts/ContextProvider";
 function App() {
   useEffect(() => {
     AOS.init({
@@ -72,10 +72,15 @@ function App() {
   const SPIN_PERMISSIONS = permissions[3]?.permissions.map((_) => _.name);
   const USERS_PERMISSIONS = permissions[4]?.permissions.map((_) => _.name);
   const VENDORS_PERMISSIONS = permissions[5]?.permissions.map((_) => _.name);
-
+  const { lang } = useStateContext();
+  // Change language dynamically when `lang` prop changes
   useEffect(() => {
-    console.log(ROLES_PERMISSIONS);
-  }, [permissions]);
+    const lang = localStorage.getItem("womnizLang") ?? "en";
+    if (lang) {
+      i18n.changeLanguage(lang);
+    }
+    document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+  }, [i18n, lang]);
 
   return (
     <Routes>
@@ -129,8 +134,8 @@ function App() {
         <Route path="products/clothes/edit/:id" element={<NewClothesEdit />} />
 
         <Route
-          path="products/clothes/cloths-sub-category"
-          element={<ClothsSubCategory />}
+          path="products/:categoryParam/:subCategoryParam"
+          element={<SubCategory />}
         />
         <Route
           path="products/clothes/product-description"
@@ -171,12 +176,12 @@ function App() {
         {/* Jewelry */}
         <Route path="products/jewellery" element={<Jewellery />} />
         <Route
-          path="products/jewellery/new-jewellery"
-          element={<NewJewellery />}
+          path="products/:categoryParam/:subCategoryParam"
+          element={<SubCategory />}
         />
         <Route
-          path="products/jewellery/jewellery-sub-category"
-          element={<JewellerySubCategory />}
+          path="products/:categoryParam/:subCategoryParam"
+          element={<SubCategory />}
         />
         <Route
           path="products/jewellery/edit/:id"
@@ -191,8 +196,8 @@ function App() {
           element={<NewCelebrities />}
         />
         <Route
-          path="products/celebrities/celebrities-sub-category"
-          element={<CelebritiesSubCategory />}
+          path="products/:categoryParam/:subCategoryParam"
+          element={<SubCategory />}
         />
 
         <Route
@@ -222,13 +227,11 @@ function App() {
           element={<NewCosmeticsEdit />}
         />
         <Route
-          path="products/cosmetics/cosmetics-sub-category"
-          element={<CosmeticsSubCategory />}
+          path="products/:categoryParam/:subCategoryParam"
+          element={<SubCategory />}
         />
-        <Route
-          path="products/cosmetics/cosmetics-sub-category"
-          element={<CosmeticsSubCategory />}
-        />
+        <Route path="/products/edit-product/:id" element={<EditProduct />} />
+
         {/*cosmetics  */}
 
         <Route path="*" element={<MissingPage />} />

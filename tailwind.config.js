@@ -8,5 +8,8 @@ export default {
       },
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"), // DaisyUI plugin
+    require("tailwindcss-rtl"), // TailwindCSS RTL plugin
+  ],
 };

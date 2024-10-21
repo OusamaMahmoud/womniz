@@ -1,0 +1,45 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "home": "Home",
+    "accounts": {
+      "label": "Accounts",
+      "admins": "Admins",
+      "customers": "Customers",
+      "restoreAccounts": "Restore Accounts",
+      "vendors": "Vendors"
+    },
+    "products": {
+      "label": "Products",
+      "all": "All Products",
+      "newProduct": "New Product",
+      "categories": "Categories",
+      "brands": "Brands"
+    },
+    "orders": {
+      "label": "Orders",
+      "all": "All Orders",
+      "delivered": "Delivered",
+      "failed": "Failed",
+      "canceled": "Canceled",
+      "returned": "Returned"
+    },
+    "salons": {
+      "label": "Salons",
+      "salonsProfiles": "Salons Profiles",
+      "professionals": "Professionals"
+    },
+    "games": {
+      "label": "Games",
+      "scratchCoupon": "Scratch Coupon",
+      "spinTheWheel": "Spin The Wheel"
+    },
+    "coupons": "Coupons & Vouchers",
+    "roles": "Roles & Permissions",
+    "terms": "Terms & Conditions",
+    "country": "Country",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout"
+  }
+}

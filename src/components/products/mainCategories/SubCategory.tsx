@@ -5,15 +5,30 @@ import { TableSkeleton } from "../../reuse-components/TableSkeleton";
 import apiClient from "../../../services/api-client";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import MainCategoryUi from "./sub/MainCategoryUi";
 import CategoryForm from "./sub/CategoryForm";
+import SubCategoryUi from "./sub/SubCategoryUi";
+import { useParams } from "react-router-dom";
+
 interface Category {
   categoryImg: FileList | null;
   name_en: string;
   name_ar: string;
 }
-const MainCategories = () => {
-  const { categories, isLoading, setCategories } = useMainCategories();
+const SubCategory = () => {
+  const { categories, isLoading , setCategories } = useMainCategories();
+
+  const { categoryParam } = useParams<{
+    categoryParam: string;
+    subCategoryParam: string;
+  }>();
+
+  const ChieldCategory = categories?.find((cat) => {
+    return (
+      cat?.name?.toLocaleLowerCase() === categoryParam?.toLocaleLowerCase()
+    );
+  });
+
+
   const [isCreateCategoryLoading, setIsCreateCategoryLoading] = useState(false);
   const [preview, setPreview] = useState("");
 
@@ -31,6 +46,7 @@ const MainCategories = () => {
       modal.showModal();
     }
   };
+
   useEffect(() => {
     if (category?.categoryImg !== null) {
       const imgPreview = URL?.createObjectURL(category?.categoryImg?.[0]);
@@ -53,6 +69,11 @@ const MainCategories = () => {
 
     formData.append("name_en", category.name_en);
     formData.append("name_ar", category.name_ar);
+
+    if (ChieldCategory) {
+      formData.append("parent_id", ChieldCategory?.id?.toString());
+    }
+
     if (category?.categoryImg !== null) {
       formData.append("image", category?.categoryImg[0]);
     }
@@ -71,19 +92,15 @@ const MainCategories = () => {
       const res = await apiClient.post("/categories", formData);
       setIsCreateCategoryLoading(false);
       console.log(res);
-      toast.success("Your Main Category has been Creating Successfully.");
-      setCategories((prev) => [
-        ...prev,
-        {
-          brands: [],
-          childs: [],
-          id: 0,
-          image: preview,
-          name: category.name_en,
-        },
-      ]);
+      toast.success("Your Sub Category has been Creating Successfully.");
+      
       setCategory({ name_ar: "", name_en: "", categoryImg: null });
       setPreview("");
+       apiClient
+      .get("/categories")
+      .then((res) => {
+        setCategories(res.data.data);
+      })
       if (imageRef.current instanceof HTMLInputElement) {
         imageRef.current.value = "";
       }
@@ -115,14 +132,14 @@ const MainCategories = () => {
         preview={preview}
       />
 
-      <HeadingOne marginBottom="mb-3" label="Main Categories" />
+      <HeadingOne marginBottom="mb-3" label={`${categoryParam} Sub Categories`} />
 
       <div className="flex items-center mb-10 justify-end gap-4">
         <button
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={toggleAddMainCategory}
         >
-          Add Main Category
+          Add Sub Category
         </button>
       </div>
       <div className="flex flex-col">
@@ -131,11 +148,15 @@ const MainCategories = () => {
             <TableSkeleton noOfElements={6} />
           </div>
         ) : (
-          <>{categories && <MainCategoryUi categories={categories} />}</>
+          <>
+            {categories && ChieldCategory && (
+              <SubCategoryUi subCategories={ChieldCategory?.childs} />
+            )}
+          </>
         )}
       </div>
     </div>
   );
 };
 
-export default MainCategories;
+export default SubCategory;

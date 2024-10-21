@@ -1,0 +1,26 @@
+{
+  "admins": {
+    "header": "تفاصيل المسؤولين",
+    "adminButtons": {
+      "add": "إضافة حساب مسؤول",
+      "delete": "حذف",
+      "export": "تصدير"
+    }
+  },
+  "tableHeader": {
+    "adminId": "معرّف المسؤول",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "age": "العمر",
+    "location": "الموقع",
+    "country": "البلد",
+    "category": "الفئة",
+    "status": "الحالة"
+  },
+  "adminsPlaceholders": {
+    "search": "بحث...",
+    "category": "اختار الفئه...",
+    "status": "اختار الحاله..."
+  }
+}

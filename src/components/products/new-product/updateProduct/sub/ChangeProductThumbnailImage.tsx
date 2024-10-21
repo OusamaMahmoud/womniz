@@ -1,7 +1,7 @@
 import { ImageDownIcon } from "lucide-react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { NewProductFormData } from "../../../validation-schems/products/new-product-schema";
+import { NewProductFormData } from "../../../../validation-schems/products/new-product-schema";
 
 interface AddProductThumbnailImageProps {
   control: Control<NewProductFormData>;
@@ -11,7 +11,7 @@ interface AddProductThumbnailImageProps {
   thumbnailPreview: string | null;
 }
 
-const AddProductThumbnailImage = ({
+const ChangeProductThumbnailImage = ({
   register,
   errors,
   onThumbnailPreview,
@@ -31,7 +31,7 @@ const AddProductThumbnailImage = ({
       <div className="space-y-4">
         <label className="block">
           <span className="flex items-center gap-2 mb-4 text-lg font-semibold">
-            Add Thumbnail Image
+           Change Thumbnail Image
             <ImageDownIcon />
           </span>
           <input
@@ -67,4 +67,4 @@ const AddProductThumbnailImage = ({
   );
 };
 
-export default AddProductThumbnailImage;
+export default ChangeProductThumbnailImage;

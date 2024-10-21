@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { ToastContainer} from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import ClothesTable from "./ClothesTable";
 import useProducts from "../../../hooks/useProducts";
 import useVendorCategories from "../../../hooks/useVendorCategories";
@@ -133,13 +133,6 @@ const Clothes = () => {
               className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
             >
               Sub Category
-            </Link>
-            <Link
-              to={"/products/clothes/new-clothes"}
-              className="flex gap-2 items-center btn text-white bg-[#577656] hover:text-black xl:text-xl"
-            >
-              <IoAdd className="text-white text-2xl hover:text-black" />
-              Add New Product
             </Link>
             <label
               htmlFor="excel"

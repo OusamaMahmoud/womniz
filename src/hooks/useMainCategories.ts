@@ -15,7 +15,6 @@ const useMainCategories = () => {
         signal: controller.signal,
       })
       .then((res) => {
-        console.log(res.data.data);
         setCategories(res.data.data);
         setLoading(false);
       })

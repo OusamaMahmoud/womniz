@@ -12,11 +12,6 @@ import useColorPalette from "../../../hooks/useColorPalette";
 import CustomSelect from "../CustomSelect";
 import useVendors from "../../../hooks/useVendors";
 
-// type FormData = z.infer<typeof schema>;
-// interface Image {
-//   preview: string;
-//   name: string;
-// }
 
 interface ProductImage {
   file: File;

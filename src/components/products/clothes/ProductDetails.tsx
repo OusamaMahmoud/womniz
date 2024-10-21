@@ -15,6 +15,7 @@ const ProductDetails = () => {
     apiClient
       .get<{ data: Product }>(`products/${id}`)
       .then((res) => {
+        console.log("target",res.data.data)
         setTargetProduct(res.data.data);
       })
       .catch((err: any) => setError(err.message));
@@ -37,13 +38,7 @@ const ProductDetails = () => {
                 Product Details
               </h1>
               <Link
-                to={`/products/${
-                  targetCategory?.toLowerCase() === "shoes"
-                    ? "clothes"
-                    : targetCategory?.toLowerCase() === "bags"
-                    ? "clothes"
-                    : targetCategory?.toLowerCase()
-                }/edit/${targetProduct?.id}`}
+                to={`/products/edit-product/${targetProduct?.id}`}
                 className="flex items-center gap-2 border p-4 rounded-md"
               >
                 <BiEdit /> Edit
@@ -131,6 +126,7 @@ const ProductDetails = () => {
                 </p>
               )}
             </div>
+
             <div
               className="max-w-5xl mt-8 border p-6 rounded-md "
               data-aos="fade-up"
@@ -159,7 +155,7 @@ const ProductDetails = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                {/* <tbody className="bg-white divide-y divide-gray-200">
                   {targetProduct &&
                     targetProduct.variants.map((item, idx) => (
                       <tr key={idx}>
@@ -179,7 +175,7 @@ const ProductDetails = () => {
                         <td className="px-6 py-4 whitespace-nowrap">أصفر</td>
                       </tr>
                     ))}
-                </tbody>
+                </tbody> */}
               </table>
             </div>
             <div
@@ -196,7 +192,7 @@ const ProductDetails = () => {
                   </p>
                   <p className="text-xl text-[#00000066]">Return Orders</p>
                 </div>
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   {targetProduct && (
                     <p>{extractContent(targetProduct?.desc_en)}</p>
                   )}
@@ -211,7 +207,7 @@ const ProductDetails = () => {
                   {targetProduct && (
                     <p>{extractContent(targetProduct?.return_order_desc)}</p>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

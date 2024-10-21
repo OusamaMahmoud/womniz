@@ -1,0 +1,22 @@
+{
+    "products": {
+      "header": "Admins Detailspp",
+      "productsButtons": {
+        "add": "Add Admin Account",
+        "delete": "Delete",
+        "export": "Export"
+      }
+    },
+    "tableHeader": [
+      "Admin Id",
+      "Name",
+      "Email",
+      "Phone",
+      "Age",
+      "Location",
+      "Country",
+      "Category",
+      "Status"
+    ]
+  }
+  

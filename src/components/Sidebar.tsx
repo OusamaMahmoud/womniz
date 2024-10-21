@@ -20,6 +20,7 @@ import { IoBagRemoveOutline } from "react-icons/io5";
 import { RiAccountCircleLine } from "react-icons/ri";
 import { BoxIcon } from "lucide-react";
 import { PiCodesandboxLogoThin, PiHairDryer } from "react-icons/pi";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = () => {
   const { setAuth, auth } = useAuth();
@@ -28,6 +29,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState<number | null>(null); // State to track active div
   const { activeMenu, screenSize, setActiveMenu } = useStateContext();
+  const { t } = useTranslation();
 
   const handleAccordionClick = (index: number) => {
     setActiveIndex(index); // Set the clicked div as active
@@ -69,24 +71,24 @@ const Sidebar = () => {
 
   const links = [
     {
-      title: "Accounts",
+      title: t("sidebar:sidebar.accounts.label"),
       icon: <RiAccountCircleLine />,
     },
 
     {
-      title: "Products",
+      title: t("sidebar:sidebar.products.label"),
       icon: <IoBagRemoveOutline />,
     },
     {
-      title: "Orders",
+      title: t("sidebar:sidebar.orders.label"),
       icon: <BoxIcon className="w-5" />,
     },
     {
-      title: "Salons",
+      title: t("sidebar:sidebar.salons.label"),
       icon: <PiHairDryer />,
     },
     {
-      title: "Games",
+      title: t("sidebar:sidebar.games.label"),
       icon: <PiCodesandboxLogoThin />,
     },
   ];
@@ -94,19 +96,19 @@ const Sidebar = () => {
   const productsLinks = {
     links: [
       {
-        name: "All",
+        name: t("sidebar:sidebar.products.all"),
         link: "/products",
       },
       {
-        name: "New Product",
+        name: t("sidebar:sidebar.products.newProduct"),
         link: "/products/new-product",
       },
       {
-        name: "Categories",
+        name: t("sidebar:sidebar.products.categories"),
         link: "/products/categories",
       },
       {
-        name: "Brands",
+        name: t("sidebar:sidebar.products.brands"),
         link: "/products/brands",
       },
     ],
@@ -138,23 +140,23 @@ const Sidebar = () => {
   const ordersLinks = {
     links: [
       {
-        name: "All Orders",
+        name: t("sidebar:sidebar.orders.label"),
         link: "/orders",
       },
       {
-        name: "Delivered",
+        name: t("sidebar:sidebar.orders.delivered"),
         link: "/orders/delivered",
       },
       {
-        name: "Failed",
+        name: t("sidebar:sidebar.orders.failed"),
         link: "/orders/delivery_failed",
       },
       {
-        name: "Canceled",
+        name: t("sidebar:sidebar.orders.canceled"),
         link: "/orders/canceled",
       },
       {
-        name: "Returned",
+        name: t("sidebar:sidebar.orders.returned"),
         link: "/orders/returned",
       },
     ],
@@ -162,11 +164,11 @@ const Sidebar = () => {
   const salonsLinks = {
     links: [
       {
-        name: "Salon’s Profiles",
+        name: t("sidebar:sidebar.salons.salonsProfiles"),
         link: "/salons/salons-profiles",
       },
       {
-        name: "Professionals",
+        name: t("sidebar:sidebar.salons.professionals"),
         link: "/salons/professionals",
       },
     ],
@@ -205,7 +207,9 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={dashboard} alt="dashboard" />
-              <span className="capitalize ">Dashboard</span>
+              <span className="capitalize ">
+                {t("sidebar:sidebar.dashboard")}
+              </span>
             </NavLink>
             <NavLink
               to={`/`}
@@ -213,7 +217,7 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={home} alt="home" />
-              <span className="capitalize ">Home</span>
+              <span className="capitalize ">{t("sidebar:sidebar.home")}</span>
             </NavLink>
 
             {links.map((item, idx) => (
@@ -234,7 +238,8 @@ const Sidebar = () => {
                     {item.icon}
                     {item.title}
                   </div>
-                  {item.title === "Accounts" && (
+
+                  {item.title === t("sidebar:sidebar.accounts.label") && (
                     <div className="collapse-content">
                       {auth?.permissions.find(
                         (per) => per === "admin-list"
@@ -246,7 +251,9 @@ const Sidebar = () => {
                             isActive ? activeLink : normalLink
                           }
                         >
-                          <span className="capitalize ">Admins</span>
+                          <span className="capitalize ">
+                            {t("sidebar:sidebar.accounts.admins")}
+                          </span>
                         </NavLink>
                       )}
 
@@ -258,7 +265,9 @@ const Sidebar = () => {
                             isActive ? activeLink : normalLink
                           }
                         >
-                          <p className="capitalize">Customers</p>
+                          <p className="capitalize">
+                            {t("sidebar:sidebar.accounts.customers")}
+                          </p>
                         </NavLink>
                       )}
 
@@ -271,7 +280,7 @@ const Sidebar = () => {
                           }
                         >
                           <p className="ml-2 -mt-5 pt-4 flex items-center justify-center">
-                            Restore Accounts
+                            {t("sidebar:sidebar.accounts.restoreAccounts")}
                           </p>
                         </NavLink>
                       )}
@@ -286,12 +295,14 @@ const Sidebar = () => {
                             isActive ? activeLink : normalLink
                           }
                         >
-                          <span className="capitalize ">Vendors</span>
+                          <span className="capitalize ">
+                            {t("sidebar:sidebar.accounts.vendors")}
+                          </span>
                         </NavLink>
                       )}
                     </div>
                   )}
-                  {item.title === "Products" && (
+                  {item.title === t("sidebar:sidebar.products.label") && (
                     <div className="collapse-content">
                       {productsLinks.links.map((pro, idx) => (
                         <NavLink
@@ -307,7 +318,7 @@ const Sidebar = () => {
                       ))}
                     </div>
                   )}
-                  {item.title === "Orders" && (
+                  {item.title === t("sidebar:sidebar.orders.label") && (
                     <div className="collapse-content">
                       {ordersLinks.links.map((order, idx) => (
                         <NavLink
@@ -323,7 +334,7 @@ const Sidebar = () => {
                       ))}
                     </div>
                   )}
-                  {item.title === "Salons" && (
+                  {item.title === t("sidebar:sidebar.salons.label") && (
                     <div className="collapse-content">
                       {salonsLinks.links.map((sa, idx) => (
                         <NavLink
@@ -339,7 +350,7 @@ const Sidebar = () => {
                       ))}
                     </div>
                   )}
-                  {item.title === "Games" && (
+                  {item.title === t("sidebar:sidebar.games.label") && (
                     <div className="collapse-content">
                       {auth?.permissions.find(
                         (per) => per === "scratch-game-information"
@@ -351,7 +362,9 @@ const Sidebar = () => {
                             isActive ? activeLink : normalLink
                           }
                         >
-                          <span className="capitalize ">Scratch Coupon</span>
+                          <span className="capitalize ">
+                            {t("sidebar:sidebar.games.scratchCoupon")}
+                          </span>
                         </NavLink>
                       )}
 
@@ -365,7 +378,9 @@ const Sidebar = () => {
                             isActive ? activeLink : normalLink
                           }
                         >
-                          <span className="capitalize ">Spin the Wheel</span>
+                          <span className="capitalize ">
+                            {t("sidebar:sidebar.games.spinTheWheel")}
+                          </span>
                         </NavLink>
                       )}
                     </div>
@@ -379,7 +394,7 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={coupons} alt="home" />
-              <span className="capitalize ">Coupons & Vouchers</span>
+              <span className="capitalize ">{t("sidebar:sidebar.coupons")}</span>
             </NavLink>
             {auth?.permissions.find((per) => per === "role-list") && (
               <NavLink
@@ -390,7 +405,7 @@ const Sidebar = () => {
                 }
               >
                 <img src={permissions} alt="home" />
-                <span className="capitalize ">Roles & Permissions</span>
+                <span className="capitalize ">{t("sidebar:sidebar.roles")}</span>
               </NavLink>
             )}
             <NavLink
@@ -399,7 +414,7 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={termsConditions} alt="home" />
-              <span className="capitalize ">Terms and Conditions</span>
+              <span className="capitalize ">{t("sidebar:sidebar.terms")}</span>
             </NavLink>
             <NavLink
               onClick={handleCloseSideBar}
@@ -407,7 +422,7 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={country} alt="home" />
-              <span className="capitalize ">Country</span>
+              <span className="capitalize ">{t("sidebar:sidebar.country")}</span>
             </NavLink>
             <NavLink
               onClick={handleCloseSideBar}
@@ -415,7 +430,7 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={reports} alt="home" />
-              <span className="capitalize ">Reports</span>
+              <span className="capitalize ">{t("sidebar:sidebar.reports")}</span>
             </NavLink>
             <NavLink
               onClick={handleCloseSideBar}
@@ -423,7 +438,7 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={settings} alt="home" />
-              <span className="capitalize ">Settings</span>
+              <span className="capitalize ">{t("sidebar:sidebar.settings")}</span>
             </NavLink>
             <div
               onClick={handleLogoutClick}
@@ -436,7 +451,7 @@ const Sidebar = () => {
               {isLoading ? (
                 <span className="loading loading-spinner"></span>
               ) : (
-                <span>Logout</span>
+                <span>{t("sidebar:sidebar.logout")}</span>
               )}
             </div>
           </div>
