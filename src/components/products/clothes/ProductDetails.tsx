@@ -6,7 +6,7 @@ import apiClient from "../../../services/api-client";
 
 const ProductDetails = () => {
   const [targetProduct, setTargetProduct] = useState<Product>();
-  const [targetCategory, setTargetCategory] = useState("");
+  const [, setTargetCategory] = useState("");
 
   const [, setError] = useState("");
   const { id } = useParams();
@@ -226,8 +226,8 @@ const ProductDetails = () => {
 
 export default ProductDetails;
 
-function extractContent(htmlString: string): string {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, "text/html");
-  return doc.body.textContent || "";
-}
+// function extractContent(htmlString: string): string {
+//   const parser = new DOMParser();
+//   const doc = parser.parseFromString(htmlString, "text/html");
+//   return doc.body.textContent || "";
+// }

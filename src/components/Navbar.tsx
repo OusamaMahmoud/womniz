@@ -1,39 +1,37 @@
 import { useEffect, useState } from "react";
 import { useStateContext } from "../contexts/ContextProvider";
 import { AiOutlineMenu } from "react-icons/ai";
-import { RiNotification3Line } from "react-icons/ri";
-import { MdKeyboardArrowDown } from "react-icons/md";
 import { useAuth } from "../contexts/AuthProvider";
 import i18n from "../i18n/i18n";
-interface NavButtonProps {
-  title: string;
-  customFunc: () => void;
-  icon: React.ReactElement;
-  color?: string;
-  dotColor?: string;
-}
-const NavButton = ({
-  title,
-  customFunc,
-  icon,
-  color,
-  dotColor,
-}: NavButtonProps) => (
-  <div className="tooltip tooltip-bottom" data-tip={title}>
-    <button
-      type="button"
-      onClick={() => customFunc()}
-      style={{ color }}
-      className="relative text-xl rounded-full p-3 hover:bg-light-gray"
-    >
-      <span
-        style={{ background: dotColor }}
-        className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2"
-      />
-      {icon}
-    </button>
-  </div>
-);
+// interface NavButtonProps {
+//   title: string;
+//   customFunc: () => void;
+//   icon: React.ReactElement;
+//   color?: string;
+//   dotColor?: string;
+// }
+// const NavButton = ({
+//   title,
+//   customFunc,
+//   icon,
+//   color,
+//   dotColor,
+// }: NavButtonProps) => (
+//   <div className="tooltip tooltip-bottom" data-tip={title}>
+//     <button
+//       type="button"
+//       onClick={() => customFunc()}
+//       style={{ color }}
+//       className="relative text-xl rounded-full p-3 hover:bg-light-gray"
+//     >
+//       <span
+//         style={{ background: dotColor }}
+//         className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2"
+//       />
+//       {icon}
+//     </button>
+//   </div>
+// );
 
 const Navbar = () => {
   const {

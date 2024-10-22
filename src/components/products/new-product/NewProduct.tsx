@@ -11,7 +11,7 @@ import AddProductVariant from "./sub-components/AddProductVariant";
 import AddProductThumbnailImage from "./sub-components/AddProductThumbnailImage";
 import ProductMultipleImages from "./sub-components/ProductMultipleImages";
 import { ImageDownIcon } from "lucide-react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import apiClient from "../../../services/api-client";
 import AddProductCategories, {
   ProductOptionType,
@@ -52,7 +52,6 @@ const NewProduct = () => {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
-  const [productImagesError, setProductImagesError] = useState("");
   const [productImages, setProductImages] = useState<File[]>([]);
 
   const onSubmit = async (data: NewProductFormData) => {
@@ -313,7 +312,6 @@ const NewProduct = () => {
         <AddProductCategories
           control={control}
           errors={errors}
-          register={register}
           setValue={setValue}
         />
         {/* Variants */}

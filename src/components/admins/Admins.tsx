@@ -166,7 +166,7 @@ const Admins: React.FC = () => {
           categories={categories}
           onSelectCategory={(category) => setSelectedCategory(category)}
           selectedCategory={selectedCategory}
-          placeholder={t('admins:adminsPlaceholders.category')}
+          placeHolder={t('admins:adminsPlaceholders.category')}
         />
         {/* Status Bar */}
         <StatusInput

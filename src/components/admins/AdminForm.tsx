@@ -9,7 +9,6 @@ import { FaEdit } from "react-icons/fa";
 import avatar from "/assets/admin/avatar.svg";
 import Select from "react-select";
 import useRoles from "../../hooks/useRoles";
-import useMainCategories from "../../hooks/useMainCategories";
 import { customStyles } from "../../components/CustomSelect";
 import useCategories from "../../hooks/useCategories";
 
@@ -72,9 +71,9 @@ const AdminForm = ({
       throw new Error("Failed to fetch default image: " + error.message);
     }
   };
-  const openModal = () => {
-    onModalOpen(true);
-  };
+  // const openModal = () => {
+  //   onModalOpen(true);
+  // };
 
   const closeModal = () => {
     onModalOpen(false);

@@ -1,5 +1,5 @@
 import { ImageDownIcon } from "lucide-react";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent} from "react";
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { NewProductFormData } from "../../../../validation-schems/products/new-product-schema";
 

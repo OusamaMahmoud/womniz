@@ -415,7 +415,6 @@ const EditProduct = () => {
         <AddProductCategories
           control={control}
           errors={errors}
-          register={register}
           setValue={setValue}
         />
         {/* Variants */}

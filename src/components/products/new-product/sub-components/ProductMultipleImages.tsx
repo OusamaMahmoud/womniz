@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useDropzone, Accept } from "react-dropzone";
 import { MdDelete } from "react-icons/md";
 

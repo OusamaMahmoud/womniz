@@ -2,7 +2,6 @@ import {
   Control,
   FieldErrors,
   useFieldArray,
-  UseFormRegister,
   Controller,
   UseFormSetValue,
 } from "react-hook-form";
@@ -25,12 +24,10 @@ export interface ProductOptionType {
 const AddProductCategories = ({
   control,
   errors,
-  register,
   setValue,
 }: {
   control: Control<NewProductFormData>;
   errors: FieldErrors<NewProductFormData>;
-  register: UseFormRegister<NewProductFormData>;
   setValue: UseFormSetValue<NewProductFormData>;
 }) => {
   const [selectedMainCategoryID, setSelectedMainCategoryID] =
@@ -44,10 +41,10 @@ const AddProductCategories = ({
   const [selectedBrandOfMainCategory, setSelectedBrandOfMainCategory] =
     useState<number>();
 
-  const [chieldsOfMainCategoriesIDs, setChieldsOfMainCategoriesIDs] = useState<
+  const [, setChieldsOfMainCategoriesIDs] = useState<
     number[]
   >([]);
-  const [subBrandsIDs, setSubBrandsIDs] = useState<number[]>([]);
+  const [, setSubBrandsIDs] = useState<number[]>([]);
 
   const { categories } = useMainCategories();
 

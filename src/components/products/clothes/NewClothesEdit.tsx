@@ -69,7 +69,7 @@ const NewClothesEdit = () => {
   const { id } = useParams();
   const { vendorCategories } = useVendorCategories();
   const { colors } = useColorPalette();
-  const { sizes } = useSizes({ productType: subClothes });
+  const { sizes } = useSizes();
 
   const navigate = useNavigate();
   useEffect(() => {

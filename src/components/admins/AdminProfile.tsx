@@ -4,82 +4,67 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { RiErrorWarningLine } from "react-icons/ri";
-import Select from "react-select";
-import { FaEdit } from "react-icons/fa";
-import useMainCategories from "../../hooks/useMainCategories";
+
 import { Admin } from "../../services/admins-service";
 import apiClient from "../../services/api-client";
-import { customStyles } from "../CustomSelect";
-import { OptionType } from "./AdminForm";
 import EditAdminForm from "./EditAdminForm";
-import useCategories from "../../hooks/useCategories";
 
 //FORM SCHEMA
-const schema = z.object({
-  name: z
-    .string()
-    .min(3)
-    .max(255)
-    .regex(/^[a-zA-Z\s]*$/),
-  email: z.string().email(),
-  // password: z.string().min(8).max(50),
-  password: z.union([z.string().length(0), z.string().min(8).max(50)]),
-  birthdate: z.string().date(),
-  address: z.string().min(3).max(255),
-  phone: z
-    .string()
-    .min(8)
-    .max(20)
-    .regex(/^\+?\d+$/),
-  jobs: z.array(z.string()).min(1),
-  status: z.enum(["0", "1"]).default("0"),
-  country_id: z.enum(["2", "1"]).default("2"),
-  role: z.string().min(3),
-});
+// const schema = z.object({
+//   name: z
+//     .string()
+//     .min(3)
+//     .max(255)
+//     .regex(/^[a-zA-Z\s]*$/),
+//   email: z.string().email(),
+//   // password: z.string().min(8).max(50),
+//   password: z.union([z.string().length(0), z.string().min(8).max(50)]),
+//   birthdate: z.string().date(),
+//   address: z.string().min(3).max(255),
+//   phone: z
+//     .string()
+//     .min(8)
+//     .max(20)
+//     .regex(/^\+?\d+$/),
+//   jobs: z.array(z.string()).min(1),
+//   status: z.enum(["0", "1"]).default("0"),
+//   country_id: z.enum(["2", "1"]).default("2"),
+//   role: z.string().min(3),
+// });
 
-type FormData = z.infer<typeof schema>;
 
 const AdminProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [, setPhotoPreview] = useState<string | null | undefined>(null);
-  const [creatingAdminError, setCreatingAdminError] = useState<string>("");
-  const [imageFile, setImageFile] = useState<any>(null);
-  const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
+
 
   const params = useParams();
   const navigate = useNavigate();
   const [targetAdmin, setTargetAdmin] = useState<Admin>({} as Admin);
   const [targetAdminError, setTaretAdminError] = useState<string>("");
 
-  // ADMINS CATEGORIES
-  const { categories } = useCategories();
-
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  // const options: OptionType[] = categories.map((item) => ({
+  //   label: item.title,
+  //   value: item.title,
+  // }));
 
   // Handle PHOTO IN EDIT FORM
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImageFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
-    }
-  };
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     const file = e.target.files[0];
+  //     setImageFile(file);
+  //     setPhotoPreview(URL.createObjectURL(file));
+  //   }
+  // };
 
   const openModal = () => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setPhotoPreview(null);
-  };
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  //   setPhotoPreview(null);
+  // };
 
   // FETCH THE TARGET ADMIN.
   useEffect(() => {
@@ -143,56 +128,56 @@ const AdminProfile = () => {
   };
 
   // UPDATE ADMIN FORM.
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-  const onSubmit = async (data: FormData) => {
-    const formData = new FormData();
-    formData.append(`name`, data.name);
-    formData.append(`address`, data.address);
-    formData.append(`birthdate`, data.birthdate);
-    formData.append(`country_id`, data.country_id);
-    formData.append(`email`, data.email);
-    formData.append(`password`, data.password);
-    formData.append(`phone`, data.phone);
-    formData.append(`status`, data.status);
-    formData.append(`role`, data.role);
-    formData.append(`jobs[0]`, `1`);
-    if (imageFile !== null) {
-      formData.append(`image`, imageFile);
-    }
-    formData.append("_method", "PUT");
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   control,
+  //   formState: { errors },
+  // } = useForm<FormData>({
+  //   resolver: zodResolver(schema),
+  // });
+  // const onSubmit = async (data: FormData) => {
+  //   const formData = new FormData();
+  //   formData.append(`name`, data.name);
+  //   formData.append(`address`, data.address);
+  //   formData.append(`birthdate`, data.birthdate);
+  //   formData.append(`country_id`, data.country_id);
+  //   formData.append(`email`, data.email);
+  //   formData.append(`password`, data.password);
+  //   formData.append(`phone`, data.phone);
+  //   formData.append(`status`, data.status);
+  //   formData.append(`role`, data.role);
+  //   formData.append(`jobs[0]`, `1`);
+  //   if (imageFile !== null) {
+  //     formData.append(`image`, imageFile);
+  //   }
+  //   formData.append("_method", "PUT");
 
-    try {
-      setSubmitinLoading(true);
-      const res = await apiClient.post(`/admins/${params.id}`, formData);
-      if (res.status === 200) {
-        setTargetAdmin((prev) => ({
-          ...prev,
-          ...data,
-          image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
-        }));
-        setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
-        toast.success("Update Admin Successfully!");
-      }
-      setSubmitinLoading(false);
-      setIsModalOpen(false);
-    } catch (error: any) {
-      if (!error?.response) {
-        setCreatingAdminError("No Server Response!!");
-        setSubmitinLoading(false);
-      } else {
-        setCreatingAdminError(error.response.data.data.error);
-        setSubmitinLoading(false);
-        setIsModalOpen(false);
-      }
-    }
-  };
+  //   try {
+  //     setSubmitinLoading(true);
+  //     const res = await apiClient.post(`/admins/${params.id}`, formData);
+  //     if (res.status === 200) {
+  //       setTargetAdmin((prev) => ({
+  //         ...prev,
+  //         ...data,
+  //         image: imageFile ? URL.createObjectURL(imageFile) : prev.image,
+  //       }));
+  //       setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
+  //       toast.success("Update Admin Successfully!");
+  //     }
+  //     setSubmitinLoading(false);
+  //     setIsModalOpen(false);
+  //   } catch (error: any) {
+  //     if (!error?.response) {
+  //       setCreatingAdminError("No Server Response!!");
+  //       setSubmitinLoading(false);
+  //     } else {
+  //       setCreatingAdminError(error.response.data.data.error);
+  //       setSubmitinLoading(false);
+  //       setIsModalOpen(false);
+  //     }
+  //   }
+  // };
   return (
     <>
       {/* MODAL OF UPDATE ADMIN. */}
@@ -201,7 +186,7 @@ const AdminProfile = () => {
       {isModalOpen && (
         <EditAdminForm
           onModalOpen={(modelState) => setIsModalOpen(modelState)}
-          onSubmitEditForm={(modelState) => {
+          onSubmitEditForm={() => {
             toast.success("Update Admin Successfully!");
           }}
         />

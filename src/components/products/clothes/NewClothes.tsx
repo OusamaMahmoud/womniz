@@ -135,7 +135,7 @@ const NewClothes = () => {
   const [, setThumbnailImgError] = useState(false);
   const [, setProductFilesError] = useState(false);
   const [isSetSubmitButton, setSubmitButton] = useState(false);
-  const { sizes } = useSizes({ productType: subClothes });
+  const { sizes } = useSizes();
   const { vendors } = useVendors({});
 
   const [selectedVendorId, setSelectedVendorId] = useState("");

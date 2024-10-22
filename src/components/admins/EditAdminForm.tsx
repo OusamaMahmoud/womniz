@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { useParams } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import {  ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import {  z } from "zod";
@@ -50,7 +50,7 @@ const EditAdminForm = ({
   const [photoPreview, setPhotoPreview] = useState<string | null | undefined>(
     null
   );
-  const [targetAdminError, setTaretAdminError] = useState<string>("");
+  const [, setTaretAdminError] = useState<string>("");
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
   const [imageFile, setImageFile] = useState<any>(null);
   const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
@@ -109,7 +109,6 @@ const EditAdminForm = ({
   const [adminSelectedCategories, setAdminSelectedCategories] = useState<
     OptionType[]
   >([]);
-  const [adminImage, setAdminImage] = useState("");
 
   useEffect(() => {
     setAdminSelectedCategories(

@@ -76,7 +76,7 @@ const NewJewellery = () => {
   });
 
   // FETCH Sizes of Rings.
-  const { sizes } = useSizes({ productType: "ring" });
+  const { sizes } = useSizes();
 
   // ERRORS STATES
   const [, setThumbnailImgError] = useState(false);

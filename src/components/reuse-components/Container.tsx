@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 const Container = ({
   children,
@@ -6,8 +6,8 @@ const Container = ({
   verticalMargin,
 }: {
   children: ReactNode;
-  horizontalPadding: String;
-  verticalMargin: String;
+  horizontalPadding: string;
+  verticalMargin: string;
 }) => {
   return (
     <div className={`container mx-auto px-${horizontalPadding} my-${verticalMargin}`}>

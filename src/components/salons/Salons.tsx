@@ -415,8 +415,8 @@ const Salons = () => {
           >
             <option value="">ALL</option>
             {categories.map((cate) => (
-              <option key={cate.id} value={cate.title}>
-                {cate.title}
+              <option key={cate.id} value={cate.name}>
+                {cate.name}
               </option>
             ))}
           </select>

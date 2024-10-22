@@ -15,7 +15,6 @@ interface CustomSelectProps {
 const ProductColorPalette: React.FC<CustomSelectProps> = ({
   selectedColor,
   handleColorsChange,
-  register,
   index,
   control,
 }) => {

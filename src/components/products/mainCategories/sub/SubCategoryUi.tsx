@@ -1,6 +1,4 @@
 import { ChiledCategory } from "../../../../services/category-service";
-import { Link } from "react-router-dom";
-import { BiRightArrowAlt } from "react-icons/bi";
 
 const SubCategoryUi = ({
   subCategories,

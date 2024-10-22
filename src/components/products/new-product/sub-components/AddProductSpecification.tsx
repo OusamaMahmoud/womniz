@@ -1,4 +1,3 @@
-import React from "react";
 import { NewProductFormData } from "../../../validation-schems/products/new-product-schema";
 import {
   Control,
