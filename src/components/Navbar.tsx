@@ -93,7 +93,7 @@ const Navbar = () => {
       </div>
       <div className="flex flex-col gap-3 ">
         {/* Language Switcher */}
-        <div className="dropdown dropdown-end">
+        <div className="dropdown">
           <label
             tabIndex={0}
             className="btn btn-outline btn-sm flex items-center"
@@ -123,7 +123,10 @@ const Navbar = () => {
                 className={`flex justify-between ${
                   selectedLang === "en" ? "bg-primary text-white" : ""
                 }`}
-                onClick={() => changeLanguage("en")}
+                onClick={() => {
+                  changeLanguage("en")
+                  
+                }}
               >
                 English
                 {selectedLang === "en" && (

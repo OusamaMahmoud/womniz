@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go"; // Assuming you're using react-icons for icons
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
+import { useTranslation } from "react-i18next";
 
 const VendorsResponsiveTable = ({
   tableData,
@@ -35,6 +36,7 @@ const VendorsResponsiveTable = ({
 
   const { auth } = useAuth();
   const navigate = useNavigate();
+  const {t} =useTranslation()
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white">
@@ -51,44 +53,44 @@ const VendorsResponsiveTable = ({
               </label>
             </th>
             <SortableHeader
-              label="ID"
+              label={t("vendors:tableHeader.vendorId")}
               onClick={() => handleSort("adminId")}
-              sorted={sortBy === "adminId" ? !sortDesc : null}
+              sorted={sortBy == "adminId" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Name"
+              label={t("vendors:tableHeader.name")}
               onClick={() => handleSort("name")}
-              sorted={sortBy === "name" ? !sortDesc : null}
+              sorted={sortBy == "name" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Email"
+              label={t("vendors:tableHeader.email")}
               onClick={() => handleSort("email")}
-              sorted={sortBy === "email" ? !sortDesc : null}
+              sorted={sortBy == "email" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Num Of Products"
+              label={t("vendors:tableHeader.nofProducts")}
               onClick={() => handleSort("NOP")}
-              sorted={sortBy === "NOP" ? !sortDesc : null}
+              sorted={sortBy == "NOP" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Commission"
+              label={t("vendors:tableHeader.commission")}
               onClick={() => handleSort("commission")}
-              sorted={sortBy === "commission" ? !sortDesc : null}
+              sorted={sortBy == "commission" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Category"
+              label={t("vendors:tableHeader.category")}
               onClick={() => handleSort("category")}
-              sorted={sortBy === "category" ? !sortDesc : null}
+              sorted={sortBy == "category" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Address"
+              label={t("vendors:tableHeader.address")}
               onClick={() => handleSort("address")}
-              sorted={sortBy === "address" ? !sortDesc : null}
+              sorted={sortBy == "address" ? !sortDesc : null}
             />
             <SortableHeader
-              label="Status"
+              label={t("vendors:tableHeader.status")}
               onClick={() => handleSort("status")}
-              sorted={sortBy === "status" ? !sortDesc : null}
+              sorted={sortBy == "status" ? !sortDesc : null}
             />
           </tr>
         </thead>

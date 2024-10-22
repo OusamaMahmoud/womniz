@@ -1,0 +1,27 @@
+{
+  "customers": {
+    "header": "Customer Details",
+    "customerButtons": {
+      "add": "Add Customer Account",
+      "delete": "Delete",
+      "export": "Export"
+    }
+  },
+  "tableHeader": {
+    "customerId": "ID",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "age": "Age",
+    "city": "City",
+    "gender": "Gender",
+    "address": "Address",
+    "nofOrders": "No of Orders",
+    "status": "Status"
+  },
+  "customersPlaceholders": {
+    "search": "Searching...",
+    "category": "Select a category...",
+    "status": "Select a status..."
+  }
+}

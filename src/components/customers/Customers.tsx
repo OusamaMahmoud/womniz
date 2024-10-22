@@ -17,6 +17,7 @@ import { ActionButton } from "../reuse-components/ActionButtons";
 import { useAuthGard } from "../reuse-hooks/AuthGard";
 import { HeadingOne } from "../reuse-components/HeadingOne";
 import { exportToExcel } from "../methods/exportToExcel";
+import { useTranslation } from "react-i18next";
 // ZOD SCHEMA
 
 const Customers: React.FC = () => {
@@ -100,7 +101,7 @@ const Customers: React.FC = () => {
   };
 
   const { allacustomers, isAllCustomersError } = useAllCustomers();
-
+const {t} = useTranslation()
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -110,14 +111,14 @@ const Customers: React.FC = () => {
         {isAllCustomersError && (
           <p className="text-red-600 text-lg p-2">{isAllCustomersError}</p>
         )}
-        <HeadingOne label="Customers Details" />
+        <HeadingOne label={t('customers:customers.header')}  marginBottom="2" />
         <div className="flex items-center flex-wrap gap-2">
           {useAuthGard({ key: "user-create" }) && (
             <ActionButton
               icon={<BiPlusCircle className="text-xl" />}
               className="btn bg-[#577656] text-[white] text-[10px] lg:text-lg"
               method={openModal}
-              label="Add Customer Account"
+              label={t('customers:customers.customerButtons.add')}
             />
           )}
           {useAuthGard({ key: "user-delete" }) && (
@@ -127,7 +128,7 @@ const Customers: React.FC = () => {
               }`}
               icon={<BiTrash className="xl:text-lg text-[#E20000B2]" />}
               isDisabled={!isDeleteEnabled}
-              label="Delete"
+              label={t('customers:customers.customerButtons.delete')}
               method={handleDelete}
             />
           )}
@@ -140,7 +141,7 @@ const Customers: React.FC = () => {
                   label: "customers",
                 })
               }
-              label="Export"
+              label={t('customers:customers.customerButtons.export')}
               icon={<BiExport />}
             />
           )}
@@ -151,15 +152,18 @@ const Customers: React.FC = () => {
         <SearchInput
           onSearchText={(text) => setSearchValue(text)}
           searchText={searchValue}
+          placeHolder={t('customers:customersPlaceholders.search')}
         />
         <SelectCategoryInput
           categories={categories}
           onSelectCategory={(category) => setSelectedCategory(category)}
           selectedCategory={selectedCategory}
+          placeHolder={t('customers:customersPlaceholders.category')}
         />
         <StatusInput
           onSelectStatus={(status) => setSelectedStatus(status)}
           selectedStatus={selectedStatus}
+          placeHolder={t('customers:customersPlaceholders.status')}
         />
       </div>
       {/* Table */}

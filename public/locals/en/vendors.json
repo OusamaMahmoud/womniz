@@ -1,0 +1,20 @@
+{
+  "vendors": {
+    "header": "Vendors Details",
+    "vendorsButtons": {
+      "add": "Add Vendor Account",
+      "delete": "Delete",
+      "export": "Export"
+    }
+  },
+  "tableHeader": {
+    "vendorId": "Vendor Id",
+    "name": "Name",
+    "email": "Email",
+    "nofProducts": "Num Of Products",
+    "commission": "Commission",
+    "category": "Category",
+    "status": "Status",
+    "address": "address"
+  }
+}

@@ -6,6 +6,8 @@ import useRequests from "../hooks/useRequests";
 import apiClient from "../services/api-client";
 import RequestDateCalender from "./RequestDateCalender";
 import { ToastContainer, toast } from "react-toastify";
+import { TableSkeleton } from "./reuse-components/TableSkeleton";
+import { useTranslation } from "react-i18next";
 
 const Requests = () => {
   const [dateValue, setDateValue] = useState("");
@@ -45,12 +47,12 @@ const Requests = () => {
   const handleRequestAccept = async (id) => {
     try {
       setRequestAcceptLoading(true);
-        const res = await apiClient.post(
-          `/restoreAccountRequest/changeStatus/${id}`,
-          {
-            status: "1",
-          }
-        );
+      const res = await apiClient.post(
+        `/restoreAccountRequest/changeStatus/${id}`,
+        {
+          status: "1",
+        }
+      );
       setRequests((prev) =>
         prev.map((request) =>
           request.id === id ? { ...request, status: "accepted" } : request
@@ -88,6 +90,9 @@ const Requests = () => {
     }
   };
 
+const {t} =useTranslation()
+
+  if (isLoading) return <TableSkeleton noOfElements={5} />;
   return (
     <div className="container mx-auto px-10">
       <dialog id="my_modal_4" className="modal">
@@ -95,17 +100,17 @@ const Requests = () => {
           <textarea
             onChange={(e) => setRejectReason(e.currentTarget.value)}
             placeholder="Write the reasons for rejection"
-            className="w-[400px] h-[100px] mb-4 border p-4"
+            className="w-[400px] h-[100px] lg:w-[800px] lg:h-[150px] mb-4 border p-4"
           ></textarea>
           <div className="modal-action">
             <form method="dialog">
               <div
                 onClick={handleRequestReject}
-                className="btn mr-4 bg-[#577656] text-white"
+                className="btn px-10 bg-[#577656] text-white"
               >
-                {isRejectedRequestLoading ? "Loading..." : "Submit"}
+                {isRejectedRequestLoading ? t('common:actions.submitting') : t('common:actions.submit')}
               </div>
-              <button className="btn">Close</button>
+              <button className="btn px-10 mr-4">{t('common:actions.close')}</button>
             </form>
           </div>
         </div>
@@ -128,7 +133,7 @@ const Requests = () => {
             </svg>
             <input
               type="text"
-              placeholder="Search"
+              placeholder={t('common:placeholders.search')}
               className="grow"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -146,101 +151,75 @@ const Requests = () => {
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal ">
               <SortableHeader
-                label="ID"
+                label={t('requests:restoreAccounts.tableHeader.id')}
                 onClick={() => handleSort("customerId")}
-                sorted={sortBy === "customerId" ? !sortDesc : null}
+                sorted={sortBy == "customerId" ? !sortDesc : null}
               />
               <SortableHeader
-                label="Customer Name"
+                label={t('requests:restoreAccounts.tableHeader.name')}
                 onClick={() => handleSort("name")}
-                sorted={sortBy === "name" ? !sortDesc : null}
+                sorted={sortBy == "name" ? !sortDesc : null}
               />
               <SortableHeader
-                label="Customer Email"
+                label={t('requests:restoreAccounts.tableHeader.email')}
                 onClick={() => handleSort("email")}
-                sorted={sortBy === "email" ? !sortDesc : null}
+                sorted={sortBy == "email" ? !sortDesc : null}
               />
               <SortableHeader
-                label="Created Date"
-                onClick={() => handleSort("NOP")}
-                sorted={sortBy === "NOP" ? !sortDesc : null}
+                label={t('requests:restoreAccounts.tableHeader.date')}
+                onClick={() => handleSort("date")}
+                sorted={sortBy == "date" ? !sortDesc : null}
               />
               <SortableHeader
-                label="Status"
-                onClick={() => handleSort("commission")}
-                sorted={sortBy === "commission" ? !sortDesc : null}
+                label={t('requests:restoreAccounts.tableHeader.status')}
+                onClick={() => handleSort("status")}
+                sorted={sortBy == "status" ? !sortDesc : null}
               />
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
-            {isLoading ? (
-              <>
-                <tr className="">
-                  <td className="skeleton h-5 "></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                </tr>
-                <tr className="">
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                </tr>
-                <tr className="">
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                  <td className="skeleton h-5"></td>
-                </tr>
-              </>
-            ) : (
-              sortedData.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-gray-200 hover:bg-gray-100"
-                >
-                  <td className="py-3 px-6 text-left">{row.id}</td>
-                  <td className="py-3 px-6 text-left">{row.user.name}</td>
-                  <td className="py-3 px-6 text-left">{row.user.email}</td>
-                  <td className="py-3 px-6 text-left">{row.date}</td>
-                  <td className="flex py-3 px-6 text-left">
-                    {row.status === "accepted" || row.status === "rejected" ? (
+            {sortedData.map((row) => (
+              <tr
+                key={row.id}
+                className="border-b border-gray-200 hover:bg-gray-100"
+              >
+                <td className="py-3 px-6 text-left">{row.id}</td>
+                <td className="py-3 px-6 text-left">{row.user.name}</td>
+                <td className="py-3 px-6 text-left">{row.user.email}</td>
+                <td className="py-3 px-6 text-left">{row.date}</td>
+                <td className="flex py-3 px-6 text-left">
+                  {row.status === "accepted" || row.status === "rejected" ? (
+                    <p
+                      className={` ${
+                        row.status === "accepted"
+                          ? "badge bg-green-400 mr-3 cursor-pointer"
+                          : "badge cursor-pointer"
+                      }`}
+                    >
+                      {row.status}
+                    </p>
+                  ) : (
+                    <>
                       <p
-                        className={` ${
-                          row.status === "accepted"
-                            ? "badge bg-green-400 mr-3 cursor-pointer"
-                            : "badge cursor-pointer"
-                        }`}
+                        onClick={() => handleRequestAccept(row.id)}
+                        className="badge bg-green-400 mr-3 cursor-pointer"
                       >
-                        {row.status}
+                        {isRequestAcceptLoading ? "processing..." : "Accept"}
                       </p>
-                    ) : (
-                      <>
-                        <p
-                          onClick={() => handleRequestAccept(row.id)}
-                          className="badge bg-green-400 mr-3 cursor-pointer"
-                        >
-                          {isRequestAcceptLoading ? "processing..." : "Accept"}
-                        </p>
-                        <p
-                          onClick={() => {
-                            document.getElementById("my_modal_4").showModal();
-                            setRowId(row.id);
-                          }}
-                          className="badge cursor-pointer"
-                        >
-                          Reject
-                        </p>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
+                      <p
+                        onClick={() => {
+                          document.getElementById("my_modal_4").showModal();
+                          setRowId(row.id);
+                        }}
+                        className="badge cursor-pointer"
+                      >
+                        Reject
+                      </p>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

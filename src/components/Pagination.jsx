@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Pagination = ({
@@ -43,11 +44,11 @@ const Pagination = ({
   //     setCurrentPage(inputPage);
   //   }
   // };
-
+const {t} =useTranslation()
   return (
     <nav className="flex flex-col xl:flex-row gap-4 justify-between items-center my-14">
       <p className="text-[16px] flex items-center xl:text-2xl ml-4">
-        1-{itemsPerPage} of {itemsPerPage * pageNumbers.length} items
+        1-{itemsPerPage} {t('common:pagination.of')} {itemsPerPage * pageNumbers.length} {t('common:pagination.items')}
       </p>
       <ul className="flex items-center justify-end  gap-10">
         <button
@@ -69,11 +70,11 @@ const Pagination = ({
         </div>
         <p className="text-[14px] xl:text-xl flex items-center xl:block">
           {" "}
-          of{" "}
+          {t('common:pagination.of')}{" "}
           <span className="px-3 py-2 rounded-md font-bold">
             {pageNumbers.length}
           </span>{" "}
-          Pages{" "}
+          {t('common:pagination.pages')}{" "}
         </p>
 
         <button

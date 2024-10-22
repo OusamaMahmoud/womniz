@@ -1,0 +1,27 @@
+{
+  "customers": {
+    "header": "تفاصيل العميل",
+    "customerButtons": {
+      "add": "إضافة حساب عميل",
+      "delete": "حذف",
+      "export": "تنزيل"
+    }
+  },
+  "tableHeader": {
+    "customerId": "معرف",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "age": "العمر",
+    "city": "المدينة",
+    "gender": "الجنس",
+    "address": "العنوان",
+    "nofOrders": "عدد الطلبات",
+    "status": "الحالة"
+  },
+  "customersPlaceholders": {
+    "search": "جاري البحث...",
+    "category": "اختر فئة...",
+    "status": "اختر حالة..."
+  }
+}

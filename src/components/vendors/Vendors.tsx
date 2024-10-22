@@ -17,6 +17,7 @@ import { HeadingOne } from "../reuse-components/HeadingOne";
 import { useAuthGard } from "../reuse-hooks/AuthGard";
 import VendorForm from "./components/VendorForm";
 import { exportToExcel } from "../methods/exportToExcel";
+import { useTranslation } from "react-i18next";
 
 const Vendors = () => {
   // Handle Filters
@@ -88,13 +89,13 @@ const Vendors = () => {
         toast.success("Vendors deleted successfully");
         setTrigerFetch(!trigerFetch);
         setSelectAll(false);
-        setIsDeleteEnabled(false)
+        setIsDeleteEnabled(false);
       } catch (error) {
         toast.error("Failed to delete Vendors");
       }
     }
   };
-
+  const { t } = useTranslation();
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -104,7 +105,7 @@ const Vendors = () => {
           <p className="text-red-600 text-lg p-2">{isAllVendorsError}</p>
         )}
 
-        <HeadingOne label="Vendor Details" />
+        <HeadingOne label={t("vendors:vendors.header")} marginBottom="4" />
 
         <div className="flex items-center flex-wrap gap-2">
           {useAuthGard({ key: "vendor-create" }) && (
@@ -112,7 +113,7 @@ const Vendors = () => {
               className="btn bg-[#577656] text-[white]"
               icon={<BiPlusCircle className="text-xl" />}
               method={openModal}
-              label="Add Vendor Account"
+              label={t("vendors:vendors.vendorsButtons.add")}
             />
           )}
           {useAuthGard({ key: "vendor-delete" }) && (
@@ -122,7 +123,7 @@ const Vendors = () => {
               }`}
               icon={<BiTrash className="text-lg text-[#E20000B2]" />}
               method={handleDelete}
-              label="Delete"
+              label={t("vendors:vendors.vendorsButtons.delete")}
               isDisabled={!isDeleteEnabled}
             />
           )}
@@ -133,7 +134,7 @@ const Vendors = () => {
               method={() =>
                 exportToExcel({ products: allVendors, label: "vendors" })
               }
-              label="Export"
+              label={t("vendors:vendors.vendorsButtons.export")}
             />
           )}
         </div>
@@ -143,15 +144,18 @@ const Vendors = () => {
         <SearchInput
           onSearchText={(text: string) => setSearchValue(text)}
           searchText={searchValue}
+          placeHolder={t("common:placeholders.search")}
         />
         <SelectCategoryInput
           onSelectCategory={(category: string) => setSelectedCategory(category)}
           categories={categories}
           selectedCategory={selectedCategory}
+          placeHolder={t("common:placeholders.category")}
         />
         <StatusInput
           onSelectStatus={(status: string) => setSelectedStatus(status)}
           selectedStatus={selectedStatus}
+          placeHolder={t("common:placeholders.search")}
         />
       </div>
 

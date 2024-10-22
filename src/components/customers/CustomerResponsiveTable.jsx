@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { GoDotFill } from "react-icons/go";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
+import { useTranslation } from "react-i18next";
 
 const CustomerResponsiveTable = ({
   tableData,
@@ -38,6 +39,7 @@ const CustomerResponsiveTable = ({
 
   const { auth } = useAuth();
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   return (
     <div className="overflow-x-auto overflow-y-auto">
@@ -55,54 +57,54 @@ const CustomerResponsiveTable = ({
               </label>
             </th>
             <SortableHeader
-              label="ID"
+              label={t('customers:tableHeader.customerId')}
               onClick={() => handleSort("id")}
               sorted={sortBy === "id" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="Name"
+              label={t('customers:tableHeader.name')}
               onClick={() => handleSort("name")}
               sorted={sortBy === "name" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="Email"
+              label={t('customers:tableHeader.email')}
               onClick={() => handleSort("email")}
               sorted={sortBy === "email" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="Phone"
+              label={t('customers:tableHeader.phone')}
               onClick={() => handleSort("phone")}
               sorted={sortBy === "phone" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="Age"
+              label={t('customers:tableHeader.age')}
               onClick={() => handleSort("age")}
               sorted={sortBy === "age" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="City"
+              label={t('customers:tableHeader.city')}
               onClick={() => handleSort("city")}
               sorted={sortBy === "city" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="Gender"
+              label={t('customers:tableHeader.gender')}
               onClick={() => handleSort("gender")}
               sorted={sortBy === "gender" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="Address"
+              label={t('customers:tableHeader.address')}
               onClick={() => handleSort("address")}
               sorted={sortBy === "address" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label="Num Of Orders"
+              label={t('customers:tableHeader.nofOrders')}
               onClick={() => handleSort("numOfOrders")}
               sorted={
                 sortBy === "numOfOrders" ? (sortDesc ? "desc" : "asc") : null
               }
             />
             <SortableHeader
-              label="Status"
+              label={t('customers:tableHeader.status')}
               onClick={() => handleSort("status")}
               sorted={sortBy === "status" ? (sortDesc ? "desc" : "asc") : null}
             />

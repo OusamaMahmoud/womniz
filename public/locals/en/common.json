@@ -1,0 +1,21 @@
+{
+  "pagination": {
+    "pages": "Pages",
+    "items": "Items",
+    "of": "of"
+  },
+  "actions": {
+    "loading": "Loading...",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "processing": "Processing...",
+    "accept": "Accept",
+    "reject": "Reject"
+  },
+  "placeholders": {
+    "search": "Searching...",
+    "category": "Select a Category...",
+    "status": "Select a Status...",
+    "date": "Select a Date..."
+  }
+}

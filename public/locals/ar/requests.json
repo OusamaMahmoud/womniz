@@ -1,0 +1,15 @@
+{
+  "restoreAccounts": {
+    "inputFields": {
+      "search": "بحث...",
+      "date": "اختر تاريخ..."
+    },
+    "tableHeader": {
+      "id": "معرف",
+      "name": "اسم العميل",
+      "email": "البريد الإلكتروني للعميل",
+      "date": "تاريخ الإنشاء",
+      "status": "الحالة"
+    }
+  }
+}

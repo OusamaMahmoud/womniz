@@ -1,0 +1,15 @@
+{
+    "restoreAccounts":{
+        "inputFields":{
+            "search":"Search...",
+            "date":"Select a Date..."
+        },
+        "tableHeader":{
+            "id":"ID",
+            "name":"Customer Name",
+            "email":"Customer Email",
+            "date":"Created Date",
+            "status":"Status"
+        }
+    }
+}

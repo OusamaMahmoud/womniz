@@ -5,12 +5,12 @@ export const SelectCategoryInput = ({
   categories,
   selectedCategory,
   onSelectCategory,
-  placeholder,
+  placeHolder,
 }: {
   categories: Category[];
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
-  placeholder: string;
+  placeHolder: string;
 }) => {
   useEffect(() => {
     onSelectCategory(selectedCategory);
@@ -22,7 +22,7 @@ export const SelectCategoryInput = ({
       onChange={(e) => onSelectCategory(e.target.value)}
       value={selectedCategory}
     >
-      <option value="">{placeholder}</option>
+      <option value="">{placeHolder}</option>
       {categories.map((cate) => (
         <option key={cate.id} value={cate.name}>
           {cate.name}

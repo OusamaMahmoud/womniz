@@ -1,31 +1,54 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import adminsEN from "../../public/locals/en/admins.json";
-import productsEN from "../../public/locals/en/products.json";
-import adminsAR from "../../public/locals/ar/admins.json";
-import productsAR from "../../public/locals/ar/products.json";
-import ordersEN from "../../public/locals/en/orders.json";
-import ordersAR from "../../public/locals/ar/orders.json";
-import sidebarAR from "../../public/locals/ar/sidebar.json";
-import sidebarEN from "../../public/locals/en/sidebar.json";
+import {
+  adminsAR,
+  adminsEN,
+  commonAR,
+  commonEN,
+  ordersAR,
+  ordersEN,
+  productsAR,
+  productsEN,
+  sidebarAR,
+  sidebarEN,
+  customersAR,
+  customersEN,
+  requestsAR,
+  requestsEN,
+  vendorsAR,
+  vendorsEN,
+} from "../../public/locals";
+
+export const defaultNS = "common";
+
+export const resources = {
+  en: {
+    admins: adminsEN,
+    products: productsEN,
+    orders: ordersEN,
+    sidebar: sidebarEN,
+    common: commonEN,
+    customers: customersEN,
+    requests: requestsEN,
+    vendors: vendorsEN,
+  },
+  ar: {
+    admins: adminsAR,
+    products: productsAR,
+    orders: ordersAR,
+    sidebar: sidebarAR,
+    common: commonAR,
+    customers: customersAR,
+    requests: requestsAR,
+    vendors: vendorsAR,
+  },
+} as const;
 
 i18n.use(initReactI18next).init({
-  resources: {
-    en: {
-      admins: adminsEN,
-      products: productsEN,
-      orders: ordersEN,
-      sidebar: sidebarEN,
-    },
-    ar: {
-      admins: adminsAR,
-      products: productsAR,
-      orders: ordersAR,
-      sidebar: sidebarAR,
-    },
-  },
-  lng: localStorage.getItem("womnizLang") ?? "en", // default language
-  fallbackLng: localStorage.getItem("womnizLang") ?? "en",
+  resources,
+  lng: "en", // default language
+  fallbackLng: "en",
+  defaultNS,
   interpolation: {
     escapeValue: false,
   },

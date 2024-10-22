@@ -1,0 +1,16 @@
+export { default as adminsAR } from "./ar/admins.json";
+export { default as adminsEN } from "./en/admins.json";
+export { default as productsEN } from "./en/products.json";
+export { default as productsAR } from "./ar/products.json";
+export { default as ordersEN } from "./en/admins.json";
+export { default as ordersAR } from "./ar/admins.json";
+export { default as sidebarAR } from "./ar/sidebar.json";
+export { default as sidebarEN } from "./en/sidebar.json";
+export { default as commonAR } from "./ar/common.json";
+export { default as commonEN } from "./en/common.json";
+export { default as customersEN } from "./en/customers.json";
+export { default as customersAR } from "./ar/customers.json";
+export { default as requestsAR } from "./ar/requests.json";
+export { default as requestsEN } from "./en/requests.json";
+export { default as vendorsEN } from "./en/vendors.json";
+export { default as vendorsAR } from "./ar/vendors.json";

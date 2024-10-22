@@ -1,0 +1,20 @@
+{
+  "vendors": {
+    "header": "تفاصيل البائعين",
+    "vendorsButtons": {
+      "add": "إضافة حساب بائع",
+      "delete": "حذف",
+      "export": "تصدير"
+    }
+  },
+  "tableHeader": {
+    "vendorId": "معرف البائع",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "nofProducts": "عدد المنتجات",
+    "commission": "العمولة",
+    "category": "الفئة",
+    "status": "الحالة",
+    "address": "العنوان"
+  }
+}

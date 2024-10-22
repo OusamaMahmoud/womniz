@@ -1,0 +1,22 @@
+{
+  "pagination": {
+    "pages": "الصفحات",
+    "items": "العناصر",
+    "of": "من"
+  },
+  "actions": {
+    "loading": "تحمبل...",
+    "submit": "ارسال",
+    "submitting": "...ارسال",
+    "close": "اغلاق",
+    "processing": "جارٍ المعالجة",
+    "accept": "قبول",
+    "reject": "رفض"
+  },
+  "placeholders": {
+    "search": "جاري البحث...",
+    "category": "اختر فئة...",
+    "status": "اختر حالة...",
+    "date": "اختر التاريخ..."
+  }
+}
