@@ -165,7 +165,7 @@ const Sidebar = () => {
     links: [
       {
         name: t("sidebar:sidebar.salons.salonsProfiles"),
-        link: "/salons/salons-profiles",
+        link: "/salons",
       },
       {
         name: t("sidebar:sidebar.salons.professionals"),

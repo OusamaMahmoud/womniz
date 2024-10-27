@@ -46,14 +46,12 @@ const AdminsResponsiveTable = ({
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
             <th className="py-3 px-6 text-left">
-              <label>
                 <input
                   type="checkbox"
                   className="checkbox"
                   checked={selectAll}
                   onChange={handleCheckAll}
                 />
-              </label>
             </th>
             <SortableHeader
               label={t("admins:tableHeader.adminId")}

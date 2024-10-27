@@ -22,8 +22,6 @@ import RequiredAuth from "./components/RequiredAuth";
 import usePermissions from "./hooks/usePremissions";
 import ProductDetails from "./components/products/clothes/ProductDetails";
 import Requests from "./components/Requests";
-import Salons from "./components/salons/Salons";
-import SalonProfile from "./components/salons/SalonProfile";
 import ProductDescription from "./components/products/clothes/ProductDescription";
 import AllProducts from "./components/products/all/AllProducts";
 import Jewellery from "./components/products/jewellery/Jewellery";
@@ -51,6 +49,10 @@ import SubCategory from "./components/products/mainCategories/SubCategory";
 import EditProduct from "./components/products/new-product/updateProduct/EditProduct";
 import i18n from "../src/i18n/i18n";
 import { useStateContext } from "./contexts/ContextProvider";
+import Salons from "./components/salons/pages/Salons";
+
+
+
 function App() {
   useEffect(() => {
     AOS.init({
@@ -163,10 +165,6 @@ function App() {
         />
         {/* Product details */}
         <Route path="products/new-product" element={<NewProduct />} />
-        {/* Salons */}
-        <Route path="salons/salons-profiles" element={<Salons />} />
-        <Route path="salons/salons-profiles/:id" element={<SalonProfile />} />
-        {/* Salons */}
 
         {/* Jewelry */}
         <Route path="products/jewellery" element={<Jewellery />} />
@@ -228,6 +226,10 @@ function App() {
         <Route path="/products/edit-product/:id" element={<EditProduct />} />
 
         {/*cosmetics  */}
+
+        {/* Salons */}
+        <Route path="/salons" element={<Salons />} />
+        {/* Salons */}
 
         <Route path="*" element={<MissingPage />} />
       </Route>
