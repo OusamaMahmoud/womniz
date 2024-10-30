@@ -59,7 +59,7 @@ const Salons = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="px-12">
       <div>
         <SalonHeader title="Salons Details">
           <button onClick={() => navigate("/salons/add-new-salon")} className="btn btn-outline">

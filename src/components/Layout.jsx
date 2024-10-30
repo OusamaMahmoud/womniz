@@ -8,7 +8,6 @@ import { useAuth } from "../contexts/AuthProvider";
 const Layout = () => {
   const { activeMenu, setActiveMenu } = useStateContext();
   return (
-    <div>
       <div className="flex relative">
         <div
           className={
@@ -20,7 +19,7 @@ const Layout = () => {
           <div className="static w-full mt-8">
             <Navbar />
           </div>
-          <div className="m-4">
+          <div className="m-4 ">
             <Outlet />
           </div>
         </div>
@@ -34,7 +33,6 @@ const Layout = () => {
           </div>
         )}
       </div>
-    </div>
   );
 };
 

@@ -2,8 +2,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FormValues } from "../../pages/AddNewSalonForm";
 import { Controller, useFormContext } from "react-hook-form";
-import SalonFormInput from "../shared/SalonFormInput";
-import PasswordInput from "./PasswordInput";
 const weekdays = [
   "Sunday",
   "Monday",

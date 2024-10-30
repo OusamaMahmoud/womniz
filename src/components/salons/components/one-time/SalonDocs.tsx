@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Dropzone from "../../../vendors/DropZone";
 
 const SalonDocs = () => {
-  const [legalDocs, setLegalDocs] = useState<FileList>();
-  const [commercialRegistration, setCommercialRegistration] =
+  const [, setLegalDocs] = useState<FileList>();
+  const [, setCommercialRegistration] =
     useState<FileList>();
-  const [vatCertificate, setVATCertificate] = useState<FileList>();
+  const [, setVATCertificate] = useState<FileList>();
 
   return (
     <div>

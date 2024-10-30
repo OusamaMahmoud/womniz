@@ -3,7 +3,7 @@ import { useFormContext, FieldValues, Path } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  register: Path<T>; // Register key path derived from dynamic form data
+  register: Path<T>;
   maxWidth?: string;
   type: string;
   icon?: React.ReactNode;
@@ -24,13 +24,13 @@ const SalonFormInput = <T extends FieldValues>({
 
   return (
     <div className={`form-control w-full lg:${maxWidth} mb-4`}>
-      <label className="label font-semibold text-gray-700">{label}</label>
+      <label className="label font-semibold text-gray-700 capitalize">{label}</label>
       <div className="flex gap-2 items-center input input-bordered">
         {icon}
         <input
           type={type}
           className="w-full"
-          {...formRegister(register)}
+          {...formRegister(register)} // Register correctly using formRegister
           {...props}
         />
       </div>
