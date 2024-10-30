@@ -99,7 +99,6 @@ const VendorForm = ({
     { category: string; id: number }[]
   >([]);
   const [legalDocs, setLegalDocs] = useState<FileList>();
-
   const [commercialRegistration, setCommercialRegistration] =
     useState<FileList>();
   const [vatCertificate, setVATCertificate] = useState<FileList>();

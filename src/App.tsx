@@ -50,6 +50,8 @@ import EditProduct from "./components/products/new-product/updateProduct/EditPro
 import i18n from "../src/i18n/i18n";
 import { useStateContext } from "./contexts/ContextProvider";
 import Salons from "./components/salons/pages/Salons";
+import AddNewSalonForm from "./components/salons/pages/AddNewSalonForm";
+import SalonDetails from "./components/salons/pages/SalonDetails";
 
 
 
@@ -229,6 +231,9 @@ function App() {
 
         {/* Salons */}
         <Route path="/salons" element={<Salons />} />
+        <Route path="/salons/add-new-salon" element={<AddNewSalonForm />} />
+        <Route path="/salon-details" element={<SalonDetails />} />
+
         {/* Salons */}
 
         <Route path="*" element={<MissingPage />} />

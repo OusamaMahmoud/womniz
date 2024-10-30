@@ -1,20 +1,24 @@
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string; // Label for the input field
-  name: string; // Name attribute for the input field, used for form handling
+  maxWidth?: string; // Name attribute for the input field, used for form handling
+  type: string; // Name attribute for the input field, used for form handling
+  icon: React.ReactNode;
 }
 
-const SalonInput: React.FC<InputProps> = ({ label, name, ...props }) => {
+const SalonInput: React.FC<InputProps> = ({
+  label,
+  type,
+  icon,
+  maxWidth,
+  ...props
+}) => {
   return (
-    <div className="form-control w-full max-w-xs mb-4">
-      <label htmlFor={name} className="label font-semibold text-gray-700">
-        {label}
-      </label>
-      <input
-        id={name}
-        name={name}
-        className="input input-bordered w-full"
-        {...props}
-      />
+    <div className={`form-control w-full lg:${maxWidth} mb-4`}>
+      <label className="label font-semibold text-gray-700">{label}</label>
+      <div className="flex gap-2 items-center input input-bordered">
+        {icon}
+        <input type={type} className="w-full" {...props} />
+      </div>
     </div>
   );
 };

@@ -6,7 +6,7 @@ interface HeaderProps {
 
 const SalonHeader: React.FC<HeaderProps> = ({ title, subtitle, children }) => {
   return (
-    <div className="flex justify-between items-center p-4  text-black rounded-lg shadow-md">
+    <div className="flex justify-between items-center p-6  text-black rounded-lg shadow-md">
       <div>
         <h1 className="text-2xl font-bold">{title}</h1>
         {subtitle && <p className="text-sm text-gray-200">{subtitle}</p>}

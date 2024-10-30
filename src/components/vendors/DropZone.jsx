@@ -65,14 +65,9 @@ const Dropzone = ({ className, onSubmit, payload = "" }) => {
     setRejected((files) => files.filter(({ file }) => file.name !== name));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!files?.length) return;
-  };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div >
       <div
         {...getRootProps({
           className: className,
@@ -163,7 +158,7 @@ const Dropzone = ({ className, onSubmit, payload = "" }) => {
           </Link>
         </div>
       )}
-    </form>
+    </div>
   );
 };
 
