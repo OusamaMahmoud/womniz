@@ -1,6 +1,4 @@
-import { LinkIcon } from "@heroicons/react/24/solid";
-import { Link2Icon } from "lucide-react";
-import React, { ReactNode } from "react";
+import  { ReactNode } from "react";
 import { BiLink } from "react-icons/bi";
 import { IoAddCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
