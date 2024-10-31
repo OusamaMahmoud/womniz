@@ -3,14 +3,14 @@ import { MdDelete } from "react-icons/md";
 const SalonDetailsNavbar = () => {
   return (
     <div className="flex justify-between items-center p-4 shadow-xl rounded-md">
-      <div className="flex justify-center items-center gap-3">
+      <div className="flex justify-center items-center gap-4">
         <img
           src="public/assets/admin/avatar.svg"
           alt="profile"
           className="w-20"
-        />
-        <div>
-          <p className="text-xl font-bold">Salon1</p>
+        /> 
+        <div className="">
+          <p className="text-xl font-bold mt-8">Salon1</p>
           <p className="text-lg">Salon1</p>
           <p className="text-lg">Address</p>
         </div>

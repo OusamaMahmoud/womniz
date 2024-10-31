@@ -9,7 +9,7 @@ interface InputProps<T extends FieldValues> extends React.InputHTMLAttributes<HT
   icon?: React.ReactNode;
 }
 
-const SalonFormInput = <T extends FieldValues>({
+const HookFormInput = <T extends FieldValues>({
   label,
   type,
   icon,
@@ -43,4 +43,4 @@ const SalonFormInput = <T extends FieldValues>({
   );
 };
 
-export default SalonFormInput;
+export default HookFormInput;

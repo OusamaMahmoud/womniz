@@ -1,10 +1,10 @@
-import SalonFormInput from "../shared/SalonFormInput";
+import HookFormInput from "../shared/SalonFormInput";
 import PasswordInput from "./PasswordInput";
 
 const SalonContactInfo = () => {
   return (
     <>
-      <SalonFormInput
+      <HookFormInput
         maxWidth="max-w-lg"
         type="text"
         icon=""
@@ -12,7 +12,7 @@ const SalonContactInfo = () => {
         register={"salonNameAr"}
         placeholder="Salon Name.."
       />
-      <SalonFormInput
+      <HookFormInput
         maxWidth="max-w-lg"
         type="text"
         icon=""
@@ -20,7 +20,7 @@ const SalonContactInfo = () => {
         register={"salonNameEn"}
         placeholder="Salon Name.."
       />
-      <SalonFormInput
+      <HookFormInput
         maxWidth="max-w-lg"
         type="tel"
         icon=""
@@ -28,7 +28,7 @@ const SalonContactInfo = () => {
         register={"phone"}
         placeholder="Phone..."
       />
-      <SalonFormInput
+      <HookFormInput
         maxWidth="max-w-lg"
         type="email"
         icon=""
@@ -36,7 +36,7 @@ const SalonContactInfo = () => {
         register={"email"}
         placeholder="write your email..."
       />
-      <SalonFormInput
+      <HookFormInput
         maxWidth="max-w-lg"
         type="text"
         icon=""
@@ -44,7 +44,7 @@ const SalonContactInfo = () => {
         register={"country"}
         placeholder="write your Country..."
       />
-      <SalonFormInput
+      <HookFormInput
         maxWidth="max-w-lg"
         type="text"
         icon=""

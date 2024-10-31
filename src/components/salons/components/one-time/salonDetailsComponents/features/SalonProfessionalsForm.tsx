@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import SalonFormInput from "../../../shared/SalonFormInput";
+import HookFormInput from "../../../shared/SalonFormInput";
 
 const salonServiceSchema = z.object({
   fullNameAr: z.string().min(1, "Arabic full name is required"),
@@ -61,72 +61,72 @@ const SalonProfessionalsForm = ({ onClose }: { onClose: () => void }) => {
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <h1 className="text-2xl font-semibold mb-4">Add New Branch</h1>
           <div className="grid grid-cols-2 gap-x-8">
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Full Name (Arabic)"
               register="fullNameAr"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Full Name (English)"
               register="fullNameEn"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Age"
               register="age"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Headline"
               register="headline"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Service Category"
               register="serviceCategory"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Service Name"
               register="serviceName"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Email"
               register="email"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Password"
               register="password"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="work start day"
               register="workStartDay"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="work end day"
               register="workEndDay"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="work start time"
               register="workStartTime"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="work end time"
               register="workEndTime"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="facebook"
               register="facebook"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="instagram"
               register="instagram"
               type="text"

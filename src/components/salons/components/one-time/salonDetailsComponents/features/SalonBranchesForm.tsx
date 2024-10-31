@@ -2,15 +2,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import SalonFormInput from "../../../shared/SalonFormInput";
+import HookFormInput from "../../../shared/SalonFormInput";
 
 const salonServiceSchema = z.object({
-  branchNameAr: z.string(),
-  branchNameEn: z.string(),
-  street: z.string(),
-  area: z.string(),
-  town: z.string(),
-  location: z.string(),
+  branchNameAr: z.string().min(1, "Branch name (Arabic) is required."),
+  branchNameEn: z.string().min(1, "Branch name (English) is required."),
+  street: z.string().min(1, "Street is required."),
+  area: z.string().min(1, "Area is required."),
+  town: z.string().min(1, "Town is required."),
+  location: z.string().min(1, "Location is required."),
 });
 
 type SalonServiceFormValues = z.infer<typeof salonServiceSchema>;
@@ -30,32 +30,32 @@ const SalonBranchesForm = ({ onClose }: { onClose: () => void }) => {
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <h1 className="text-2xl font-semibold mb-4">Add New Branch</h1>
           <div className="grid grid-cols-2 gap-x-8">
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Branch Name (Arabic)"
               register="branchNameAr"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="Branch Name (English)"
               register="branchNameEn"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="street"
               register="street"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="area"
               register="area"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="town"
               register="town"
               type="text"
             />
-            <SalonFormInput<SalonServiceFormValues>
+            <HookFormInput<SalonServiceFormValues>
               label="location"
               register="location"
               type="text"

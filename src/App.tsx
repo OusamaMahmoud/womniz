@@ -52,8 +52,9 @@ import { useStateContext } from "./contexts/ContextProvider";
 import Salons from "./components/salons/pages/Salons";
 import AddNewSalonForm from "./components/salons/pages/AddNewSalonForm";
 import SalonDetails from "./components/salons/pages/SalonDetails";
-
-
+import ServicesTables from "./components/salons/components/one-time/salonDetailsComponents/features/tables/ServicesTables";
+import BranchesTables from "./components/salons/components/one-time/salonDetailsComponents/features/tables/BranchesTables";
+import ProfessionalsTables from "./components/salons/components/one-time/salonDetailsComponents/features/tables/ProfessionalsTables";
 
 function App() {
   useEffect(() => {
@@ -233,6 +234,10 @@ function App() {
         <Route path="/salons" element={<Salons />} />
         <Route path="/salons/add-new-salon" element={<AddNewSalonForm />} />
         <Route path="/salon-details" element={<SalonDetails />} />
+
+        <Route path="/services-table" element={<ServicesTables id="headerExist" />} />
+        <Route path="/branches-table" element={<BranchesTables />} />
+        <Route path="/professionals-table" element={<ProfessionalsTables   />} />
 
         {/* Salons */}
 
