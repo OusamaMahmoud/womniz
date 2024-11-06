@@ -13,6 +13,7 @@ import { exportToExcel } from "../../methods/exportToExcel";
 import NotFound from "../../error-page/NotFound";
 import { handleBulkUpload } from "../../methods/handleBulkUpload";
 import useDeleteProducts from "../../../hooks/useDeleteProducts";
+import BulkUpload from "./productsUI-sections/BulkUpload";
 
 const AllProducts = () => {
   // Filters
@@ -123,7 +124,13 @@ const AllProducts = () => {
       navigate(`/products/${selectedValue}`);
     }
   };
+  const [bulkUploadFile, setBulkUploadFile] = useState<File | null>(null);
 
+  // Bulk Upload!!
+  const handleBulkUploadBtn = (file: File) => {
+    setBulkUploadFile(file);
+  };
+  
   return (
     <div className="flex flex-col ">
       <ToastContainer />
@@ -138,7 +145,7 @@ const AllProducts = () => {
       {!productServerError && (
         <>
           {" "}
-          <div className="flex items-center gap-8 justify-end mb-8">
+          {/* <div className="flex items-center gap-8 justify-end mb-8">
             <label
               htmlFor="excel"
               className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
@@ -152,7 +159,9 @@ const AllProducts = () => {
                 hidden
               />
             </label>
-          </div>
+          </div> */}
+
+          <BulkUpload onBulkUpload={handleBulkUploadBtn} />
           <div className="flex items-center gap-8 justify-end mb-6">
             <button
               onClick={deleteProducts}

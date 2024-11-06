@@ -1,8 +1,11 @@
+import ProductsUI from "../all/ProductsUI";
 
 const MainBrands = () => {
   return (
-    <div>MainBrands</div>
-  )
-}
+    <div>
+      <ProductsUI />
+    </div>
+  );
+};
 
-export default MainBrands
+export default MainBrands;

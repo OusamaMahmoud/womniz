@@ -39,7 +39,7 @@ const Customers: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
-  const { categories } = useMainCategories();
+  const { mainCategories } = useMainCategories();
 
   const { customers, isLoading, meta, next, prev } = useCustomers({
     categories: selectedCategory,
@@ -155,7 +155,7 @@ const {t} = useTranslation()
           placeHolder={t('customers:customersPlaceholders.search')}
         />
         <SelectCategoryInput
-          categories={categories}
+          categories={mainCategories}
           onSelectCategory={(category) => setSelectedCategory(category)}
           selectedCategory={selectedCategory}
           placeHolder={t('customers:customersPlaceholders.category')}

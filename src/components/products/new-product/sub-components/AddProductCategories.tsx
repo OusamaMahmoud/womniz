@@ -11,10 +11,12 @@ import useMainCategories from "../../../../hooks/useMainCategories";
 import { useEffect, useState } from "react";
 import {
   BrandOfMainCategory,
+  Category,
   ChiledCategory,
   SubBrand,
 } from "../../../../services/category-service";
 import Select, { MultiValue, SingleValue } from "react-select";
+import apiClient, { CanceledError } from "../../../../services/api-client";
 
 export interface ProductOptionType {
   value: number;
@@ -46,9 +48,33 @@ const AddProductCategories = ({
   >([]);
   const [, setSubBrandsIDs] = useState<number[]>([]);
 
-  const { categories } = useMainCategories();
+// test 
+const [mainCategories, setMainCategories] = useState<Category[]>([]);
+const [error, setError] = useState("");
+const [isMainCategoriesLoading, setIsMainCategoriesLoading] = useState(false);
 
-  const mainCategoryOptions: ProductOptionType[] = categories.map((item) => ({
+useEffect(() => {
+  setIsMainCategoriesLoading(true);
+  const controller = new AbortController();
+  apiClient
+    .get("/categories", {
+      signal: controller.signal,
+    })
+    .then((res) => {
+      setMainCategories(res.data.data);
+      setIsMainCategoriesLoading(false);
+    })
+    .catch((err) => {
+      if (err instanceof CanceledError) return;
+      setError(err.message);
+      setIsMainCategoriesLoading(false);
+    });
+  return () => controller.abort();
+}, []);
+
+
+
+  const mainCategoryOptions: ProductOptionType[] = mainCategories.map((item) => ({
     value: item.id, // unique value for the option
     label: item.name, // label displayed in the select
   }));
@@ -68,7 +94,7 @@ const AddProductCategories = ({
   };
 
   useEffect(() => {
-    const mainCategory = categories.find(
+    const mainCategory = mainCategories.find(
       (mainCategory) => mainCategory?.id === selectedMainCategoryID?.value
     );
 

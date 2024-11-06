@@ -1,5 +1,6 @@
 import React from "react";
-interface Category {
+import { Category } from "../../../../../services/category-service";
+interface CategoryForm {
   categoryImg: FileList | null;
   name_en: string;
   name_ar: string;
@@ -9,9 +10,10 @@ interface CategoryFormProps {
   handleCreateCategoryBtn: () => Promise<void>;
   handleCloseDialog: () => void;
   isCreateCategoryLoading: boolean;
-  category: Category;
+  category: CategoryForm;
   imageRef: React.MutableRefObject<HTMLInputElement | null>;
   preview: string;
+  dialogId: string;
 }
 
 const CategoryForm = ({
@@ -22,11 +24,12 @@ const CategoryForm = ({
   handleCloseDialog,
   isCreateCategoryLoading,
   category,
+  dialogId,
 }: CategoryFormProps) => {
   return (
     <div>
       {" "}
-      <dialog id="my_modal_1" className="modal">
+      <dialog id={dialogId} className="modal">
         <div className="modal-box">
           <div>
             <input

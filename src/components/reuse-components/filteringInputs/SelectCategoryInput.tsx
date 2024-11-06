@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Category } from "../../../services/category-service";
+import { TargetCategory } from "../../../hooks/useMainCategories";
 
 export const SelectCategoryInput = ({
   categories,
@@ -7,7 +7,7 @@ export const SelectCategoryInput = ({
   onSelectCategory,
   placeHolder,
 }: {
-  categories: Category[];
+  categories: TargetCategory[];
   selectedCategory: string;
   onSelectCategory: (category: string) => void;
   placeHolder: string;
@@ -24,8 +24,8 @@ export const SelectCategoryInput = ({
     >
       <option value="">{placeHolder}</option>
       {categories.map((cate) => (
-        <option key={cate.id} value={cate.name}>
-          {cate.name}
+        <option key={cate.id} value={cate.nameEn}>
+          {cate.nameEn}
         </option>
       ))}
     </select>

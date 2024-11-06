@@ -36,7 +36,7 @@ const Admins: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
 
-  const { categories } = useMainCategories();
+  const { mainCategories } = useMainCategories();
 
   const {
     admins,
@@ -107,8 +107,7 @@ const Admins: React.FC = () => {
 
   const { alladmins, isAllAdminsError } = useAllAdmins();
 
-  const { t } = useTranslation()
-
+  const { t } = useTranslation();
 
   return (
     <div className="overflow-x-scroll p-5">
@@ -119,7 +118,7 @@ const Admins: React.FC = () => {
         {isAllAdminsError && (
           <p className="text-red-600 text-lg p-2">{isAllAdminsError}</p>
         )}
-        <HeadingOne label={t('admins:admins.header')} marginBottom="2" />
+        <HeadingOne label={t("admins:admins.header")} marginBottom="2" />
         <div className="flex items-center flex-wrap gap-2">
           {useAuthGard({ key: "admin-create" }) && (
             <ActionButton
@@ -159,20 +158,20 @@ const Admins: React.FC = () => {
         <SearchInput
           onSearchText={(text) => setSearchValue(text)}
           searchText={searchValue}
-          placeHolder={t('admins:adminsPlaceholders.search')}
+          placeHolder={t("admins:adminsPlaceholders.search")}
         />
         {/* Category Bar */}
         <SelectCategoryInput
-          categories={categories}
+          categories={mainCategories}
           onSelectCategory={(category) => setSelectedCategory(category)}
           selectedCategory={selectedCategory}
-          placeHolder={t('admins:adminsPlaceholders.category')}
+          placeHolder={t("admins:adminsPlaceholders.category")}
         />
         {/* Status Bar */}
         <StatusInput
           onSelectStatus={(status) => setSelectedStatus(status)}
           selectedStatus={selectedStatus}
-          placeHolder={t('admins:adminsPlaceholders.status')}
+          placeHolder={t("admins:adminsPlaceholders.status")}
         />
       </div>
       {/* Table */}

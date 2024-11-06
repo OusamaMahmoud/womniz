@@ -44,7 +44,7 @@ const Vendors = () => {
     isFetching: trigerFetch,
     page: paginationPage,
   });
-  const { categories } = useMainCategories();
+  const { mainCategories } = useMainCategories();
   const { allVendors, isAllVendorsError } = useAllVendors();
 
   const recordsPerPage = meta.per_page || 5;
@@ -148,7 +148,7 @@ const Vendors = () => {
         />
         <SelectCategoryInput
           onSelectCategory={(category: string) => setSelectedCategory(category)}
-          categories={categories}
+          categories={mainCategories}
           selectedCategory={selectedCategory}
           placeHolder={t("common:placeholders.category")}
         />

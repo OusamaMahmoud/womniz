@@ -95,7 +95,7 @@ const Salons = () => {
           />
         </div>
         <div>
-          <SalonTable data={data} headers={headers} rowKey="id" />
+          <SalonTable data={data} headers={headers} rowKey="id" route="/salon-details" />
         </div>
       </div>
     </div>

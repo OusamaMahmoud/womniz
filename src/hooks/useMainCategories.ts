@@ -1,32 +1,49 @@
 import { useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
-import { Category } from "../services/category-service";
+
+export interface TargetCategory {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  image: string;
+  isLastLevel: string;
+  isParent: boolean;
+  isChild: boolean;
+}
 
 const useMainCategories = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [mainCategories, setMainCategories] = useState<TargetCategory[]>([]);
   const [error, setError] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [isMainCategoriesLoading, setIsMainCategoriesLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    setIsMainCategoriesLoading(true);
     const controller = new AbortController();
     apiClient
-      .get("/categories", {
+      .get("/categories/main", {
         signal: controller.signal,
       })
       .then((res) => {
-        setCategories(res.data.data);
-        setLoading(false);
+        setMainCategories(res.data.data);
+        setIsMainCategoriesLoading(false);
       })
       .catch((err) => {
         if (err instanceof CanceledError) return;
         setError(err.message);
-        setLoading(false);
+        setIsMainCategoriesLoading(false);
       });
     return () => controller.abort();
   }, []);
 
-  return { categories, error, isLoading, setCategories, setError };
+  return {
+    mainCategories,
+    error,
+    isLoading: isMainCategoriesLoading,
+    setMainCategories,
+    setError,
+    isMainCategoriesLoading,
+    setIsMainCategoriesLoading,
+  };
 };
 
 export default useMainCategories;

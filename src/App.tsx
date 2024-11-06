@@ -10,7 +10,6 @@ import VendorProfile from "./components/vendors/VendorProfile";
 import Layout from "./components/Layout";
 import UnauthorizedPage from "./components/UnauthorizedPage";
 import MissingPage from "./components/MissingPage";
-import Clothes from "./components/products/clothes/Clothes";
 import ScratchCoupon from "./components/games/ScratchCoupon";
 import SpinTheWheel from "./components/games/SpinTheWheel";
 import Roles from "./components/roles-and-permtions/Roles";
@@ -20,32 +19,17 @@ import BrandProfile from "./components/vendors/BrandProfile";
 import FinancialReport from "./components/vendors/FinancialReport";
 import RequiredAuth from "./components/RequiredAuth";
 import usePermissions from "./hooks/usePremissions";
-import ProductDetails from "./components/products/clothes/ProductDetails";
 import Requests from "./components/Requests";
-import ProductDescription from "./components/products/clothes/ProductDescription";
 import AllProducts from "./components/products/all/AllProducts";
-import Jewellery from "./components/products/jewellery/Jewellery";
 import OrdersDetails from "./components/orders/OrderDetails";
 import SpecificStatusOrder from "./components/orders/SpecificStatusOrder";
 import OrdersComponent from "./components/orders/OrdersComponent";
-import Cosmetics from "./components/products/cosmetics/Cosmetics";
-import NewCosmetics from "./components/products/cosmetics/NewCosmetics";
-import Celebrities from "./components/products/celebrities/Celebrities";
-import NewCelebrities from "./components/products/celebrities/NewCelebrities";
-import ProductDetailsEditing from "./components/products/clothes/ProductDetailsEditing";
-import NewClothes from "./components/products/clothes/NewClothes";
-import NewClothesEdit from "./components/products/clothes/NewClothesEdit";
-import NewJewelleryEdit from "./components/products/jewellery/NewJewelleryEdit";
-import NewCosmeticsEdit from "./components/products/cosmetics/NewCosmeticsEdit";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
-import NewCelebritiesEdit from "./components/products/celebrities/NewCelebritiesEdit";
 import AdminProfile from "./components/admins/AdminProfile";
-import MainCategories from "./components/products/mainCategories/MainCategories";
 import MainBrands from "./components/products/mainBrands/MainBrands";
 import NewProduct from "./components/products/new-product/NewProduct";
-import SubCategory from "./components/products/mainCategories/SubCategory";
 import EditProduct from "./components/products/new-product/updateProduct/EditProduct";
 import i18n from "../src/i18n/i18n";
 import { useStateContext } from "./contexts/ContextProvider";
@@ -55,6 +39,9 @@ import SalonDetails from "./components/salons/pages/SalonDetails";
 import ServicesTables from "./components/salons/components/one-time/salonDetailsComponents/features/tables/ServicesTables";
 import BranchesTables from "./components/salons/components/one-time/salonDetailsComponents/features/tables/BranchesTables";
 import ProfessionalsTables from "./components/salons/components/one-time/salonDetailsComponents/features/tables/ProfessionalsTables";
+import ProductDetailsUI from "./components/products/product-details/ProductDetailsUI";
+import ProductCategoriesUI from "./components/products/product-categories/ProductCategoriesUI";
+import SubCategory from "./components/products/product-categories/sub-categories/SubCategory";
 
 function App() {
   useEffect(() => {
@@ -119,7 +106,9 @@ function App() {
         {/* all products */}
         <Route path="products" element={<AllProducts />} />
         {/* categories */}
-        <Route path="products/categories" element={<MainCategories />} />
+        <Route path="/main-categories" element={<ProductCategoriesUI />} />
+        <Route path="main-categories/:id/sub-categories" element={<SubCategory />} />
+
         {/* brands */}
         <Route path="products/brands" element={<MainBrands />} />
 
@@ -128,23 +117,6 @@ function App() {
           element={<CustomerOrders />}
         />
 
-        {/* Clothes */}
-        <Route path="products/clothes" element={<Clothes />} />
-        <Route path="products/clothes/new-clothes" element={<NewClothes />} />
-        <Route path="products/clothes/edit/:id" element={<NewClothesEdit />} />
-
-        <Route
-          path="products/:categoryParam/:subCategoryParam"
-          element={<SubCategory />}
-        />
-        <Route
-          path="products/clothes/product-description"
-          element={<ProductDescription />}
-        />
-
-        {/* Clothes */}
-
-        {/* Brands */}
         <Route
           path="AllVendorBrandsProducts"
           element={<AllVendorBrandsProducts />}
@@ -158,74 +130,14 @@ function App() {
         {/* Brands */}
 
         {/* Product details */}
-        <Route
-          path="products/product-details/:id"
-          element={<ProductDetails />}
-        />
-        <Route
-          path="products/product-details/:id/edit"
-          element={<ProductDetailsEditing />}
-        />
-        {/* Product details */}
         <Route path="products/new-product" element={<NewProduct />} />
-
-        {/* Jewelry */}
-        <Route path="products/jewellery" element={<Jewellery />} />
-        <Route
-          path="products/:categoryParam/:subCategoryParam"
-          element={<SubCategory />}
-        />
-        <Route
-          path="products/:categoryParam/:subCategoryParam"
-          element={<SubCategory />}
-        />
-        <Route
-          path="products/jewellery/edit/:id"
-          element={<NewJewelleryEdit />}
-        />
-        {/* Jewelry */}
-
-        {/* celebrities */}
-        <Route path="products/celebrities" element={<Celebrities />} />
-        <Route
-          path="products/celebrities/new-celebrity"
-          element={<NewCelebrities />}
-        />
-        <Route
-          path="products/:categoryParam/:subCategoryParam"
-          element={<SubCategory />}
-        />
-
-        <Route
-          path="products/celebrities/new-product"
-          element={<NewCelebrities />}
-        />
-        <Route
-          path="/products/celebrities/edit/:id"
-          element={<NewCelebritiesEdit />}
-        />
-        {/* celebrities */}
+        <Route path="/product-details/:id" element={<ProductDetailsUI />} />
 
         {/* Orders */}
         <Route path="orders" element={<OrdersComponent />} />
         <Route path="orders/orders-details/:id" element={<OrdersDetails />} />
         <Route path="orders/:slug" element={<SpecificStatusOrder />} />
-        {/* Orders */}
 
-        {/*cosmetics  */}
-        <Route path="products/cosmetics" element={<Cosmetics />} />
-        <Route
-          path="products/cosmetics/new-cosmetics"
-          element={<NewCosmetics />}
-        />
-        <Route
-          path="products/cosmetics/edit/:id"
-          element={<NewCosmeticsEdit />}
-        />
-        <Route
-          path="products/:categoryParam/:subCategoryParam"
-          element={<SubCategory />}
-        />
         <Route path="/products/edit-product/:id" element={<EditProduct />} />
 
         {/*cosmetics  */}
@@ -235,9 +147,12 @@ function App() {
         <Route path="/salons/add-new-salon" element={<AddNewSalonForm />} />
         <Route path="/salon-details" element={<SalonDetails />} />
 
-        <Route path="/services-table" element={<ServicesTables id="headerExist" />} />
+        <Route
+          path="/services-table"
+          element={<ServicesTables id="headerExist" />}
+        />
         <Route path="/branches-table" element={<BranchesTables />} />
-        <Route path="/professionals-table" element={<ProfessionalsTables   />} />
+        <Route path="/professionals-table" element={<ProfessionalsTables />} />
 
         {/* Salons */}
 

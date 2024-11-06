@@ -53,54 +53,52 @@ const AllProductsTable = ({
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal ">
             <th className="py-3 px-6 text-left">
-              <label>
-                <input
-                  type="checkbox"
-                  className="checkbox"
-                  checked={selectAll}
-                  onChange={handleCheckAll}
-                />
-              </label>
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={selectAll}
+                onChange={handleCheckAll}
+              />
             </th>
             <SortableHeader
               label="ID"
               onClick={() => handleSort("id")}
-              sorted={sortBy === "id" ? !sortDesc : null}
+              sorted={sortBy == "id" ? !sortDesc : null}
             />
             <SortableHeader
               label="Model ID"
               onClick={() => handleSort("model_id")}
-              sorted={sortBy === "model_id" ? !sortDesc : null}
+              sorted={sortBy == "model_id" ? !sortDesc : null}
             />
             <SortableHeader
               label="Product Name"
               onClick={() => handleSort("name")}
-              sorted={sortBy === "name" ? !sortDesc : null}
+              sorted={sortBy == "name" ? !sortDesc : null}
             />
             <SortableHeader
               label="Vendor"
               onClick={() => handleSort("vendor")}
-              sorted={sortBy === "vendor" ? !sortDesc : null}
+              sorted={sortBy == "vendor" ? !sortDesc : null}
             />
             <SortableHeader
               label="Brand"
               onClick={() => handleSort("brand")}
-              sorted={sortBy === "brand" ? !sortDesc : null}
+              sorted={sortBy == "brand" ? !sortDesc : null}
             />
             <SortableHeader
               label="Category"
               onClick={() => handleSort("cat")}
-              sorted={sortBy === "cat" ? !sortDesc : null}
+              sorted={sortBy == "cat" ? !sortDesc : null}
             />
             <SortableHeader
               label="Price"
               onClick={() => handleSort("price")}
-              sorted={sortBy === "price" ? !sortDesc : null}
+              sorted={sortBy == "price" ? !sortDesc : null}
             />
             <SortableHeader
               label="Status"
               onClick={() => handleSort("status")}
-              sorted={sortBy === "status" ? !sortDesc : null}
+              sorted={sortBy == "status" ? !sortDesc : null}
             />
           </tr>
         </thead>
@@ -108,7 +106,7 @@ const AllProductsTable = ({
           {sortedData?.map((row) => (
             <tr
               key={row.id}
-              onClick={() => navigate(`product-details/${row?.id}`)}
+              onClick={() => navigate(`/product-details/${row?.id}`)}
               className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
             >
               <td
@@ -145,33 +143,11 @@ const AllProductsTable = ({
                 {row?.product_type}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">{row?.price}</td>
-              {row?.status === "live" ? (
-                <td
-                  className={`badge bg-[#ECFDF3] py-3 px-6 text-left xl:text-lg `}
-                >
+              <td className={`py-3 px-6 text-left xl:text-lg`}>
+                <p className=" flex items-center bg-[#53f2a8] w-fit px-4 py-1 rounded-md gap-1">
                   <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row?.status}
-                </td>
-              ) : row?.status === "rejected" ? (
-                <td
-                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
-                >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
-                  {row?.status}
-                </td>
-              ) : row?.status === "deactivated" ? (
-                <td
-                  className={`badge bg-[#E2000029] py-3 px-6 text-left xl:text-lg `}
-                >
-                  <GoDotFill className={`mr-1 text-[#E2000099]`} />{" "}
-                  {row?.status}
-                </td>
-              ) : (
-                <td
-                  className={`badge bg-[#EDEDED] py-3 px-6 text-left xl:text-lg `}
-                >
-                  <GoDotFill className={`mr-1 text-[#636366]`} /> {row?.status}
-                </td>
-              )}
+                </p>
+              </td>
             </tr>
           ))}
         </tbody>

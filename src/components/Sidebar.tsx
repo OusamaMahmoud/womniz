@@ -21,6 +21,7 @@ import { RiAccountCircleLine } from "react-icons/ri";
 import { BoxIcon } from "lucide-react";
 import { PiCodesandboxLogoThin, PiHairDryer } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
+import { BiCategory } from "react-icons/bi";
 
 const Sidebar = () => {
   const { setAuth, auth } = useAuth();
@@ -74,11 +75,6 @@ const Sidebar = () => {
       title: t("sidebar:sidebar.accounts.label"),
       icon: <RiAccountCircleLine />,
     },
-
-    {
-      title: t("sidebar:sidebar.products.label"),
-      icon: <IoBagRemoveOutline />,
-    },
     {
       title: t("sidebar:sidebar.orders.label"),
       icon: <BoxIcon className="w-5" />,
@@ -90,6 +86,10 @@ const Sidebar = () => {
     {
       title: t("sidebar:sidebar.games.label"),
       icon: <PiCodesandboxLogoThin />,
+    },
+    {
+      title: t("sidebar:sidebar.products.label"),
+      icon: <IoBagRemoveOutline />,
     },
   ];
 
@@ -104,15 +104,12 @@ const Sidebar = () => {
         link: "/products/new-product",
       },
       {
-        name: t("sidebar:sidebar.products.categories"),
-        link: "/products/categories",
-      },
-      {
         name: t("sidebar:sidebar.products.brands"),
         link: "/products/brands",
       },
     ],
   };
+
   // const productsLinks = {
   //   links: [
   //     {
@@ -302,6 +299,7 @@ const Sidebar = () => {
                       )}
                     </div>
                   )}
+
                   {item.title === t("sidebar:sidebar.products.label") && (
                     <div className="collapse-content">
                       {productsLinks.links.map((pro, idx) => (
@@ -318,6 +316,7 @@ const Sidebar = () => {
                       ))}
                     </div>
                   )}
+
                   {item.title === t("sidebar:sidebar.orders.label") && (
                     <div className="collapse-content">
                       {ordersLinks.links.map((order, idx) => (
@@ -334,6 +333,7 @@ const Sidebar = () => {
                       ))}
                     </div>
                   )}
+
                   {item.title === t("sidebar:sidebar.salons.label") && (
                     <div className="collapse-content">
                       {salonsLinks.links.map((sa, idx) => (
@@ -350,6 +350,7 @@ const Sidebar = () => {
                       ))}
                     </div>
                   )}
+
                   {item.title === t("sidebar:sidebar.games.label") && (
                     <div className="collapse-content">
                       {auth?.permissions.find(
@@ -389,12 +390,24 @@ const Sidebar = () => {
               </div>
             ))}
             <NavLink
+              to={`/main-categories`}
+              onClick={handleCloseSideBar}
+              className={({ isActive }) => (isActive ? activeLink : normalLink)}
+            >
+              <BiCategory />
+              <span className="capitalize ">
+                {t("sidebar:sidebar.categories")}
+              </span>
+            </NavLink>
+            <NavLink
               onClick={handleCloseSideBar}
               to={`/`}
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={coupons} alt="home" />
-              <span className="capitalize ">{t("sidebar:sidebar.coupons")}</span>
+              <span className="capitalize ">
+                {t("sidebar:sidebar.coupons")}
+              </span>
             </NavLink>
             {auth?.permissions.find((per) => per === "role-list") && (
               <NavLink
@@ -405,7 +418,9 @@ const Sidebar = () => {
                 }
               >
                 <img src={permissions} alt="home" />
-                <span className="capitalize ">{t("sidebar:sidebar.roles")}</span>
+                <span className="capitalize ">
+                  {t("sidebar:sidebar.roles")}
+                </span>
               </NavLink>
             )}
             <NavLink
@@ -422,7 +437,9 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={country} alt="home" />
-              <span className="capitalize ">{t("sidebar:sidebar.country")}</span>
+              <span className="capitalize ">
+                {t("sidebar:sidebar.country")}
+              </span>
             </NavLink>
             <NavLink
               onClick={handleCloseSideBar}
@@ -430,7 +447,9 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={reports} alt="home" />
-              <span className="capitalize ">{t("sidebar:sidebar.reports")}</span>
+              <span className="capitalize ">
+                {t("sidebar:sidebar.reports")}
+              </span>
             </NavLink>
             <NavLink
               onClick={handleCloseSideBar}
@@ -438,7 +457,9 @@ const Sidebar = () => {
               className={({ isActive }) => (isActive ? activeLink : normalLink)}
             >
               <img src={settings} alt="home" />
-              <span className="capitalize ">{t("sidebar:sidebar.settings")}</span>
+              <span className="capitalize ">
+                {t("sidebar:sidebar.settings")}
+              </span>
             </NavLink>
             <div
               onClick={handleLogoutClick}
