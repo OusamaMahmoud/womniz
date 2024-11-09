@@ -7,15 +7,17 @@ import useMainCategories, {
 import apiClient from "../../../../services/api-client";
 import { HeadingOne } from "../../../reuse-components/HeadingOne";
 import { TableSkeleton } from "../../../reuse-components/TableSkeleton";
-import CategoryForm from "./components/CategoryForm";
 import MainCategoryUi from "./components/MainCategoryUi";
+import { IoWarning } from "react-icons/io5";
 interface Category {
   categoryImg: FileList | null;
   name_en: string;
   name_ar: string;
 }
 const MainCategories = () => {
-  const { mainCategories, isMainCategoriesLoading } = useMainCategories();
+  const [refreshCategories, setRefreshCategories] = useState(false); // State to trigger re-fetch
+  const { mainCategories, isMainCategoriesLoading } =
+    useMainCategories(refreshCategories);
   const [isCreateCategoryLoading, setIsCreateCategoryLoading] = useState(false);
   const [preview, setPreview] = useState("");
   const [targetMainCategoryId, setTargetMainCategoryId] = useState("");
@@ -67,6 +69,24 @@ const MainCategories = () => {
     }
   };
 
+  const openDeleteCategoryModel = () => {
+    const modal = document.getElementById(
+      "Delete_Main_Category"
+    ) as HTMLDialogElement;
+    if (modal) {
+      modal.showModal();
+    }
+  };
+
+  const closeDeleteCategoryModel = () => {
+    const modal = document.getElementById(
+      "Delete_Main_Category"
+    ) as HTMLDialogElement;
+    if (modal) {
+      modal.close();
+    }
+  };
+
   useEffect(() => {
     if (category?.categoryImg !== null) {
       const imgPreview = URL?.createObjectURL(category?.categoryImg?.[0]);
@@ -96,10 +116,10 @@ const MainCategories = () => {
       formData.append("image", category?.categoryImg[0]);
     }
 
+    // Skip validation check if key is "edit"
     if (
-      category?.name_en == "" ||
-      category?.name_ar == "" ||
-      category?.categoryImg == null
+      key !== "edit" &&
+      (!category?.name_en || !category?.name_ar || !category?.categoryImg)
     ) {
       toast.warn("Please Add Category Name Or Image");
       return;
@@ -107,19 +127,30 @@ const MainCategories = () => {
 
     try {
       setIsCreateCategoryLoading(true);
-      const res = await apiClient.post("/categories", formData);
+      if (key === "edit") {
+        const res = await apiClient.post(
+          `/categories/${targetMainCategoryId}`,
+          formData
+        );
+        console.log(res);
+      } else {
+        const res = await apiClient.post(`/categories`, formData);
+        console.log(res);
+      }
       setIsCreateCategoryLoading(false);
-      console.log(res);
       toast.success("Your Main Category has been Creating Successfully.");
       setCategory({ name_ar: "", name_en: "", categoryImg: null });
       setPreview("");
       if (imageRef.current instanceof HTMLInputElement) {
         imageRef.current.value = "";
       }
+      setRefreshCategories((prev) => !prev);
       closeAddCategoryModel();
+      closeEditCategoryModel();
     } catch (error) {
       console.log(error);
       toast.error("Oops!.. Something went wrong!");
+      setIsCreateCategoryLoading(false);
     }
   };
 
@@ -133,11 +164,41 @@ const MainCategories = () => {
   }, [targetMainCategoryId]);
 
   useEffect(() => {
-    console.log(targetMainCategory);
+    if (targetMainCategory) {
+      setCategory({
+        ...category,
+        name_ar: targetMainCategory?.nameAr,
+        name_en: targetMainCategory?.nameEn,
+      });
+    }
   }, [targetMainCategory]);
 
+  const [isMainCategoryDeleted, setIsMainCategoryDeleted] = useState(false);
+
+  const handleDeleteCategory = async () => {
+    const formData = new FormData();
+    formData.append("_method", "delete");
+    try {
+      setIsMainCategoryDeleted(true);
+      const res = await apiClient.post(
+        `/categories/${targetMainCategoryId}`,
+        formData
+      );
+      console.log(res);
+      setIsMainCategoryDeleted(false);
+      setCategory({ categoryImg: null, name_ar: "", name_en: "" });
+      toast("Category Has Been Successfully Deleted!");
+      setRefreshCategories((prev) => !prev);
+      closeDeleteCategoryModel();
+    } catch (error) {
+      console.log(error);
+      toast("Something Went wrong!");
+      setIsMainCategoryDeleted(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+    <div className=" px-4 sm:px-6 lg:px-8 pb-20">
       <ToastContainer />
 
       <dialog id={"Add_Main_Category"} className="modal">
@@ -177,6 +238,7 @@ const MainCategories = () => {
           </div>
           <div className="flex gap-4 items-center  mt-4">
             <button
+              disabled={isCreateCategoryLoading}
               onClick={() => handleCreateCategoryBtn("")}
               className="btn w-40 hover:bg-[#577656] hover:text-white"
             >
@@ -190,8 +252,8 @@ const MainCategories = () => {
       </dialog>
 
       <dialog id={"Edit_Main_Category"} className="modal">
-        <div className="modal-box">
-          <div>
+        <div className="modal-box ">
+          <div className="">
             <input
               name="categoryImg"
               className="file-input mb-4"
@@ -200,16 +262,20 @@ const MainCategories = () => {
               multiple={false}
               onChange={handleInputChange}
             />
-            <div className="my-2 rounded-md">
+            <div className="my-4 rounded-md ">
               {targetMainCategory?.image && !preview && (
                 <img
-                  className="rounded-md"
+                  className="rounded-md  "
                   src={targetMainCategory?.image}
                   alt="imgPreview"
                 />
               )}
               {preview && (
-                <img className="rounded-md" src={preview} alt="imgPreview" />
+                <img
+                  className="rounded-md object-cover "
+                  src={preview}
+                  alt="imgPreview"
+                />
               )}
             </div>
           </div>
@@ -219,7 +285,7 @@ const MainCategories = () => {
               className="input input-bordered"
               type="text"
               placeholder="name_en"
-              value={targetMainCategory?.nameEn}
+              value={category.name_en}
               onChange={handleInputChange}
             />
             <input
@@ -227,12 +293,13 @@ const MainCategories = () => {
               className="input input-bordered"
               type="text"
               placeholder="name_ar"
-              value={targetMainCategory?.nameAr}
+              value={category.name_ar}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4 items-center  mt-4">
             <button
+              disabled={isCreateCategoryLoading}
               onClick={() => {
                 handleCreateCategoryBtn("edit");
               }}
@@ -247,6 +314,33 @@ const MainCategories = () => {
         </div>
       </dialog>
 
+      <dialog id={"Delete_Main_Category"} className="modal">
+        <div className="modal-box ">
+          <p className="  gap-1 text-xl mb-2 ">
+            Are you sure you want to delete this category? This action cannot be
+            undone.
+            {/* This pushes the icon to the right */}
+          </p>
+          <span className="flex justify-center items-center mb-4">
+            {" "}
+            <IoWarning className="text-yellow-400" size={100} />
+          </span>
+
+          <div className="flex gap-4 items-center">
+            <button
+              disabled={isMainCategoryDeleted}
+              onClick={handleDeleteCategory}
+              className="btn w-40 text-white bg-red-400 hover:text-white"
+            >
+              {isMainCategoryDeleted ? " Deleting..." : "Delete"}
+            </button>
+            <button onClick={closeDeleteCategoryModel} className="btn">
+              Close
+            </button>
+          </div>
+        </div>
+      </dialog>
+      
       <HeadingOne marginBottom="mb-3" label="Main Categories" />
 
       <div className="flex items-center mb-10 justify-end gap-4">
@@ -268,6 +362,7 @@ const MainCategories = () => {
               <MainCategoryUi
                 categories={mainCategories}
                 handleDeleteCategory={(id) => {
+                  openDeleteCategoryModel();
                   setTargetMainCategoryId(id);
                 }}
                 handleEditCategory={(id) => {

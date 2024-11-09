@@ -6,12 +6,13 @@ export interface TargetCategory {
   nameEn: string;
   nameAr: string;
   image: string;
-  isLastLevel: string;
+  isLastLevel: boolean;
   isParent: boolean;
   isChild: boolean;
+  hasProducts: boolean;
 }
 
-const useMainCategories = () => {
+const useMainCategories = (refresh: boolean) => {
   const [mainCategories, setMainCategories] = useState<TargetCategory[]>([]);
   const [error, setError] = useState("");
   const [isMainCategoriesLoading, setIsMainCategoriesLoading] = useState(false);
@@ -33,7 +34,7 @@ const useMainCategories = () => {
         setIsMainCategoriesLoading(false);
       });
     return () => controller.abort();
-  }, []);
+  }, [refresh]);
 
   return {
     mainCategories,

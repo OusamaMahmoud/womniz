@@ -32,7 +32,7 @@ const useProducts = ({
 
   const fetchProducts = useCallback(() => {
     setLoading(true);
-    setError('');
+    setError("");
     const controller = new AbortController();
     const request = apiClient.get<{
       data: {
@@ -46,6 +46,7 @@ const useProducts = ({
     request
       .then((res) => {
         setProducts(res.data.data.data);
+        console.log(res.data.data.data);
         setLoading(false);
         setMeta(res.data.data.meta);
         setNext(res.data.data.links.next);

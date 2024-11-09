@@ -1,22 +1,20 @@
-import { useEffect } from "react";
-import { json } from "react-router-dom";
-
 const Dashboard = () => {
-  const genreObject = { name: "os" };
-  useEffect(() => {
-    fetch("http://localhost:3000/api/genres/3", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json", // This should be correctly capitalized
-      },
-      body: JSON.stringify(genreObject),
-    })
-      .then((res) => res.json()) // Awaiting JSON response
-      .then((data) => console.log(data)) // Logging resolved data
-      .catch((err) => console.log(err));
-  }, []);
-
-  return <div>Dashboard</div>;
+  return (
+    <div className="flex flex-wrap gap-6">
+      <img src="/assets/dashboard/dashboard1.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard2.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard3.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard4.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard2.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard1.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard4.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard3.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard1.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard4.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard3.svg" alt="dashboard" />
+      <img src="/assets/dashboard/dashboard2.svg" alt="dashboard" />
+    </div>
+  );
 };
 
 export default Dashboard;

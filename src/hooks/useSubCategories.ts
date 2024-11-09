@@ -2,13 +2,20 @@ import { useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { TargetCategory } from "./useMainCategories";
 
-const useSubCategories = ({ mainCategoryID }: { mainCategoryID: string }) => {
+const useSubCategories = ({
+  mainCategoryID,
+  refreshCategories,
+}: {
+  mainCategoryID: string;
+  refreshCategories: boolean;
+}) => {
   const [subCategories, setSubCategories] = useState<TargetCategory[]>([]);
   const [error, setError] = useState("");
   const [isSubCategoriesLoading, setIsSubCategoriesLoading] = useState(false);
 
   useEffect(() => {
     setIsSubCategoriesLoading(true);
+    console.log("this in Sub Categories Hook ", mainCategoryID);
     const controller = new AbortController();
     apiClient
       .get(`/categories/sub/${mainCategoryID}`, {
@@ -16,7 +23,6 @@ const useSubCategories = ({ mainCategoryID }: { mainCategoryID: string }) => {
       })
       .then((res) => {
         setSubCategories(res.data.data);
-        console.log(res.data.data);
         setIsSubCategoriesLoading(false);
       })
       .catch((err) => {
@@ -25,7 +31,7 @@ const useSubCategories = ({ mainCategoryID }: { mainCategoryID: string }) => {
         setIsSubCategoriesLoading(false);
       });
     return () => controller.abort();
-  }, [mainCategoryID]);
+  }, [mainCategoryID, refreshCategories]);
 
   return {
     subCategories,

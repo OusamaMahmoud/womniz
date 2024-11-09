@@ -5,7 +5,7 @@ export interface Product {
   vendor_id: number;
   name_ar: string;
   name_en: string;
-  brand: { id: number; name: string };
+  brand: { id: number; name_en: string; name_ar: string; icon: string };
   price: number;
   categories: { id: number; name: string }[];
   variants: { size_id: number; stock: number; size: string; sku: string }[];

@@ -2,7 +2,7 @@ import MainCategories from "./main-categories/MainCategories";
 
 const ProductCategoriesUI = () => {
   return (
-    <div className="container mx-auto">
+    <div className="">
       <MainCategories />
     </div>
   );

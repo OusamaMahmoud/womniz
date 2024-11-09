@@ -63,19 +63,21 @@ const Login = () => {
       setLoading(false);
     }
   };
-  const [isPasswordEyeOpen, setPasswordEyeOpen] = useState(false);
+
+  const [isPasswordEyeOpen, setIsPasswordEyeOpen] = useState(false);
+
   return (
-    <div className="container mx-auto px-8">
+    <div className="container mx-auto ">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-2 items-center gap-40">
-          <div>
+        <div className="flex items-center gap-20">
+          <div className="h-[700px]">
             <img
               src="/assets/login/loginImage.svg"
               alt="loginImage"
-              className="object-cover"
+              className="object-contain w-full h-full"
             />
           </div>
-          <div>
+          <div className="max-w-[500px] grow">
             <h1 className="text-2xl font-extrabold mb-2">Sign in</h1>
             <p className="text-[#969696]">
               Please login to continue to your account.
@@ -99,13 +101,13 @@ const Login = () => {
                   <EyeIcon
                     width={20}
                     className="absolute cursor-pointer top-1/2 mt-1 right-3"
-                    onClick={() => setPasswordEyeOpen((prev) => !prev)}
+                    onClick={() => setIsPasswordEyeOpen((prev) => !prev)}
                   />
                 ) : (
                   <EyeOff
                     width={20}
                     className="absolute cursor-pointer top-1/2 mt-1 right-3"
-                    onClick={() => setPasswordEyeOpen((prev) => !prev)}
+                    onClick={() => setIsPasswordEyeOpen((prev) => !prev)}
                   />
                 )}
                 <input
@@ -125,13 +127,11 @@ const Login = () => {
                 <p className="text-[#367AFF]">Forget Password?</p>
               </div> */}
             </div>
-            <div className="mt-6 flex">
+            <div className="mt-10 flex justify-center items-center ">
               <button
                 type="submit"
-                disabled={!isValid}
-                className={`bg-[#577656] text-xl py-3 rounded-lg grow text-white ${
-                  !isValid && "opacity-50 cursor-not-allowed"
-                }`}
+                
+                className={`max-w-[350px] bg-[#577656] text-xl py-3 rounded-lg grow text-white`}
               >
                 {isLoading ? (
                   <span className="loading loading-ring loading-md"></span>

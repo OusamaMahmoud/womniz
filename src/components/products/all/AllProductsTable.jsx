@@ -137,10 +137,10 @@ const AllProductsTable = ({
                 {row?.vendor?.contactName}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row?.brand?.name}
+                {row?.brand?.name_en}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row?.product_type}
+                {row?.categories[0]?.name}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">{row?.price}</td>
               <td className={`py-3 px-6 text-left xl:text-lg`}>

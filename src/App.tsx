@@ -92,6 +92,7 @@ function App() {
         </Route>
 
         <Route path="login" element={<Login />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
 
         {/* Games */}
