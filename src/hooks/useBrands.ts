@@ -5,8 +5,8 @@ export interface MainBrand {
   name_en: string;
   name_ar: string;
   icon: string;
-  refreshCategories:boolean;
 }
+
 const useBrands = (refreshCategories:boolean) => {
   const [brands, setBrands] = useState<MainBrand[]>([]);
   const [isBrandsLoading, setIsBrandsLoading] = useState(false);

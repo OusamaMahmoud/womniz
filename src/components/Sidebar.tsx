@@ -81,10 +81,6 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
         name: t("sidebar:sidebar.products.newProduct"),
         link: "/products/new-product",
       },
-      {
-        name: t("sidebar:sidebar.products.brands"),
-        link: "/products/brands",
-      },
     ],
   };
 
@@ -161,7 +157,6 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
     isOpen(!isSidebarOpen);
   };
 
-
   return (
     <div
       className={`min-h-screen overflow-y-auto max-h-screen pb-10 sm:mt-2 rounded-e-[30px] transition-width duration-300 ${
@@ -172,7 +167,12 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
       <div className="flex justify-between items-center p-4">
         <Link to="/" className="mt-6">
           {isSidebarOpen && (
-            <img src={logo} alt="logo" className="object-cover md:w-36"  loading="lazy"/>
+            <img
+              src={logo}
+              alt="logo"
+              className="object-cover md:w-36"
+              loading="lazy"
+            />
           )}
         </Link>
         <button onClick={toggleSidebar} className="text-2xl">
@@ -359,6 +359,16 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
               {t("sidebar:sidebar.categories")}
             </span>
           </NavLink>
+          <NavLink
+            to={`/main-brands`}
+            className={({ isActive }) => (isActive ? activeLink : normalLink)}
+          >
+            <img src="/assets/sidebar/categoriesIcon.svg" alt="categories" />
+            <span className="capitalize ">
+              {t("sidebar:sidebar.products.brands")}
+            </span>
+          </NavLink>
+          
           {/* <NavLink
             to={`/`}
             className={({ isActive }) => (isActive ? activeLink : normalLink)}
@@ -366,6 +376,7 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
             <img src={coupons} alt="home" />
             <span className="capitalize ">{t("sidebar:sidebar.coupons")}</span>
           </NavLink> */}
+
           {auth?.permissions.find((per) => per === "role-list") && (
             <NavLink
               to={`/roles-permissions`}
@@ -412,6 +423,7 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
           </div>
         </div>
       )}
+
       {/* Logout Confirmation Modal */}
       <dialog id="logout_modal" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">

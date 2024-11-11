@@ -7,6 +7,8 @@ import apiClient from "../../../services/api-client";
 import { BiAddToQueue } from "react-icons/bi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AddBrandService from "./brands-components/AddBrandComponent";
+import EditBrandService from "./brands-components/EditBrandService";
 
 interface TargetBrand {
   name_en: string;
@@ -165,71 +167,25 @@ const MainBrands = () => {
   }, [targetBrandId]);
 
   return (
-    <div>
-      <div className=" flex justify-between items-center">
-        <HeadingOne marginBottom="5" label="Brands" />
-        <div className="mb-2 mr-10">
-          <button
-            onClick={() => toggleAddNewBrandModel("OPEN")}
-            className="btn  px-20 bg-womnizColor hover:bg-womnizColorLight text-white"
-          >
-            <BiAddToQueue /> Add New Brand
-          </button>
-        </div>
-      </div>
+    <div className="px-4">
+      <AddBrandService
+        onBrandAdded={() => {
+          setRefreshCategories((prev) => !prev);
+          toggleAddNewBrandModel("CLOSE");
+        }}
+        onCloseAddMode={() => toggleAddNewBrandModel("CLOSE")}
+      />
 
-      <dialog id={"add_brand_model"} className="modal">
-        <div className="modal-box">
-          <div>
-            <input
-              name="brandImg"
-              className="file-input mb-4"
-              type="file"
-              ref={imageRef}
-              multiple={false}
-              onChange={handleInputChange}
-            />
-            <div className="my-2 rounded-md">
-              {preview && (
-                <img className="rounded-md" src={preview} alt="imgPreview" />
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col gap-3">
-            <input
-              name="name_en"
-              className="input input-bordered"
-              type="text"
-              placeholder="name_en"
-              value={targetBrand.name_en}
-              onChange={handleInputChange}
-            />
-            <input
-              name="name_ar"
-              className="input input-bordered"
-              type="text"
-              placeholder="name_ar"
-              value={targetBrand.name_ar}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex gap-4 items-center  mt-4">
-            <button
-              disabled={isCreateCategoryLoading}
-              onClick={() => handleAddNewBrand("")}
-              className="btn w-40 hover:bg-[#577656] hover:text-white"
-            >
-              {isCreateCategoryLoading ? " Submitting..." : "submit"}
-            </button>
-            <button
-              onClick={() => toggleAddNewBrandModel("CLOSE")}
-              className="btn"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </dialog>
+      <EditBrandService
+        brandId={targetBrandId}
+        brands={brands}
+        onEditBrand={() => {
+          setRefreshCategories((prev) => !prev);
+          toggleEditModel("CLOSE");
+          setTargetBrandId("");
+        }}
+        onCloseAddMode={() => toggleEditModel("CLOSE")}
+      />
 
       <dialog id="delete_model" className="modal">
         <DeletedModel
@@ -239,69 +195,17 @@ const MainBrands = () => {
         />
       </dialog>
 
-      <dialog id={"edit_model"} className="modal">
-        <div className="modal-box ">
-          <div className="">
-            <input
-              name="categoryImg"
-              className="file-input mb-4"
-              type="file"
-              ref={imageRef}
-              multiple={false}
-              onChange={handleInputChange}
-            />
-            <div className="my-4 rounded-md ">
-              {brands.find((br) => br.id == targetBrandId)?.icon &&
-                !preview && (
-                  <img
-                    className="rounded-md  "
-                    src={brands.find((br) => br.id == targetBrandId)?.icon}
-                    alt="imgPreview"
-                  />
-                )}
-              {preview && (
-                <img
-                  className="rounded-md object-cover "
-                  src={preview}
-                  alt="imgPreview"
-                />
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col gap-3">
-            <input
-              name="name_en"
-              className="input input-bordered"
-              type="text"
-              placeholder="name_en"
-              value={targetBrand.name_en}
-              onChange={handleInputChange}
-            />
-            <input
-              name="name_ar"
-              className="input input-bordered"
-              type="text"
-              placeholder="name_ar"
-              value={targetBrand.name_ar}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex gap-4 items-center  mt-4">
-            <button
-              disabled={isCreateCategoryLoading}
-              onClick={() => {
-                handleAddNewBrand("edit");
-              }}
-              className="btn w-40 hover:bg-[#577656] hover:text-white"
-            >
-              {isCreateCategoryLoading ? " Submitting..." : "submit"}
-            </button>
-            <button onClick={() => toggleEditModel("CLOSE")} className="btn">
-              Close
-            </button>
-          </div>
+      <div className=" flex justify-between items-center">
+        <HeadingOne marginBottom="5" label="Brands" />
+        <div className="mb-4">
+          <button
+            onClick={() => toggleAddNewBrandModel("OPEN")}
+            className="btn  px-20 bg-womnizColor hover:bg-womnizColorLight text-white"
+          >
+            <BiAddToQueue /> Add New Brand
+          </button>
         </div>
-      </dialog>
+      </div>
 
       <MainBrandTableUi
         brands={brands}

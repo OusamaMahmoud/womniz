@@ -42,7 +42,6 @@ import ProfessionalsTables from "./components/salons/components/one-time/salonDe
 import ProductDetailsUI from "./components/products/product-details/ProductDetailsUI";
 import ProductCategoriesUI from "./components/products/product-categories/ProductCategoriesUI";
 import SubCategory from "./components/products/product-categories/sub-categories/SubCategory";
-
 function App() {
   useEffect(() => {
     AOS.init({
@@ -108,11 +107,12 @@ function App() {
         <Route path="products" element={<AllProducts />} />
         {/* categories */}
         <Route path="/main-categories" element={<ProductCategoriesUI />} />
-        <Route path="main-categories/:id/sub-categories" element={<SubCategory />} />
+        <Route path="/main-brands" element={<MainBrands />} />
 
-        {/* brands */}
-        <Route path="products/brands" element={<MainBrands />} />
-
+        <Route
+          path="main-categories/:id/sub-categories"
+          element={<SubCategory />}
+        />
         <Route
           path="see-all-customers-orders/:id"
           element={<CustomerOrders />}

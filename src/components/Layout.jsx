@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useAuth } from "../contexts/AuthProvider";
+import { ToastContainer } from "react-toastify";
 
 const Layout = () => {
   const { auth } = useAuth();
@@ -16,6 +17,7 @@ const Layout = () => {
       >
         <div className="static w-full mt-8">
           <Navbar />
+          <ToastContainer />
         </div>
         <div className="m-4">
           <Outlet />
