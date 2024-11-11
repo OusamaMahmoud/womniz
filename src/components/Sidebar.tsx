@@ -1,32 +1,21 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { MdMenu, MdOutlineCancel } from "react-icons/md";
-import { useStateContext } from "../contexts/ContextProvider";
 import { useAuth } from "../contexts/AuthProvider";
 import apiClient from "../services/api-client";
 import dashboard from "/assets/sidebar/dashboard.svg";
-import home from "/assets/sidebar/home.svg";
 import logo from "/assets/logo.svg";
-import {
-  country,
-  coupons,
-  logout,
-  permissions,
-  reports,
-  settings,
-  termsConditions,
-} from "../../public/assets/sidebar";
+import { logout, permissions } from "../../public/assets/sidebar";
 import { IoBagRemoveOutline } from "react-icons/io5";
-import { RiAccountCircleLine } from "react-icons/ri";
 import { BoxIcon } from "lucide-react";
 import { PiCodesandboxLogoThin, PiHairDryer } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
-import { BiCategory } from "react-icons/bi";
+// Lazy load your larger images
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
   const { setAuth, auth } = useAuth();
   const [error, setError] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState<number | null>(null); // State to track active div
   const { t } = useTranslation();
@@ -37,20 +26,20 @@ const Sidebar = () => {
 
   const handleLogOutButton = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       await apiClient.post("/logout");
       localStorage.removeItem("authToken"); // Adjust based on your storage method
       setAuth(null);
 
       navigate("/login");
-      setLoading(false);
+      setIsLoading(false);
       (document.getElementById("logout_modal") as HTMLDialogElement).close();
     } catch (err: any) {
       if (!err?.response) {
         setError("No Server Response!");
       }
       setError(err.message);
-      setLoading(false);
+      setIsLoading(false);
       // (document.getElementById("logout_modal") as HTMLDialogElement).close();
     }
   };
@@ -62,7 +51,7 @@ const Sidebar = () => {
   const links = [
     {
       title: t("sidebar:sidebar.accounts.label"),
-      icon: <img src="/assets/sidebar/user-circle.svg" alt="categories"/>,
+      icon: <img src="/assets/sidebar/user-circle.svg" alt="categories" />,
     },
     {
       title: t("sidebar:sidebar.orders.label"),
@@ -165,8 +154,13 @@ const Sidebar = () => {
     "flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-[#577656] hover:bg-[#BED3C4] hover:text-[#577656] text-md m-2";
   const normalLink =
     "flex items-center gap-5 pl-2 pt-3 pb-2.5 rounded-2xl text-md m-2  hover:bg-[#BED3C4] hover:text-[#577656]";
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar toggle
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar toggle
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+    isOpen(!isSidebarOpen);
+  };
+
 
   return (
     <div
@@ -178,16 +172,16 @@ const Sidebar = () => {
       <div className="flex justify-between items-center p-4">
         <Link to="/" className="mt-6">
           {isSidebarOpen && (
-            <img src={logo} alt="logo" className="object-cover md:w-36" />
+            <img src={logo} alt="logo" className="object-cover md:w-36"  loading="lazy"/>
           )}
         </Link>
         <button onClick={toggleSidebar} className="text-2xl">
-          {isSidebarOpen ? <MdOutlineCancel /> : <MdMenu />}
+          <MdMenu />
         </button>
       </div>
 
       {isSidebarOpen && (
-        <div className="mt-10 mx-2">
+        <div className="mt-8 mx-2">
           <NavLink
             to={`/dashboard`}
             className={({ isActive }) => (isActive ? activeLink : normalLink)}
@@ -360,7 +354,7 @@ const Sidebar = () => {
             to={`/main-categories`}
             className={({ isActive }) => (isActive ? activeLink : normalLink)}
           >
-            <img src="/assets/sidebar/categoriesIcon.svg" alt="categories"/>
+            <img src="/assets/sidebar/categoriesIcon.svg" alt="categories" />
             <span className="capitalize ">
               {t("sidebar:sidebar.categories")}
             </span>

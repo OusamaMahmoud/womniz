@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         womnizColor: '#577656', // Replace with your specific color
+        womnizColorLight: '#BED3C4', // Replace with your specific color
       },
       fontFamily: {
         inter: ["Inter", "sans-serif"],
