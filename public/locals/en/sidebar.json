@@ -12,7 +12,7 @@
     "products": {
       "label": "Products",
       "all": "All Products",
-      "newProduct": "New Product",
+      "newProduct": "Add New Product",
       "categories": "Categories",
       "brands": "Brands"
     },

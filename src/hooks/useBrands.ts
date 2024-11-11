@@ -7,7 +7,7 @@ export interface MainBrand {
   icon: string;
 }
 
-const useBrands = (refreshCategories:boolean) => {
+const useBrands = (refreshCategories: boolean) => {
   const [brands, setBrands] = useState<MainBrand[]>([]);
   const [isBrandsLoading, setIsBrandsLoading] = useState(false);
   const [brandsError, setBrandsError] = useState("");

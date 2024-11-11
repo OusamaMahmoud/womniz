@@ -106,7 +106,9 @@ const AllProductsTable = ({
           {sortedData?.map((row) => (
             <tr
               key={row.id}
-              onClick={() => navigate(`/product-details/${row?.id}`)}
+              onClick={() =>
+                navigate(`/product-details/${row?.id}`, { state: row.id })
+              }
               className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
             >
               <td
@@ -144,7 +146,7 @@ const AllProductsTable = ({
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">{row?.price}</td>
               <td className={`py-3 px-6 text-left xl:text-lg`}>
-                <p className=" flex items-center bg-[#53f2a8] w-fit px-4 py-1 rounded-md gap-1">
+                <p className=" flex items-center bg-[#ECFDF3] text-[#14BA6D] w-fit px-4 py-1 badge gap-1">
                   <GoDotFill className={`mr-1 text-[#14BA6D]`} /> {row?.status}
                 </p>
               </td>

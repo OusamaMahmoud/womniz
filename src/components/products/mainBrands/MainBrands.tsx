@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddBrandService from "./brands-components/AddBrandComponent";
 import EditBrandService from "./brands-components/EditBrandService";
+import { TableSkeleton } from "../../reuse-components/TableSkeleton";
 
 interface TargetBrand {
   name_en: string;
@@ -18,12 +19,10 @@ interface TargetBrand {
 
 const MainBrands = () => {
   const [refreshCategories, setRefreshCategories] = useState(false);
-  const { brands } = useBrands(refreshCategories);
+  const { brands, isBrandsLoading } = useBrands(refreshCategories);
   const [targetBrandId, setTargetBrandId] = useState("");
   const [isDeletedBrandLoading, setIsDeletedBrandLoading] = useState(false);
-  const [preview, setPreview] = useState("");
-  const [isCreateCategoryLoading, setIsCreateCategoryLoading] = useState(false);
-  const imageRef = useRef<HTMLInputElement | null>(null);
+  const [, setPreview] = useState("");
 
   const [targetBrand, setTargetBrand] = useState<TargetBrand>({
     name_en: "",
@@ -95,64 +94,6 @@ const MainBrands = () => {
       toast.error("Oops! Something went wrong!");
     }
   };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files, type } = e.currentTarget;
-
-    if (type === "file" && files) {
-      setTargetBrand((prev) => ({ ...prev, [name]: files }));
-    } else {
-      setTargetBrand((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleAddNewBrand = async (key: string) => {
-    const formData = new FormData();
-
-    formData.append("name_en", targetBrand.name_en);
-    formData.append("name_ar", targetBrand.name_ar);
-    if (key == "edit") {
-      formData.append("_method", "PUT");
-    }
-    if (targetBrand?.brandImg !== null) {
-      formData.append("image", targetBrand?.brandImg[0]);
-    }
-
-    // Skip validation check if key is "edit"
-    if (
-      key !== "edit" &&
-      (!targetBrand?.name_en || !targetBrand?.name_ar || !targetBrand?.brandImg)
-    ) {
-      toast.warn("Please Add Category Name Or Image");
-      return;
-    }
-
-    try {
-      setIsCreateCategoryLoading(true);
-      if (key === "edit") {
-        const res = await apiClient.post(`/brands/${targetBrandId}`, formData);
-        console.log(res);
-      } else {
-        const res = await apiClient.post(`/brands`, formData);
-        console.log(res);
-      }
-      setIsCreateCategoryLoading(false);
-      toast.success("Your Main Category has been Creating Successfully.");
-      setTargetBrand({ name_ar: "", name_en: "", brandImg: null });
-      setPreview("");
-      if (imageRef.current instanceof HTMLInputElement) {
-        imageRef.current.value = "";
-      }
-      setRefreshCategories((prev) => !prev);
-      toggleAddNewBrandModel("CLOSE");
-      toggleEditModel("CLOSE");
-    } catch (error) {
-      console.log(error);
-      toast.error("Oops!.. Something went wrong!");
-      setIsCreateCategoryLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (targetBrandId) {
       const br = brands.find((br) => br.id == targetBrandId);
@@ -165,6 +106,10 @@ const MainBrands = () => {
       }
     }
   }, [targetBrandId]);
+  
+  useEffect(() => {
+    console.log(isBrandsLoading);
+  }, []);
 
   return (
     <div className="px-4">
@@ -207,17 +152,21 @@ const MainBrands = () => {
         </div>
       </div>
 
-      <MainBrandTableUi
-        brands={brands}
-        handleDeleteCategory={(id) => {
-          toggleDeleteModel("OPEN");
-          setTargetBrandId(id);
-        }}
-        handleEditCategory={(id) => {
-          toggleEditModel("OPEN");
-          setTargetBrandId(id);
-        }}
-      />
+      {isBrandsLoading ? (
+        <TableSkeleton noOfElements={8} />
+      ) : (
+        <MainBrandTableUi
+          brands={brands}
+          handleDeleteCategory={(id) => {
+            toggleDeleteModel("OPEN");
+            setTargetBrandId(id);
+          }}
+          handleEditCategory={(id) => {
+            toggleEditModel("OPEN");
+            setTargetBrandId(id);
+          }}
+        />
+      )}
     </div>
   );
 };

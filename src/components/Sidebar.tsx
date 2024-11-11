@@ -84,31 +84,6 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
     ],
   };
 
-  // const productsLinks = {
-  //   links: [
-  //     {
-  //       name: "All",
-  //       link: "/products",
-  //     },
-  //     {
-  //       name: "Clothes",
-  //       link: "/products/clothes",
-  //     },
-  //     {
-  //       name: "Jewellery",
-  //       link: "/products/jewellery",
-  //     },
-  //     {
-  //       name: "Cosmetics",
-  //       link: "/products/cosmetics",
-  //     },
-  //     {
-  //       name: "Celebrities",
-  //       link: "/products/celebrities",
-  //     },
-  //   ],
-  // };
-
   const ordersLinks = {
     links: [
       {
@@ -368,14 +343,6 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
               {t("sidebar:sidebar.products.brands")}
             </span>
           </NavLink>
-          
-          {/* <NavLink
-            to={`/`}
-            className={({ isActive }) => (isActive ? activeLink : normalLink)}
-          >
-            <img src={coupons} alt="home" />
-            <span className="capitalize ">{t("sidebar:sidebar.coupons")}</span>
-          </NavLink> */}
 
           {auth?.permissions.find((per) => per === "role-list") && (
             <NavLink
@@ -386,34 +353,6 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
               <span className="capitalize ">{t("sidebar:sidebar.roles")}</span>
             </NavLink>
           )}
-          {/* <NavLink
-            to={`/`}
-            className={({ isActive }) => (isActive ? activeLink : normalLink)}
-          >
-            <img src={termsConditions} alt="home" />
-            <span className="capitalize ">{t("sidebar:sidebar.terms")}</span>
-          </NavLink> */}
-          {/* <NavLink
-            to={`/`}
-            className={({ isActive }) => (isActive ? activeLink : normalLink)}
-          >
-            <img src={country} alt="home" />
-            <span className="capitalize ">{t("sidebar:sidebar.country")}</span>
-          </NavLink>
-          <NavLink
-            to={`/`}
-            className={({ isActive }) => (isActive ? activeLink : normalLink)}
-          >
-            <img src={reports} alt="home" />
-            <span className="capitalize ">{t("sidebar:sidebar.reports")}</span>
-          </NavLink>
-          <NavLink
-            to={`/`}
-            className={({ isActive }) => (isActive ? activeLink : normalLink)}
-          >
-            <img src={settings} alt="home" />
-            <span className="capitalize ">{t("sidebar:sidebar.settings")}</span>
-          </NavLink> */}
           <div
             onClick={handleLogoutClick}
             className={`${normalLink} cursor-pointer`}
