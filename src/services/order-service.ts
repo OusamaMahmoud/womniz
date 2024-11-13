@@ -51,8 +51,7 @@ export interface TargetOrder {
       discount: number;
       thumbnail: string;
       totalsub: number;
-    vendor: Vendor;
-
+      vendor: Vendor;
     };
   }[];
 }

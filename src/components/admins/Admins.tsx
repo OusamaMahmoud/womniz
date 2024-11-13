@@ -35,8 +35,9 @@ const Admins: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
+  const [refreshAdminsList, setRefreshAdminsList] = useState(false);
 
-  const { mainCategories } = useMainCategories();
+  const { mainCategories } = useMainCategories(refreshAdminsList);
 
   const {
     admins,
@@ -49,7 +50,7 @@ const Admins: React.FC = () => {
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
-    isFetching: trigerFetch,
+    isFetching: refreshAdminsList,
     page: paginationPage,
   });
 
@@ -57,6 +58,10 @@ const Admins: React.FC = () => {
   const nPages = Math.ceil(admins.length / recordsPerPage);
 
   // Handle React Hook Form
+
+  const handleRefreshAdminsList = () => {
+    setRefreshAdminsList((prev) => !prev);
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -95,7 +100,7 @@ const Admins: React.FC = () => {
       try {
         await apiClient.post("/admins/delete", data);
         toast.success("Admins deleted successfully");
-        setTrigerFetch(!trigerFetch);
+        setRefreshAdminsList((prev) => !prev);
         setSelectAll(false);
         setIsDeleteEnabled(false);
         // Optionally, refetch the data or update the state to remove the deleted admins
@@ -160,13 +165,6 @@ const Admins: React.FC = () => {
           searchText={searchValue}
           placeHolder={t("admins:adminsPlaceholders.search")}
         />
-        {/* Category Bar */}
-        <SelectCategoryInput
-          categories={mainCategories}
-          onSelectCategory={(category) => setSelectedCategory(category)}
-          selectedCategory={selectedCategory}
-          placeHolder={t("admins:adminsPlaceholders.category")}
-        />
         {/* Status Bar */}
         <StatusInput
           onSelectStatus={(status) => setSelectedStatus(status)}
@@ -200,7 +198,10 @@ const Admins: React.FC = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <AdminForm onModalOpen={(modalState) => setIsModalOpen(modalState)} />
+        <AdminForm
+          onRefresh={handleRefreshAdminsList}
+          onModalOpen={(modalState) => setIsModalOpen(modalState)}
+        />
       )}
     </div>
   );

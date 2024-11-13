@@ -27,7 +27,6 @@ const schema = z.object({
     .min(8)
     .max(20)
     .regex(/^\+?\d+$/),
-  jobs: z.array(z.string()).min(1),
   status: z.enum(["0", "1"]).default("0"),
   country_id: z.enum(["2", "1"]).default("2"),
   role: z.string().min(3, { message: "Role Must Be Selected!" }),
@@ -37,12 +36,13 @@ export type FormData = z.infer<typeof schema>;
 export type OptionType = { label: string; value: string };
 const AdminForm = ({
   onModalOpen,
+  onRefresh,
 }: {
   onModalOpen: (modelState: boolean) => void;
+  onRefresh: () => void;
 }) => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [creatingAdminError, setCreatingAdminError] = useState<string>("");
-  const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
   const [imageFile, setImageFile] = useState<File>({} as File);
   const [isSubmittinLoading, setSubmitinLoading] = useState<boolean>(false);
   const { roles } = useRoles();
@@ -132,8 +132,8 @@ const AdminForm = ({
       notify();
       reset();
       setImageFile({} as File);
+      if (onRefresh) onRefresh();
       setPhotoPreview("");
-      setTrigerFetch(!trigerFetch);
       setCreatingAdminError("");
     } catch (error: any) {
       setCreatingAdminError(error.response.data.data.error);
@@ -348,32 +348,9 @@ const AdminForm = ({
               <p className="text-[red] text-xs mt-3 ">{errors.role.message}</p>
             )}
           </div>
-          {/* Category Multi-Selector */}
-          <div className="form-control ">
-            <label className="mb-3 mt-5">Select Category</label>
-            <Controller
-              control={control}
-              defaultValue={options.map((c) => c.value)}
-              name="jobs"
-              render={({ field: { onChange, ref } }) => (
-                <Select
-                  isMulti
-                  ref={ref}
-                  // value={options.filter((c) => value.includes(c.value))}
-                  onChange={(val) => onChange(val.map((c) => c.value))}
-                  options={options}
-                  styles={customStyles}
-                />
-              )}
-            />
-            {errors.jobs && (
-              <p className="text-red-500 ">{errors.jobs.message}</p>
-            )}
-          </div>
           <div className="modal-action flex justify-around items-center right-80 mt-20 mb-10 ">
             <button
               type="submit"
-              disabled={!isValid}
               className={`btn px-10 lg:px-20 bg-[#577656] text-[white]`}
             >
               {isSubmittinLoading ? (

@@ -46,12 +46,12 @@ const AdminsResponsiveTable = ({
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
             <th className="py-3 px-6 text-left">
-                <input
-                  type="checkbox"
-                  className="checkbox"
-                  checked={selectAll}
-                  onChange={handleCheckAll}
-                />
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={selectAll}
+                onChange={handleCheckAll}
+              />
             </th>
             <SortableHeader
               label={t("admins:tableHeader.adminId")}
@@ -91,13 +91,6 @@ const AdminsResponsiveTable = ({
               sorted={sortBy === "country" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t("admins:tableHeader.category")}
-              onClick={() => handleSort("category")}
-              sorted={
-                sortBy === "category" ? (sortDesc ? "desc" : "asc") : null
-              }
-            />
-            <SortableHeader
               label={t("admins:tableHeader.status")}
               onClick={() => handleSort("status")}
               sorted={sortBy === "status" ? (sortDesc ? "desc" : "asc") : null}
@@ -134,7 +127,6 @@ const AdminsResponsiveTable = ({
               <td className="py-3 px-6 text-left">{row?.age}</td>
               <td className="py-3 px-6 text-left">{row?.address}</td>
               <td className="py-3 px-6 text-left">{row?.country}</td>
-              <td className="py-3 px-6 text-left">{row?.category}</td>
               <td className="py-3 px-6 text-center">
                 {row?.status === 1 ? (
                   <p className="badge p-3 gap-2 rounded-md text-[#14BA6D] bg-[#ECFDF3]">
