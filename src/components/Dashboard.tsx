@@ -1,4 +1,8 @@
+import { Callback } from "i18next";
+import { useEffect } from "react";
+
 const Dashboard = () => {
+ 
   return (
     <div className="flex flex-wrap gap-6 max-w-7xl">
       <img src="/assets/dashboard/dashboard1.svg" alt="dashboard" />

@@ -162,8 +162,10 @@ const OrdersDetails = () => {
                         <div className="flex flex-wrap gap-1  rounded-lg  xl:max-w-[250px]">
                           <span>{targetOrder?.address?.label}</span>,
                           <span>{targetOrder?.address?.map_address}</span>,
-                          <span>apartment_floor: {targetOrder?.address?.apt_floor}</span>,
-                          <span>{targetOrder?.address?.street_address}</span>,
+                          <span>
+                            apartment_floor: {targetOrder?.address?.apt_floor}
+                          </span>
+                          ,<span>{targetOrder?.address?.street_address}</span>,
                           <span>{targetOrder?.address?.lat}</span>,
                           <span>{targetOrder?.address?.long}</span>
                         </div>
@@ -200,8 +202,10 @@ const OrdersDetails = () => {
                             />
                             <span>{order?.product_information?.name}</span>
                           </td>
-                          <td>vendor</td>
-                          <td>{order?.product_information?.brand?.name}</td>
+                          <td>
+                            {order?.product_information?.vendor.contactName}
+                          </td>
+                          <td>{order?.product_information?.brand?.name_en}</td>
                           <td>{order?.quantity}</td>
                           <td>{order?.price}</td>
                           <td>{order?.product_information?.discount}</td>
