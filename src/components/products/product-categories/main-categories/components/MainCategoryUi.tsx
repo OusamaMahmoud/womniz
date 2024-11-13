@@ -1,4 +1,4 @@
-import { Delete, DeleteIcon, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import { TargetCategory } from "../../../../../hooks/useMainCategories";
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";

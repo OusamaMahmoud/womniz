@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect,  useState } from "react";
 import useBrands from "../../../hooks/useBrands";
 import { HeadingOne } from "../../reuse-components/HeadingOne";
 import MainBrandTableUi from "./brands-components/MainBrandTableUi";

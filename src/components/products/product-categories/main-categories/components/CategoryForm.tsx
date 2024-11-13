@@ -1,5 +1,4 @@
 import React from "react";
-import { Category } from "../../../../../services/category-service";
 interface CategoryForm {
   categoryImg: FileList | null;
   name_en: string;

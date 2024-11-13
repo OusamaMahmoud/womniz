@@ -1,6 +1,5 @@
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { BiUpload } from "react-icons/bi";
 import { FaFileExport } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -33,11 +32,11 @@ const AllProducts = () => {
   // const [isProductsDeleted, setProductsDeleted] = useState(false);
 
   // Bulk Upload!!
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
-    }
-  };
+  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (event.target.files && event.target.files[0]) {
+  //     setFile(event.target.files[0]);
+  //   }
+  // };
 
   useEffect(() => {
     if (file !== null) {
@@ -124,7 +123,7 @@ const AllProducts = () => {
       navigate(`/products/${selectedValue}`);
     }
   };
-  const [bulkUploadFile, setBulkUploadFile] = useState<File | null>(null);
+  const [, setBulkUploadFile] = useState<File | null>(null);
 
   // Bulk Upload!!
   const handleBulkUploadBtn = (file: File) => {

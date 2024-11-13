@@ -1,5 +1,3 @@
-import { Callback } from "i18next";
-import { useEffect } from "react";
 
 const Dashboard = () => {
  

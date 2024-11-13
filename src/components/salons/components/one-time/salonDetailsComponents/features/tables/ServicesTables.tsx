@@ -103,7 +103,21 @@ const ServicesTables = ({ id }: { id: string }) => {
         </div>
       )}
       <div>
-        <SalonTable data={data} headers={headers} rowKey="id" />
+        <SalonTable
+          data={data}
+          headers={headers}
+          rowKey="id"
+          keys={[
+            "id",
+            "Service_Category",
+            "Service_Name",
+            "Service_Price",
+            "Service_Sale",
+            "Service_Professional",
+            "Time_Taken",
+          ]}
+          route="/"
+        />
       </div>
     </div>
   );

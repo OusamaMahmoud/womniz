@@ -10,7 +10,6 @@ export interface MainBrand {
 const useBrands = (refreshCategories: boolean) => {
   const [brands, setBrands] = useState<MainBrand[]>([]);
   const [isBrandsLoading, setIsBrandsLoading] = useState(false);
-  const [brandsError, setBrandsError] = useState("");
 
   useEffect(() => {
     try {

@@ -4,7 +4,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAdmins from "../../hooks/useAdmins";
 import apiClient from "../../services/api-client";
-import useMainCategories from "../../hooks/useMainCategories";
 import Pagination from "../Pagination";
 import useAllAdmins from "../../hooks/useAllAdmins";
 import AdminsResponsiveTable from "./AdminsResponsiveTable";
@@ -12,7 +11,6 @@ import { exportToExcel } from "../methods/exportToExcel";
 import AdminForm from "./AdminForm";
 import { TableSkeleton } from "../reuse-components/TableSkeleton";
 import { StatusInput } from "../reuse-components/filteringInputs/StatusInput";
-import { SelectCategoryInput } from "../reuse-components/filteringInputs/SelectCategoryInput";
 import { SearchInput } from "../reuse-components/filteringInputs/SearchInput";
 import { useAuthGard } from "../reuse-hooks/AuthGard";
 import { ActionButton } from "../reuse-components/ActionButtons";
@@ -22,7 +20,7 @@ import { useTranslation } from "react-i18next";
 const Admins: React.FC = () => {
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -31,13 +29,11 @@ const Admins: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
 
-  const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
-
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
   const [refreshAdminsList, setRefreshAdminsList] = useState(false);
 
-  const { mainCategories } = useMainCategories(refreshAdminsList);
+  // const { mainCategories } = useMainCategories(refreshAdminsList);
 
   const {
     admins,

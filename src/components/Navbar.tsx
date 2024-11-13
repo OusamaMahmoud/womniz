@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { useStateContext } from "../contexts/ContextProvider";
-import { AiOutlineMenu } from "react-icons/ai";
 import { useAuth } from "../contexts/AuthProvider";
 import i18n from "../i18n/i18n";
 // interface NavButtonProps {

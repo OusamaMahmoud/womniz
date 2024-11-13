@@ -1,9 +1,6 @@
 import { Edit } from "lucide-react";
 import { TargetCategory } from "../../../../../hooks/useMainCategories";
 import { MdDelete } from "react-icons/md";
-import { toast } from "react-toastify";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 interface SubCategoryProps {
   subCategories: TargetCategory[];

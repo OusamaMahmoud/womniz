@@ -44,12 +44,12 @@ const SubCategory = () => {
     }
   };
 
-  const handleCloseDialog = () => {
-    const modal = document.getElementById("my_modal_2") as HTMLDialogElement;
-    if (modal) {
-      modal.close();
-    }
-  };
+  // const handleCloseDialog = () => {
+  //   const modal = document.getElementById("my_modal_2") as HTMLDialogElement;
+  //   if (modal) {
+  //     modal.close();
+  //   }
+  // };
   const openEditCategoryModel = () => {
     const modal = document.getElementById(
       "Edit_Sub_Category"

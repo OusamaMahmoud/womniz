@@ -1,6 +1,6 @@
 import {  Edit } from "lucide-react";
 import { MdDelete } from "react-icons/md";
-import { toast, ToastContainer } from "react-toastify";
+import {  ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MainBrand } from "../../../../hooks/useBrands";
 

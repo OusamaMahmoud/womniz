@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { lazy, Suspense, useState } from "react";
-import { MdMenu, MdOutlineCancel } from "react-icons/md";
+import { useState } from "react";
+import { MdMenu } from "react-icons/md";
 import { useAuth } from "../contexts/AuthProvider";
 import apiClient from "../services/api-client";
 import dashboard from "/assets/sidebar/dashboard.svg";

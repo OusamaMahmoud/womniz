@@ -62,7 +62,10 @@ const Salons = () => {
     <div className="px-12">
       <div>
         <SalonHeader title="Salons Details">
-          <button onClick={() => navigate("/salons/add-new-salon")} className="btn btn-outline">
+          <button
+            onClick={() => navigate("/salons/add-new-salon")}
+            className="btn btn-outline"
+          >
             <MdAdd />
             Add New Salon
           </button>
@@ -95,7 +98,21 @@ const Salons = () => {
           />
         </div>
         <div>
-          <SalonTable data={data} headers={headers} rowKey="id" route="/salon-details" />
+          <SalonTable
+            data={data}
+            headers={headers}
+            rowKey="id"
+            route="/salon-details"
+            keys={[
+              "id",
+              "name",
+              "email",
+              "total_bookings",
+              "branches",
+              "country",
+              "status",
+            ]}
+          />
         </div>
       </div>
     </div>

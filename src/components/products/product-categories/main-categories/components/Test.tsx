@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 
 function ExampleComponent() {
   const [items, setItems] = useState([1, 2, 3, 4]);

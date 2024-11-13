@@ -7,7 +7,6 @@ import {
 } from "react-hook-form";
 import { NewProductFormData } from "../../../validation-schems/products/new-product-schema";
 import { PlusCircleIcon, Trash2Icon } from "lucide-react";
-import useMainCategories from "../../../../hooks/useMainCategories";
 import { useEffect, useState } from "react";
 import {
   BrandOfMainCategory,
@@ -50,8 +49,8 @@ const AddProductCategories = ({
 
 // test 
 const [mainCategories, setMainCategories] = useState<Category[]>([]);
-const [error, setError] = useState("");
-const [isMainCategoriesLoading, setIsMainCategoriesLoading] = useState(false);
+const [, setError] = useState("");
+const [, setIsMainCategoriesLoading] = useState(false);
 
 useEffect(() => {
   setIsMainCategoriesLoading(true);

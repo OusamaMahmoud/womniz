@@ -1,11 +1,8 @@
-import React, { useState } from "react";
-import { BiUpload } from "react-icons/bi";
+import  { useState } from "react";
 import BulkUpload from "./productsUI-sections/BulkUpload";
-import useProducts from "../../../hooks/useProducts";
-import useDeleteProducts from "../../../hooks/useDeleteProducts";
 
 const ProductsUI = () => {
-  const [file, setFile] = useState<File | null>(null);
+  const [, setFile] = useState<File | null>(null);
 
   // Bulk Upload!!
   const handleBulkUpload = (file: File) => {

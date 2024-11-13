@@ -14,7 +14,7 @@ const ProductDetailsSpecification = ({
         handleEditBtn={handleEditBtn}
       />
       <div className="flex flex-col gap-4 my-4 px-4 ">
-        {specifications.map((specific, idx) => (
+        {specifications.map((specific) => (
           <div
             key={specific.id}
             className="flex flex-col md:flex-row gap-2 items-center justify-between   "

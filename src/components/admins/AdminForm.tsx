@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import adminsService from "../../services/admins-service";
 import { toast } from "react-toastify";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { FaEdit } from "react-icons/fa";
 import avatar from "/assets/admin/avatar.svg";
-import Select from "react-select";
 import useRoles from "../../hooks/useRoles";
-import { customStyles } from "../../components/CustomSelect";
-import useCategories from "../../hooks/useCategories";
 
 const schema = z.object({
   name: z
@@ -50,9 +47,9 @@ const AdminForm = ({
   const {
     register,
     handleSubmit,
-    control,
+  
     reset,
-    formState: { errors, isValid },
+    formState: { errors},
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
@@ -89,11 +86,11 @@ const AdminForm = ({
     }
   };
 
-  const { categories } = useCategories();
-  const options: OptionType[] = categories.map((item) => ({
-    label: item.title,
-    value: item.title,
-  }));
+  // const { categories } = useCategories();
+  // const options: OptionType[] = categories.map((item) => ({
+  //   label: item.title,
+  //   value: item.title,
+  // }));
 
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
