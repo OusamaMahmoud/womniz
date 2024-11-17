@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useAuth } from "../contexts/AuthProvider";
 import { ToastContainer } from "react-toastify";
+import LoadingModal from "../modals/LoadingModal";
 
 const Layout = () => {
   const { auth } = useAuth();
@@ -28,6 +29,7 @@ const Layout = () => {
           <Sidebar isOpen={(isSideBarOpen) => setIsOpen(isSideBarOpen)} />
         </div>
       )}
+      <LoadingModal />
     </div>
   );
 };

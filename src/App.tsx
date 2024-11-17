@@ -42,6 +42,9 @@ import ProfessionalsTables from "./components/salons/components/one-time/salonDe
 import ProductDetailsUI from "./components/products/product-details/ProductDetailsUI";
 import ProductCategoriesUI from "./components/products/product-categories/ProductCategoriesUI";
 import SubCategory from "./components/products/product-categories/sub-categories/SubCategory";
+import SpecificationsAndVariants from "./components/products/new-product/sub-components/SpecificationsAndVariants";
+import DynamicCategoryForm from "./components/products/new-product/sub-components/DynamicCategoryForm";
+import LoadingModal from "./modals/LoadingModal";
 function App() {
   useEffect(() => {
     AOS.init({
@@ -105,9 +108,20 @@ function App() {
 
         {/* all products */}
         <Route path="products" element={<AllProducts />} />
+
         {/* categories */}
         <Route path="/main-categories" element={<ProductCategoriesUI />} />
         <Route path="/main-brands" element={<MainBrands />} />
+        <Route
+          path="/add-specification-variants"
+          element={<SpecificationsAndVariants />}
+        />
+        <Route
+          path="/add-product-categories"
+          element={<DynamicCategoryForm />}
+        />
+
+        {/* categories */}
 
         <Route
           path="main-categories/:id/sub-categories"

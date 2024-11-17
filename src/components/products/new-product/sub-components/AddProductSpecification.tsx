@@ -1,21 +1,41 @@
-import { NewProductFormData } from "../../../validation-schems/products/new-product-schema";
-import {
-  Control,
-  FieldErrors,
-  useFieldArray,
-  UseFormRegister,
-} from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { MinusCircleIcon, PlusCircleIcon } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import apiClient from "../../../../services/api-client";
+import { useLoading } from "../../../../contexts/LoadingContext";
+import { showToast } from "../../../reuse-components/ShowToast";
 
-const AddProductSpecification = ({
-  control,
-  errors,
-  register,
-}: {
-  control: Control<NewProductFormData>;
-  errors: FieldErrors<NewProductFormData>;
-  register: UseFormRegister<NewProductFormData>;
-}) => {
+const specificationSchema = z.object({
+  specifications: z.union([
+    z.array(
+      z.object({
+        name_en: z.string().min(3),
+        name_ar: z.string().min(3),
+        value_en: z.string().min(3),
+        value_ar: z.string().min(3),
+      })
+    ),
+    z.null(),
+  ]),
+});
+type specificationSchemaFormValues = z.infer<typeof specificationSchema>;
+
+const AddProductSpecification = ({ productId }: { productId: string }) => {
+  const {
+    control,
+    formState: { errors },
+    register,
+    handleSubmit,
+  } = useForm({
+    resolver: zodResolver(specificationSchema),
+    defaultValues: {
+      specifications: [
+        { name_en: "", name_ar: "", value_en: "", value_ar: "" },
+      ],
+    },
+  });
+
   const {
     fields: specifications,
     append: appendSpecification,
@@ -24,9 +44,57 @@ const AddProductSpecification = ({
     control,
     name: "specifications",
   });
+  const { setLoading } = useLoading();
+
+  const onSubmit = async (data: specificationSchemaFormValues) => {
+    const specificationFormData = new FormData();
+
+    if (data?.specifications && data?.specifications?.length > 0) {
+      data?.specifications?.map((specific, idx) => {
+        specificationFormData.append(
+          `specifications[${idx}][name_en]`,
+          specific?.name_en
+        );
+        specificationFormData.append(
+          `specifications[${idx}][name_ar]`,
+          specific?.name_ar
+        );
+        specificationFormData.append(
+          `specifications[${idx}][value_en]`,
+          specific?.value_en
+        );
+        specificationFormData.append(
+          `specifications[${idx}][value_ar]`,
+          specific?.value_ar
+        );
+      });
+      if (productId) specificationFormData.append("product_id", productId);
+    }
+
+    try {
+      setLoading(true);
+      const res = await apiClient.post(
+        "/product-specifications",
+        specificationFormData
+      );
+      console.log(res);
+      setLoading(false);
+      showToast(
+        "The Product Specifications has been successfully added.",
+        "success"
+      );
+    } catch (error: any) {
+      console.log("specification", error);
+      setLoading(false);
+      showToast(error.response.data.data.error, "error");
+    }
+  };
 
   return (
-    <div className="flex flex-col items-start mt-8">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col items-start mt-8"
+    >
       <label className="flex justify-between items-center text-xl font-medium">
         <div
           onClick={() =>
@@ -119,7 +187,10 @@ const AddProductSpecification = ({
           <p className="divider divider-vertical"></p>
         </>
       ))}
-    </div>
+      <button className="btn bg-womnizColor text-lg text-white px-20 py-2 mt-8">
+        Submit
+      </button>
+    </form>
   );
 };
 

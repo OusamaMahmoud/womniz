@@ -1,20 +1,44 @@
-import { NewProductFormData } from "../../../validation-schems/products/new-product-schema";
-import {
-  Control,
-  FieldErrors,
-  useFieldArray,
-  UseFormRegister,
-} from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { MinusCircleIcon, PlusCircleIcon } from "lucide-react";
-const AddProductVariant = ({
-  control,
-  errors,
-  register,
-}: {
-  control: Control<NewProductFormData>;
-  errors: FieldErrors<NewProductFormData>;
-  register: UseFormRegister<NewProductFormData>;
-}) => {
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import apiClient from "../../../../services/api-client";
+import { useLoading } from "../../../../contexts/LoadingContext";
+import { showToast } from "../../../reuse-components/ShowToast";
+
+const variantSchema = z.object({
+  variants: z.union([
+    z.array(
+      z.object({
+        size_id: z.string().min(1, "Size must be at least 3 characters."),
+        color_id: z.string().min(1, "Color must be at least 3 characters."),
+        sku: z.string().min(1, "SKU must be at least 1 characters"),
+        stock: z.number({ invalid_type_error: "Stock must be a number" }),
+        price: z.number({ invalid_type_error: "Price must be a number" }),
+        discount: z.number({ invalid_type_error: "Discount must be a number" }),
+      })
+    ),
+    z.null(),
+  ]),
+});
+
+type variantSchemaFormValues = z.infer<typeof variantSchema>;
+
+const AddProductVariant = ({ productId }: { productId: string }) => {
+  const {
+    control,
+    formState: { errors },
+    register,
+    handleSubmit,
+  } = useForm({
+    resolver: zodResolver(variantSchema),
+    defaultValues: {
+      variants: [
+        { size_id: "", color_id: "", sku: "", stock: 0, price: 0, discount: 0 },
+      ],
+    },
+  });
+
   const {
     fields: variants,
     append: appendVariant,
@@ -23,9 +47,59 @@ const AddProductVariant = ({
     control,
     name: "variants",
   });
+  const { setLoading } = useLoading();
+  const onSubmit = async (data: variantSchemaFormValues) => {
+    const variantsFormData = new FormData();
 
+    if (data.variants && data.variants.length > 0) {
+      data?.variants.map((variant, idx) => {
+        variantsFormData.append(
+          `skus[${idx}][size]`,
+          variant?.size_id?.toString()
+        );
+
+        variantsFormData.append(
+          `skus[${idx}][color]`,
+          variant?.color_id?.toString()
+        );
+
+        variantsFormData.append(
+          `skus[${idx}][stock]`,
+          variant?.stock?.toString()
+        );
+        variantsFormData.append(`skus[${idx}][sku]`, variant?.sku);
+        variantsFormData.append(
+          `skus[${idx}][price]`,
+          variant?.price?.toString()
+        );
+        variantsFormData.append(
+          `skus[${idx}][discount]`,
+          variant?.discount?.toString()
+        );
+      });
+      if (productId) variantsFormData.append("product_id", productId);
+    }
+
+    try {
+      setLoading(true);
+      const res = await apiClient.post(
+        "/product-variant-skus",
+        variantsFormData
+      );
+      console.log(res);
+      setLoading(false);
+      showToast("The Product Variants has been successfully added.", "success");
+    } catch (error: any) {
+      console.log("variant", error);
+      setLoading(false);
+      showToast(error.response.data.data.error, "error");
+    }
+  };
   return (
-    <div className="flex flex-col items-start mt-8 ">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col items-start mt-8 "
+    >
       <label className="flex justify-between items-center text-xl font-medium">
         <div
           onClick={() =>
@@ -158,7 +232,10 @@ const AddProductVariant = ({
           <p className="divider divider-vertical"></p>
         </>
       ))}
-    </div>
+      <button className="btn bg-womnizColor text-lg text-white px-20 py-2 mt-8">
+        Submit
+      </button>
+    </form>
   );
 };
 

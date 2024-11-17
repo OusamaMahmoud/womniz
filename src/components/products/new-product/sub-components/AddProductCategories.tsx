@@ -9,10 +9,8 @@ import { NewProductFormData } from "../../../validation-schems/products/new-prod
 import { PlusCircleIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
-  BrandOfMainCategory,
   Category,
   ChiledCategory,
-  SubBrand,
 } from "../../../../services/category-service";
 import Select, { MultiValue, SingleValue } from "react-select";
 import apiClient, { CanceledError } from "../../../../services/api-client";
@@ -21,6 +19,13 @@ export interface ProductOptionType {
   value: number;
   label: string;
 }
+interface SubCategory {
+  id: number;
+  nameEn: string;
+  isLastLevel: boolean;
+}
+
+
 
 const AddProductCategories = ({
   control,
@@ -37,46 +42,37 @@ const AddProductCategories = ({
   const [chieldsOfMainCategory, setChieldsOfMainCategory] = useState<
     ChiledCategory[]
   >([]);
-  const [brandsOfMainCategory, setBrandsOfMainCategory] =
-    useState<BrandOfMainCategory[]>();
-  const [selectedBrandOfMainCategory, setSelectedBrandOfMainCategory] =
-    useState<number>();
 
-  const [, setChieldsOfMainCategoriesIDs] = useState<
-    number[]
-  >([]);
-  const [, setSubBrandsIDs] = useState<number[]>([]);
+  // test
+  const [mainCategories, setMainCategories] = useState<Category[]>([]);
+  const [, setError] = useState("");
+  const [, setIsMainCategoriesLoading] = useState(false);
 
-// test 
-const [mainCategories, setMainCategories] = useState<Category[]>([]);
-const [, setError] = useState("");
-const [, setIsMainCategoriesLoading] = useState(false);
+  useEffect(() => {
+    setIsMainCategoriesLoading(true);
+    const controller = new AbortController();
+    apiClient
+      .get("/categories", {
+        signal: controller.signal,
+      })
+      .then((res) => {
+        setMainCategories(res.data.data);
+        setIsMainCategoriesLoading(false);
+      })
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setError(err.message);
+        setIsMainCategoriesLoading(false);
+      });
+    return () => controller.abort();
+  }, []);
 
-useEffect(() => {
-  setIsMainCategoriesLoading(true);
-  const controller = new AbortController();
-  apiClient
-    .get("/categories", {
-      signal: controller.signal,
+  const mainCategoryOptions: ProductOptionType[] = mainCategories.map(
+    (item) => ({
+      value: item.id, // unique value for the option
+      label: item.name, // label displayed in the select
     })
-    .then((res) => {
-      setMainCategories(res.data.data);
-      setIsMainCategoriesLoading(false);
-    })
-    .catch((err) => {
-      if (err instanceof CanceledError) return;
-      setError(err.message);
-      setIsMainCategoriesLoading(false);
-    });
-  return () => controller.abort();
-}, []);
-
-
-
-  const mainCategoryOptions: ProductOptionType[] = mainCategories.map((item) => ({
-    value: item.id, // unique value for the option
-    label: item.name, // label displayed in the select
-  }));
+  );
 
   const handleSelectMainCategory = (
     selectedOption: SingleValue<ProductOptionType>,
@@ -84,11 +80,7 @@ useEffect(() => {
   ) => {
     if (selectedOption) {
       setSelectedMainCategoryID(selectedOption);
-      setValue(`categories.${idx}.brand`, { label: "", value: 0 }); // Clear brand when main category changes
       setValue(`categories.${idx}.subCategories`, []); // Clear sub-categories when main category changes
-      setValue(`categories.${idx}.subBrands`, []); // Clear sub-brands when main category changes
-      setBrandsOfMainCategory([]); // Reset brands of main category
-      setSubBrands([]); // Reset sub-brands
     }
   };
 
@@ -100,9 +92,6 @@ useEffect(() => {
     if (mainCategory && mainCategory?.childs) {
       setChieldsOfMainCategory(mainCategory.childs);
     }
-    if (mainCategory && mainCategory?.brands) {
-      setBrandsOfMainCategory(mainCategory.brands);
-    }
   }, [selectedMainCategoryID]);
 
   const chieldsOfMainCategoryOptions: ProductOptionType[] =
@@ -111,60 +100,34 @@ useEffect(() => {
       label: item.name, // label displayed in the select
     }));
 
-  let brandsOfMainCategoryOptions: ProductOptionType[] = [];
-  if (brandsOfMainCategory && brandsOfMainCategory?.length > 0) {
-    brandsOfMainCategoryOptions = brandsOfMainCategory?.map((item) => ({
-      label: item.name_en,
-      value: Number(item.id),
-    }));
-  }
+  // --------------------------------------------- //
 
-  const [subBrands, setSubBrands] = useState<SubBrand[]>([]);
+  const [subCategoryId, setSubCategoryId] = useState<number | null>(null);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [allSubCategories, setAllSubCategories] = useState([]);
+
+  const getSUbCategoriesById = async (subCategoryId: number) => {
+    try {
+      const res = await apiClient.get(`categories/sub/${subCategoryId}`);
+      console.log(res.data.data);
+      setSubCategories(res.data.data);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    if (selectedBrandOfMainCategory) {
-      const subBrandsCalc = brandsOfMainCategory?.find(
-        (br) => br.id == selectedBrandOfMainCategory.toString()
-      )?.categories;
-
-      if (subBrandsCalc) {
-        setSubBrands(subBrandsCalc);
-      }
-    }
-  }, [selectedBrandOfMainCategory]);
-
-  const subBrandsOptions: ProductOptionType[] = subBrands?.map((item) => ({
-    label: item.name,
-    value: Number(item.id),
-  }));
+    if (subCategoryId) getSUbCategoriesById(subCategoryId);
+  }, [subCategoryId]);
 
   const handleSelectChieldsOfMainCategory = (
-    selectedOptions: MultiValue<ProductOptionType>
+    selectedOptions: SingleValue<ProductOptionType>
   ) => {
-    const ChieldsIDs = selectedOptions.map((item) => {
-      return item.value;
-    });
-    setChieldsOfMainCategoriesIDs(ChieldsIDs);
+    if (selectedOptions) setSubCategoryId(selectedOptions?.value);
   };
 
-  const handleSelectBrandOfMainCategory = (
-    selectedOption: SingleValue<ProductOptionType>,
-    idx: number
-  ) => {
-    setSelectedBrandOfMainCategory(selectedOption?.value);
-    setValue(`categories.${idx}.subBrands`, []); // Clear sub-brands when brand changes
-  };
-
-  const handleSelectSubBrand = (
-    selectedOptions: MultiValue<ProductOptionType>
-  ) => {
-    const SubBrandsIDs = selectedOptions.map((item) => {
-      return item.value;
-    });
-    if (SubBrandsIDs) {
-      setSubBrandsIDs(SubBrandsIDs);
-    }
-  };
+  // --------------------------------------------- //
 
   const { fields, append, remove } = useFieldArray({
     name: "categories",
@@ -181,8 +144,6 @@ useEffect(() => {
           onClick={() =>
             append({
               mainCategory: {} as ProductOptionType,
-              brand: {} as ProductOptionType,
-              subBrands: [] as ProductOptionType[],
               subCategories: [] as ProductOptionType[],
             })
           }
@@ -191,8 +152,11 @@ useEffect(() => {
         </button>
       </label>
       {fields.map((f, idx) => (
-        <div key={f.id} className="flex items-center flex-wrap gap-4 mt-4">
-          <div className="my-4">
+        <div
+          key={f.id}
+          className="flex flex-col items-center flex-wrap gap-2 mt-4"
+        >
+          <div className="my-2">
             <Controller
               name={`categories.${idx}.mainCategory`}
               control={control}
@@ -215,7 +179,7 @@ useEffect(() => {
               </p>
             )}
           </div>
-          <div className="my-4">
+          <div className="my-2">
             <Controller
               name={`categories.${idx}.subCategories`}
               control={control}
@@ -223,7 +187,6 @@ useEffect(() => {
                 <Select
                   isDisabled={!selectedMainCategoryID.value}
                   {...field}
-                  isMulti
                   options={chieldsOfMainCategoryOptions}
                   onChange={(selectedOption) => {
                     field.onChange(selectedOption); // Pass selected option to RHF
@@ -240,55 +203,35 @@ useEffect(() => {
               </p>
             )}
           </div>
-          <div className="my-4">
-            <Controller
-              name={`categories.${idx}.brand`}
-              control={control}
-              render={({ field }) => (
-                <Select
-                  isDisabled={!selectedMainCategoryID.value}
-                  {...field}
-                  options={brandsOfMainCategoryOptions}
-                  onChange={(selectedOption) => {
-                    field.onChange(selectedOption); // Pass selected option to RHF
-                    handleSelectBrandOfMainCategory(selectedOption, idx); // Call your custom handler
-                  }}
-                  isClearable
-                  placeholder="Select a Brand..."
-                />
+          {subCategories?.length > 0 && (
+            <div className="my-2">
+              <Controller
+                name={`categories.${idx}.subCategories`}
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    isDisabled={!selectedMainCategoryID.value}
+                    {...field}
+                    options={subCategories.map((sub) => ({
+                      label: sub.nameEn,
+                      value: sub.id,
+                    }))}
+                    onChange={(selectedOption) => {
+                      field.onChange(selectedOption); // Pass selected option to RHF
+                      handleSelectChieldsOfMainCategory(selectedOption); // Call your custom handler
+                    }}
+                    isClearable
+                    placeholder="Select a Sub Category..."
+                  />
+                )}
+              />
+              {errors?.categories?.[idx]?.subCategories && (
+                <p className="text-red-500">
+                  {errors?.categories?.[idx]?.subCategories?.message}
+                </p>
               )}
-            />
-            {errors?.categories?.[idx]?.brand && (
-              <p className="text-red-500">
-                {errors?.categories?.[idx]?.brand?.message}
-              </p>
-            )}
-          </div>
-          <div className="my-4">
-            <Controller
-              name={`categories.${idx}.subBrands`}
-              control={control}
-              render={({ field }) => (
-                <Select
-                  isDisabled={!selectedBrandOfMainCategory}
-                  {...field}
-                  isMulti
-                  isClearable
-                  placeholder="Select a Sub Brand..."
-                  options={subBrandsOptions}
-                  onChange={(selectedOptions) => {
-                    field.onChange(selectedOptions); // Pass selected option to RHF
-                    handleSelectSubBrand(selectedOptions); // Call your custom handler
-                  }}
-                />
-              )}
-            />
-            {errors?.categories?.[idx]?.subBrands && (
-              <p className="text-red-500">
-                {errors?.categories?.[idx]?.subBrands?.message}
-              </p>
-            )}
-          </div>
+            </div>
+          )}
           {idx >= 1 && (
             <button
               type="button"

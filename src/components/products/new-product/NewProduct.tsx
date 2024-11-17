@@ -6,18 +6,16 @@ import NewProductFormSchema, {
 import { HeadingOne } from "../../reuse-components/HeadingOne";
 import Container from "../../reuse-components/Container";
 import { RiErrorWarningLine } from "react-icons/ri";
-import AddProductSpecification from "./sub-components/AddProductSpecification";
-import AddProductVariant from "./sub-components/AddProductVariant";
 import AddProductThumbnailImage from "./sub-components/AddProductThumbnailImage";
 import ProductMultipleImages from "./sub-components/ProductMultipleImages";
 import { ImageDownIcon } from "lucide-react";
 import { useState } from "react";
 import apiClient from "../../../services/api-client";
-import AddProductCategories, {
-  ProductOptionType,
-} from "./sub-components/AddProductCategories";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useBrands from "../../../hooks/useBrands";
+import { useNavigate } from "react-router-dom";
+import { showToast } from "../../reuse-components/ShowToast";
 
 const NewProduct = () => {
   const {
@@ -25,38 +23,17 @@ const NewProduct = () => {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<NewProductFormData>({
     resolver: zodResolver(NewProductFormSchema),
-    defaultValues: {
-      categories: [
-        {
-          mainCategory: {
-            label: "Select a Main Category",
-            value: 0,
-          } as ProductOptionType,
-          brand: {
-            label: "Select a Main Brand",
-            value: 0,
-          } as ProductOptionType,
-          subBrands: [] as ProductOptionType[],
-          subCategories: [] as ProductOptionType[],
-        },
-      ],
-      variants: [],
-      specifications: [],
-    },
   });
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
   const [productImages, setProductImages] = useState<File[]>([]);
-
+  const navigate = useNavigate();
   const onSubmit = async (data: NewProductFormData) => {
-    console.log("is It Repeat !!");
-    console.log(data);
     const formData = new FormData();
 
     formData.append("name_en", data.name_en); // 1
@@ -66,6 +43,7 @@ const NewProduct = () => {
     formData.append("price", data?.price?.toString()); // 5
     formData.append("discount", data?.discount?.toString()); // 6
     formData.append("model_id", data.model); // 7
+    formData.append("brand_id", data.brand); // 7
     formData.append("seller_sku", data.sellerSKU); // 8
     formData.append("stock", data.stock?.toString()); // 8
 
@@ -83,72 +61,23 @@ const NewProduct = () => {
       });
     }
 
-    // // -------------------------------
-    if (data.variants && data.variants.length > 0) {
-      data?.variants.map((variant, idx) => {
-        formData.append(
-          `variants[${idx}][size]`,
-          variant?.size_id?.toString()
-        );
-
-        formData.append(
-          `variants[${idx}][color]`,
-          variant?.color_id?.toString()
-        );
-
-        formData.append(`variants[${idx}][stock]`, variant?.stock?.toString());
-        formData.append(`variants[${idx}][sku]`, variant?.sku);
-        formData.append(`variants[${idx}][price]`, variant?.price?.toString());
-        formData.append(
-          `variants[${idx}][discount]`,
-          variant?.discount?.toString()
-        );
-      });
-    }
-
-    // -------------------------------
-    if (data?.specifications && data?.specifications?.length > 0) {
-      data?.specifications?.map((specific, idx) => {
-        formData.append(`specifications[${idx}][name_en]`, specific?.name_en);
-        formData.append(`specifications[${idx}][name_ar]`, specific?.name_ar);
-        formData.append(`specifications[${idx}][value_en]`, specific?.value_en);
-        formData.append(`specifications[${idx}][value_ar]`, specific?.value_ar);
-      });
-    }
-
-    // -------------------------------
-    if (data?.categories && data?.categories?.length > 0) {
-      let counter = 0;
-      data?.categories?.map((category) => {
-        category?.subCategories?.map((subCat) => {
-          formData.append(
-            `categories[${counter}][id]`,
-            subCat?.value?.toString()
-          );
-          counter++;
-        });
-        category?.subBrands?.map((subBrand) => {
-          formData.append(
-            `categories[${counter}][id]`,
-            subBrand?.value?.toString()
-          );
-          counter++;
-        });
-        formData.append(`brand_id`, category?.brand?.value.toString());
-      });
-    }
-
     try {
       await apiClient.post("/products", formData);
-      toast.success("WOo! Your Product has been Created Successfully.", {
-        position: "top-center",
-        style: { width: "400px", height: "100px", fontSize: "18px" },
-      });
       setThumbnailPreview(null);
       setImages([]);
       setPreviews([]);
       reset();
+      showToast(
+        "WOo! Your Product has been Created Successfully.",
+        "success",
+        {
+          delay: 1500,
+          navigateTo: "/add-product-categories",
+        },
+        navigate
+      );
     } catch (error: any) {
+      console.log("it =>", error);
       if (error?.response?.status == 422) {
         toast.error(error?.response?.data?.data?.error, {
           position: "top-center",
@@ -175,6 +104,7 @@ const NewProduct = () => {
       error: errors.name_en,
       errorMsg: errors.name_en?.message,
       class: `input input-bordered grow ${errors.name_en && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Product Name (Arabic)",
@@ -184,6 +114,7 @@ const NewProduct = () => {
       error: errors.name_ar,
       errorMsg: errors.name_ar?.message,
       class: `input input-bordered grow ${errors.name_ar && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Product Description (English)",
@@ -193,6 +124,7 @@ const NewProduct = () => {
       error: errors.desc_en,
       errorMsg: errors.desc_en?.message,
       class: `input input-bordered grow ${errors.desc_en && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Product Description (Arabic)",
@@ -202,6 +134,7 @@ const NewProduct = () => {
       error: errors.desc_ar,
       errorMsg: errors.desc_ar?.message,
       class: `input input-bordered grow ${errors.desc_ar && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Price",
@@ -211,6 +144,7 @@ const NewProduct = () => {
       error: errors.price,
       errorMsg: errors.price?.message,
       class: `input input-bordered grow ${errors.price && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Discount",
@@ -220,6 +154,7 @@ const NewProduct = () => {
       error: errors.discount,
       errorMsg: errors.discount?.message,
       class: `input input-bordered grow ${errors.discount && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Model ID",
@@ -229,6 +164,7 @@ const NewProduct = () => {
       error: errors.model,
       errorMsg: errors.model?.message,
       class: `input input-bordered grow ${errors.model && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Seller Sku",
@@ -238,6 +174,7 @@ const NewProduct = () => {
       error: errors.sellerSKU,
       errorMsg: errors.sellerSKU?.message,
       class: `input input-bordered grow ${errors.sellerSKU && "border-[red]"}`,
+      selectInput: false,
     },
     {
       label: "Stock",
@@ -247,13 +184,27 @@ const NewProduct = () => {
       error: errors.stock,
       errorMsg: errors.stock?.message,
       class: `input input-bordered grow ${errors.stock && "border-[red]"}`,
+      selectInput: false,
+    },
+    {
+      label: "Brand",
+      inputName: "brand" as const,
+      type: "text",
+      num: false,
+      error: errors.brand,
+      errorMsg: errors.brand?.message,
+      class: `input input-bordered grow ${errors.brand && "border-[red]"}`,
+      selectInput: true,
     },
   ];
+
+  const { brands } = useBrands(false);
 
   return (
     <Container horizontalPadding={"10"} verticalMargin={"10"}>
       <ToastContainer />
       <HeadingOne label="Create New Product" marginBottom="2" />
+
       <p className="divider divider-vertical "></p>
 
       <AddProductThumbnailImage
@@ -263,7 +214,7 @@ const NewProduct = () => {
         onThumbnailPreview={(preview) => setThumbnailPreview(preview)}
         thumbnailPreview={thumbnailPreview}
       />
-      
+
       <div className="max-w-xl mt-8 ">
         <p className="flex font-medium gap-2 p-3  bg-slate-50 rounded-md">
           Add Product Images <ImageDownIcon />
@@ -280,7 +231,7 @@ const NewProduct = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* FormInputs */}
         <div
-          className="flex flex-col items-center lg:gap-x-8 
+          className="flex flex-col items-center  lg:gap-x-8 
             sm:flex-row sm:flex-wrap sm:gap-4 "
         >
           {formInputs.map((input) => (
@@ -289,15 +240,29 @@ const NewProduct = () => {
                 <span className="label-text">{input.label}</span>
               </label>
               <div className="flex items-center gap-2  ">
-                <input
-                  placeholder={`${input.label}...`}
-                  type={input.type}
-                  className={`${input.class} placeholder:text-sm `}
-                  {...register(
-                    input.inputName,
-                    input.num ? { valueAsNumber: true } : {}
-                  )}
-                />
+                {input.selectInput ? (
+                  <select
+                    {...register("brand")}
+                    className="select select-bordered grow"
+                  >
+                    <option value={""}>Select A Brand</option>
+                    {brands.map((brand) => (
+                      <option key={brand.id} value={brand.id}>
+                        {brand.name_en}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    placeholder={`${input.label}...`}
+                    type={input.type}
+                    className={`${input.class} placeholder:text-sm `}
+                    {...register(
+                      input.inputName,
+                      input.num ? { valueAsNumber: true } : {}
+                    )}
+                  />
+                )}
                 {input.error && (
                   <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />
                 )}
@@ -308,29 +273,9 @@ const NewProduct = () => {
             </div>
           ))}
         </div>
-        {/* Categories */}
-        <AddProductCategories
-          control={control}
-          errors={errors}
-          setValue={setValue}
-        />
-        {/* Variants */}
-        <AddProductVariant
-          control={control}
-          errors={errors}
-          register={register}
-        />
-
-        {/* Specifications */}
-        <AddProductSpecification
-          control={control}
-          errors={errors}
-          register={register}
-        />
-
         <div className="flex justify-center items-center mt-8  ">
           <button type="submit" className="btn btn-outline px-20 text-lg">
-            {isSubmitting ? "Submitting..." : " Submit"}
+            {isSubmitting ? "Submitting..." : " Save and Go Next"}
           </button>
         </div>
       </form>

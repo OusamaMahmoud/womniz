@@ -9,11 +9,13 @@ import { HeadingOne } from "../../../reuse-components/HeadingOne";
 import { TableSkeleton } from "../../../reuse-components/TableSkeleton";
 import MainCategoryUi from "./components/MainCategoryUi";
 import { IoWarning } from "react-icons/io5";
+
 interface Category {
   categoryImg: FileList | null;
   name_en: string;
   name_ar: string;
 }
+
 const MainCategories = () => {
   const [refreshCategories, setRefreshCategories] = useState(false); // State to trigger re-fetch
   const { mainCategories, isMainCategoriesLoading } =
