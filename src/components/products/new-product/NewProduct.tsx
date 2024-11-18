@@ -62,7 +62,8 @@ const NewProduct = () => {
     }
 
     try {
-      await apiClient.post("/products", formData);
+      const res = await apiClient.post("/products", formData);
+      console.log("iS Product id return?!", res.data.data);
       setThumbnailPreview(null);
       setImages([]);
       setPreviews([]);
@@ -73,6 +74,7 @@ const NewProduct = () => {
         {
           delay: 1500,
           navigateTo: "/add-product-categories",
+          state: { productId: res.data.data.id },
         },
         navigate
       );

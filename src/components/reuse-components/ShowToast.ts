@@ -4,8 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 export const showToast = (
   message: string,
   type = "default",
-  options?: { delay?: number; navigateTo?: string },
-  navigate?: (path: string) => void
+  options?: { delay?: number; navigateTo?: string; state?: Record<string, any> },
+  navigate?: (path: string, options?: { state?: Record<string, any> }) => void
 ) => {
   // Show the toast based on the type
   switch (type) {
@@ -34,11 +34,11 @@ export const showToast = (
       });
   }
 
-  // Handle optional navigation
+  // Handle optional navigation with state
   if (options?.navigateTo && navigate) {
     const delay = options.delay || 3000; // Default delay is 3 seconds if not specified
     setTimeout(() => {
-      navigate(options.navigateTo!); // Navigate to the specified route
+      navigate(options.navigateTo!, { state: options.state }); // Navigate with the state
     }, delay);
   }
 };

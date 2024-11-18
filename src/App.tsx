@@ -30,7 +30,6 @@ import { useEffect } from "react";
 import AdminProfile from "./components/admins/AdminProfile";
 import MainBrands from "./components/products/mainBrands/MainBrands";
 import NewProduct from "./components/products/new-product/NewProduct";
-import EditProduct from "./components/products/new-product/updateProduct/EditProduct";
 import i18n from "../src/i18n/i18n";
 import { useStateContext } from "./contexts/ContextProvider";
 import Salons from "./components/salons/pages/Salons";
@@ -44,7 +43,6 @@ import ProductCategoriesUI from "./components/products/product-categories/Produc
 import SubCategory from "./components/products/product-categories/sub-categories/SubCategory";
 import SpecificationsAndVariants from "./components/products/new-product/sub-components/SpecificationsAndVariants";
 import DynamicCategoryForm from "./components/products/new-product/sub-components/DynamicCategoryForm";
-import LoadingModal from "./modals/LoadingModal";
 function App() {
   useEffect(() => {
     AOS.init({
@@ -152,8 +150,6 @@ function App() {
         <Route path="orders" element={<OrdersComponent />} />
         <Route path="orders/orders-details/:id" element={<OrdersDetails />} />
         <Route path="orders/:slug" element={<SpecificStatusOrder />} />
-
-        <Route path="/products/edit-product/:id" element={<EditProduct />} />
 
         {/*cosmetics  */}
 

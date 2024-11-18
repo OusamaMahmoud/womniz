@@ -8,7 +8,7 @@ const ProductDetailsSpecification = ({
   handleEditBtn: () => void;
 }) => {
   return (
-    <div className="border w-full xl:max-w-7xl mt-6 shadow-md rounded-s-xl rounded-e-xl overflow-hidden  ">
+    <div className="border w-full xl:max-w-5xl mt-6 shadow-md rounded-s-xl rounded-e-xl overflow-hidden  ">
       <ProductDetailsHeading
         label="Specification"
         handleEditBtn={handleEditBtn}
@@ -17,12 +17,12 @@ const ProductDetailsSpecification = ({
         {specifications.map((specific) => (
           <div
             key={specific.id}
-            className="flex flex-col md:flex-row gap-2 items-center justify-between   "
+            className="flex flex-col md:flex-row gap-4 md:items-center "
           >
-            <span className="font-bold opacity-45 min-w-36  text-lg self-start">
+            <p className="font-bold text-gray-400 max-w-80 self-start md:self-auto">
               {specific.name}:
-            </span>
-            <span className="text-left">{specific.value}</span>
+            </p>
+            <p>{specific.value}</p>
             <p className="divider divider-vertical"></p>
           </div>
         ))}

@@ -17,7 +17,7 @@ const ProductColorsAndSizes = ({
       />
       <div className="flex flex-col gap-4 my-4 px-4 ">
         <div className="flex gap-2 items-center  ">
-          {colors.map((color, colorIndex) => (
+          {colors?.map((color, colorIndex) => (
             <div
               onClick={() => onColorIdx(colorIndex)}
               key={color.color}
@@ -37,14 +37,14 @@ const ProductColorsAndSizes = ({
             </tr>
           </thead>
           <tbody>
-            {colors[colorIdx].sizes.map((size) => (
-              <tr key={size.sku_id} className="">
-                <td>{size.sku_id}</td>
-                <td>{size.size}</td>
-                <td>{size.quantity}</td>
-                <td>{size.price}</td>
-                <td>{size.discount}</td>
-                <td>{size.price_after_sale}</td>
+            {colors[colorIdx]?.sizes?.map((size) => (
+              <tr key={size?.sku_id} className="">
+                <td>{size?.sku_id}</td>
+                <td>{size?.size}</td>
+                <td>{size?.quantity}</td>
+                <td>{size?.price}</td>
+                <td>{size?.discount}</td>
+                <td>{size?.price_after_sale}</td>
               </tr>
             ))}
           </tbody>

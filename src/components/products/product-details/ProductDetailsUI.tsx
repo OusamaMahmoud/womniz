@@ -1,13 +1,13 @@
 import { Edit3Icon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../../../services/api-client";
 import { TableSkeleton } from "../../reuse-components/TableSkeleton";
 import ProductDetailsThumbnail, {
   ProductImage,
 } from "./services/ProductDetailsThumbnail";
 import ProductColorsAndSizes from "./services/ProductsClorsAndSizes";
-import ProductDetailsDescription from "./services/ProductDetailsDescription";
+import ProductDetailsCategories from "./services/ProductDetailsCategories";
 import ProductDetailsSpecification from "./services/ProductDetailsSpecification";
 
 export interface Size {
@@ -29,6 +29,12 @@ export interface Specification {
   name: string;
   value: string;
 }
+export interface Brand {
+  id: string;
+  name_en: string;
+  name_ar: string;
+  icon: string;
+}
 interface Product {
   id: string;
   thumbnail: string;
@@ -41,12 +47,16 @@ interface Product {
   colors: Color[];
   specifications: Specification[];
   desc_en: string;
+  brand: Brand;
+  categories: { id: string; name: string }[];
 }
 const ProductDetailsUI = () => {
   const { state: productId } = useLocation();
   const [product, setProduct] = useState<Product>();
   const [isFetchProductLoading, setIsFetchProductLoading] = useState(false);
   const [colorIdx, setColorIdx] = useState<number>(0);
+
+  const navigate = useNavigate();
 
   const handleGetTargetProduct = async () => {
     try {
@@ -103,29 +113,24 @@ const ProductDetailsUI = () => {
                 <span className="font-bold opacity-45 min-w-36  text-lg">
                   Product Name:
                 </span>
-                <span>T-shirt</span>
+                <span>{product?.name_en}</span>
               </div>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Category:
-                </span>
-                <select className="select select-bordered">
-                  <option value={1}>Clothes</option>
-                  <option value={1}>Celebrates</option>
-                  <option value={1}>jewelries</option>
-                </select>
-              </div>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Sub Category:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">T-shirt</div>
-              </div>
+
               <div className="flex items-center justify-between  ">
                 <span className="font-bold opacity-45 min-w-36  text-lg">
                   Brand:
                 </span>
-                <div className="flex items-center gap-3 flex-wrap">T-shirt</div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {product?.brand.name_en}
+                </div>
+              </div>
+              <div className="flex items-center justify-between  ">
+                <span className="font-bold opacity-45 min-w-36  text-lg">
+                  Description:
+                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {product?.desc_en}
+                </div>
               </div>
             </div>
           </div>
@@ -148,10 +153,11 @@ const ProductDetailsUI = () => {
         )}
       </div>
 
-      {product?.desc_en && (
-        <ProductDetailsDescription
-          description={product?.desc_en}
-          handleEditBtn={() => console.log("desc")}
+      {product?.categories && (
+        <ProductDetailsCategories
+          categories={product.categories}
+          handleEditBtn={() => navigate("/")}
+          productId={product?.id}
         />
       )}
       {product?.specifications && (
@@ -176,10 +182,13 @@ export const ProductDetailsHeading = ({
   return (
     <div className="flex justify-between items-center bg-[#B6C9B599] p-4 ">
       <h1 className="text-xl font-semibold">{label}</h1>
-      <span className="flex items-center gap-2 " onClick={handleEditBtn}>
+      <div
+        className="flex items-center gap-2 cursor-pointer"
+        onClick={handleEditBtn}
+      >
         <Edit3Icon className="" width={20} />
         <span className="font-medium text-sm link">Edit</span>
-      </span>
+      </div>
     </div>
   );
 };

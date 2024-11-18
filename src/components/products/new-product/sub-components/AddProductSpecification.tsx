@@ -5,6 +5,7 @@ import { z } from "zod";
 import apiClient from "../../../../services/api-client";
 import { useLoading } from "../../../../contexts/LoadingContext";
 import { showToast } from "../../../reuse-components/ShowToast";
+import { ToastContainer } from "react-toastify";
 
 const specificationSchema = z.object({
   specifications: z.union([
@@ -95,6 +96,7 @@ const AddProductSpecification = ({ productId }: { productId: string }) => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col items-start mt-8"
     >
+      <ToastContainer />
       <label className="flex justify-between items-center text-xl font-medium">
         <div
           onClick={() =>

@@ -18,10 +18,10 @@ const Layout = () => {
       >
         <div className="static w-full mt-8">
           <Navbar />
-          <ToastContainer />
         </div>
         <div className="m-4">
           <Outlet />
+          <ToastContainer />
         </div>
       </div>
       {auth && (

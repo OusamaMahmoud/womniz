@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import apiClient from "../../../../services/api-client";
-import { MdDone, MdDoneAll, MdDoneOutline } from "react-icons/md";
-import { IoRemoveCircleOutline } from "react-icons/io5";
 import { showToast } from "../../../reuse-components/ShowToast";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLoading } from "../../../../contexts/LoadingContext";
+import { ToastContainer } from "react-toastify";
 
 type Category = {
   id: number;
@@ -85,13 +84,17 @@ const CategoryForm = ({
       },
       null
     );
-
+    if (!lastSelectedId) {
+      showToast("Please Add a Category.", "error");
+      return;
+    }
     onLastIdChange(index, lastSelectedId);
 
     // reset({
     //   categories: [{ id: null }],
     // });
     // setSubCategories({});
+
     showToast(
       "Product has been successfully added to this category .",
       "success"
@@ -202,8 +205,10 @@ const DynamicCategoryForm = () => {
   useEffect(() => {
     console.log("lastIDs", lastSelectedIds);
   }, [lastSelectedIds]);
+
   const isArrayNull = (arr: any) =>
     Array.isArray(arr) && arr.length === 1 && arr[0] === null;
+
   const handleAllFormsSubmit = () => {
     // Send the collected lastSelectedIds to the API
     if (isArrayNull(lastSelectedIds)) {
@@ -221,6 +226,7 @@ const DynamicCategoryForm = () => {
     }
 
     setIsSaveCategoriesBtnLoading(true);
+
     apiClient
       .post(`product-categories/update/${productId}`, formData)
       .then((response) => {
@@ -228,7 +234,11 @@ const DynamicCategoryForm = () => {
         showToast(
           "The Product has been successfully added to These Categories.",
           "success",
-          { delay: 3000, navigateTo: "/add-specification-variants" },
+          {
+            delay: 3000,
+            navigateTo: "/add-specification-variants",
+            state: { productId: productId },
+          },
           navigate
         );
       })
@@ -239,9 +249,13 @@ const DynamicCategoryForm = () => {
 
   return (
     <div className=" ml-10">
+       <ToastContainer />
       <h1 className="text-2xl font-bold mb-4">Product Categories</h1>
       {[...Array(formCount)].map((_, index) => (
-        <div className="border p-4 rounded-lg flex flex-col gap-3 mt-6 max-w-xl">
+        <div
+          key={index}
+          className="border p-4 rounded-lg flex flex-col gap-3 mt-6 max-w-xl"
+        >
           <CategoryForm
             key={index}
             index={index}
@@ -254,7 +268,7 @@ const DynamicCategoryForm = () => {
         <button
           type="button"
           onClick={addForm}
-          className="py-2 px-8  bg-[#B6C9B5]  rounded-md mt-4 mb-8 flex gap-2 items-center"
+          className="py-2 px-8 lg:ml-8  bg-[#B6C9B5]  rounded-md mt-4 mb-8 flex gap-2 items-center"
         >
           <img src="/assets/products/plus.png" alt="plus-Icon" /> Add Product
           Categories
