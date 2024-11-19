@@ -9,6 +9,7 @@ import ProductDetailsThumbnail, {
 import ProductColorsAndSizes from "./services/ProductsClorsAndSizes";
 import ProductDetailsCategories from "./services/ProductDetailsCategories";
 import ProductDetailsSpecification from "./services/ProductDetailsSpecification";
+import { ToastContainer } from "react-toastify";
 
 export interface Size {
   discount: string;
@@ -16,6 +17,7 @@ export interface Size {
   price_after_sale: string;
   quantity: string;
   size: string;
+  sku: string;
   sku_id: string;
 }
 export interface Color {
@@ -47,6 +49,8 @@ interface Product {
   colors: Color[];
   specifications: Specification[];
   desc_en: string;
+  stock: string;
+  seller_sku: string;
   brand: Brand;
   categories: { id: string; name: string }[];
 }
@@ -54,7 +58,6 @@ const ProductDetailsUI = () => {
   const { state: productId } = useLocation();
   const [product, setProduct] = useState<Product>();
   const [isFetchProductLoading, setIsFetchProductLoading] = useState(false);
-  const [colorIdx, setColorIdx] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -82,29 +85,12 @@ const ProductDetailsUI = () => {
 
   return (
     <div className="p-4 2xl:max-w-[1800px] flex flex-col mx-auto">
-      <div className="p-4 shadow-md flex items-center flex-wrap gap-5">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Model ID:</span>
-          <span>{product?.model_id}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Price:</span>
-          <span>${product?.price}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Sale:</span>
-          <span>{product?.discount}%</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Price After Sale:</span>
-          <span>${product?.price_after_sale}</span>
-        </div>
-      </div>
-
+      <ToastContainer />
       <div className="flex flex-col lg:flex-row justify-between lg:gap-10 items-center lg:items-start">
         <div className="w-full xl:min-w-[600px] order-2 lg:order-none ">
           <div className="border w-full  mt-4 shadow-md rounded-s-xl rounded-e-xl overflow-hidden  ">
             <ProductDetailsHeading
+              actionKey="Edit"
               label="Details"
               handleEditBtn={() => console.log("Edit")}
             />
@@ -126,6 +112,56 @@ const ProductDetailsUI = () => {
               </div>
               <div className="flex items-center justify-between  ">
                 <span className="font-bold opacity-45 min-w-36  text-lg">
+                  Model_id:
+                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {product?.model_id}
+                </div>
+              </div>
+              <div className="flex items-center justify-between  ">
+                <span className="font-bold opacity-45 min-w-36  text-lg">
+                  Seller_sku:
+                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {product?.seller_sku}
+                </div>
+              </div>
+              <div className="flex items-center justify-between  ">
+                <span className="font-bold opacity-45 min-w-36  text-lg">
+                  Stock:
+                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {product?.stock} items
+                </div>
+              </div>
+              <p className="divider divider-vertical my-1"></p>
+              <div className="flex items-center justify-between  ">
+                <span className="font-bold opacity-45 min-w-36  text-lg">
+                  Price:
+                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  ${product?.price}
+                </div>
+              </div>
+              <div className="flex items-center justify-between  ">
+                <span className="font-bold opacity-45 min-w-36  text-lg">
+                  Sale:
+                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {product?.discount}%
+                </div>
+              </div>
+              <div className="flex items-center justify-between  ">
+                <span className="font-bold opacity-45 min-w-36  text-lg">
+                  price_after_sale:
+                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  ${product?.price_after_sale}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between  ">
+                <span className="font-bold opacity-45 min-w-36  text-lg">
                   Description:
                 </span>
                 <div className="flex items-center gap-3 flex-wrap">
@@ -137,9 +173,12 @@ const ProductDetailsUI = () => {
 
           {product?.colors && (
             <ProductColorsAndSizes
-              colorIdx={colorIdx}
               colors={product?.colors}
-              onColorIdx={(idx) => setColorIdx(idx)}
+              handleAddSizesBtn={() =>
+                navigate("/add-specification-variants", {
+                  state: { productId: productId, key: "edit" },
+                })
+              }
             />
           )}
         </div>
@@ -156,13 +195,22 @@ const ProductDetailsUI = () => {
       {product?.categories && (
         <ProductDetailsCategories
           categories={product.categories}
-          handleEditBtn={() => navigate("/")}
+          handleEditBtn={() =>
+            navigate("/add-product-categories", {
+              state: { productId: productId, key: "edit" },
+            })
+          }
           productId={product?.id}
         />
       )}
       {product?.specifications && (
         <ProductDetailsSpecification
-          handleEditBtn={() => console.log("specicf eddit")}
+          handleEditBtn={() =>
+            navigate("/add-specification-variants", {
+              state: { productId: productId, key: "edit" },
+            })
+          }
+          productId={productId}
           specifications={product?.specifications}
         />
       )}
@@ -175,19 +223,21 @@ export default ProductDetailsUI;
 export const ProductDetailsHeading = ({
   label,
   handleEditBtn,
+  actionKey,
 }: {
   label: string;
+  actionKey: string;
   handleEditBtn: () => void;
 }) => {
   return (
-    <div className="flex justify-between items-center bg-[#B6C9B599] p-4 ">
+    <div className="flex justify-between  items-center bg-[#B6C9B599] p-4 ">
       <h1 className="text-xl font-semibold">{label}</h1>
       <div
         className="flex items-center gap-2 cursor-pointer"
         onClick={handleEditBtn}
       >
         <Edit3Icon className="" width={20} />
-        <span className="font-medium text-sm link">Edit</span>
+        <span className="font-medium text-sm link">{actionKey}</span>
       </div>
     </div>
   );

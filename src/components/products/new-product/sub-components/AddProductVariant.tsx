@@ -5,6 +5,7 @@ import { z } from "zod";
 import apiClient from "../../../../services/api-client";
 import { useLoading } from "../../../../contexts/LoadingContext";
 import { showToast } from "../../../reuse-components/ShowToast";
+import { useNavigate } from "react-router-dom";
 
 const variantSchema = z.object({
   variants: z.union([
@@ -24,7 +25,13 @@ const variantSchema = z.object({
 
 type variantSchemaFormValues = z.infer<typeof variantSchema>;
 
-const AddProductVariant = ({ productId }: { productId: string }) => {
+const AddProductVariant = ({
+  productId,
+  productKey,
+}: {
+  productId: string;
+  productKey: string;
+}) => {
   const {
     control,
     formState: { errors },
@@ -48,6 +55,9 @@ const AddProductVariant = ({ productId }: { productId: string }) => {
     name: "variants",
   });
   const { setLoading } = useLoading();
+
+  const navigate = useNavigate();
+
   const onSubmit = async (data: variantSchemaFormValues) => {
     const variantsFormData = new FormData();
 
@@ -89,6 +99,11 @@ const AddProductVariant = ({ productId }: { productId: string }) => {
       console.log(res);
       setLoading(false);
       showToast("The Product Variants has been successfully added.", "success");
+      if (productKey === "edit") {
+        setTimeout(() => {
+          navigate("/products");
+        }, 2000);
+      }
     } catch (error: any) {
       console.log("variant", error);
       setLoading(false);

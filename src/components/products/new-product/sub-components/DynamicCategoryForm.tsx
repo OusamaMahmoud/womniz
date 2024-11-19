@@ -170,13 +170,19 @@ const CategoryForm = ({
 
 const DynamicCategoryForm = () => {
   const [formCount, setFormCount] = useState(1);
+  const [key, setKey] = useState("");
   const [lastSelectedIds, setLastSelectedIds] = useState<Array<number | null>>(
     Array(formCount).fill(null)
   );
   const { state } = useLocation();
 
   useEffect(() => {
-    if (state || state?.productId) setProductId(state?.productId);
+    if (state || state?.productId) {
+      setProductId(state?.productId);
+    }
+    if (state || state?.key) {
+      setKey(state.key);
+    }
   }, [state]);
 
   const addForm = () => {
@@ -231,16 +237,29 @@ const DynamicCategoryForm = () => {
       .post(`product-categories/update/${productId}`, formData)
       .then((response) => {
         setIsSaveCategoriesBtnLoading(false);
-        showToast(
-          "The Product has been successfully added to These Categories.",
-          "success",
-          {
-            delay: 3000,
-            navigateTo: "/add-specification-variants",
-            state: { productId: productId },
-          },
-          navigate
-        );
+        if (key == "edit") {
+          showToast(
+            "The Product has been successfully added to These Categories.",
+            "success",
+            {
+              delay: 3000,
+              navigateTo: "/products",
+              state: { productId: productId },
+            },
+            navigate
+          );
+        } else {
+          showToast(
+            "The Product has been successfully added to These Categories.",
+            "success",
+            {
+              delay: 3000,
+              navigateTo: "/add-specification-variants",
+              state: { productId: productId },
+            },
+            navigate
+          );
+        }
       })
       .catch((error) => {
         showToast("This Category is not last child!", "error");
@@ -249,7 +268,7 @@ const DynamicCategoryForm = () => {
 
   return (
     <div className=" ml-10">
-       <ToastContainer />
+      <ToastContainer />
       <h1 className="text-2xl font-bold mb-4">Product Categories</h1>
       {[...Array(formCount)].map((_, index) => (
         <div

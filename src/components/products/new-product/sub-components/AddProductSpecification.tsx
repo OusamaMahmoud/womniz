@@ -6,6 +6,7 @@ import apiClient from "../../../../services/api-client";
 import { useLoading } from "../../../../contexts/LoadingContext";
 import { showToast } from "../../../reuse-components/ShowToast";
 import { ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const specificationSchema = z.object({
   specifications: z.union([
@@ -22,7 +23,13 @@ const specificationSchema = z.object({
 });
 type specificationSchemaFormValues = z.infer<typeof specificationSchema>;
 
-const AddProductSpecification = ({ productId }: { productId: string }) => {
+const AddProductSpecification = ({
+  productId,
+  productKey,
+}: {
+  productId: string;
+  productKey: string;
+}) => {
   const {
     control,
     formState: { errors },
@@ -46,6 +53,8 @@ const AddProductSpecification = ({ productId }: { productId: string }) => {
     name: "specifications",
   });
   const { setLoading } = useLoading();
+
+  const navigate = useNavigate();
 
   const onSubmit = async (data: specificationSchemaFormValues) => {
     const specificationFormData = new FormData();
@@ -84,6 +93,11 @@ const AddProductSpecification = ({ productId }: { productId: string }) => {
         "The Product Specifications has been successfully added.",
         "success"
       );
+      if (productKey === "edit") {
+        setTimeout(() => {
+          navigate("/products");
+        }, 2000);
+      }
     } catch (error: any) {
       console.log("specification", error);
       setLoading(false);
