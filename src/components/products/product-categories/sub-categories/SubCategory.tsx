@@ -10,6 +10,8 @@ import apiClient from "../../../../services/api-client";
 import CantPassModel from "./components/CantPassModel";
 import { TargetCategory } from "../../../../hooks/useMainCategories";
 import { IoWarning } from "react-icons/io5";
+import SubCategoryEditComponent from "./components/SubCategoryEditComponent";
+import { RiArrowGoBackFill } from "react-icons/ri";
 
 interface Category {
   categoryImg: FileList | null;
@@ -50,6 +52,7 @@ const SubCategory = () => {
   //     modal.close();
   //   }
   // };
+
   const openEditCategoryModel = () => {
     const modal = document.getElementById(
       "Edit_Sub_Category"
@@ -58,12 +61,21 @@ const SubCategory = () => {
       modal.showModal();
     }
   };
-  useEffect(() => {
-    if (category?.categoryImg !== null) {
-      const imgPreview = URL?.createObjectURL(category?.categoryImg?.[0]);
-      setPreview(imgPreview);
-    }
-  }, [category]);
+  const [targetMainCategoryId, setTargetMainCategoryId] = useState("");
+  const [targetMainCategory, setTargetMainCategory] =
+    useState<TargetCategory>();
+
+  // useEffect(() => {
+  //   if (category?.categoryImg !== null && category?.categoryImg !== undefined) {
+  //     const imgPreview = URL.createObjectURL(category?.categoryImg[0]);
+  //     setPreview(imgPreview);
+
+  //     // Cleanup old URL
+  //     return () => {
+  //       URL.revokeObjectURL(imgPreview);
+  //     };
+  //   }
+  // }, [category, targetMainCategory]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files, type } = e.currentTarget;
@@ -72,6 +84,11 @@ const SubCategory = () => {
       setCategory((prev) => ({ ...prev, [name]: files }));
     } else {
       setCategory((prev) => ({ ...prev, [name]: value }));
+    }
+
+    if (files !== null && files[0]) {
+      const blob = URL.createObjectURL(files[0]);
+      setPreview(blob);
     }
   };
 
@@ -101,13 +118,18 @@ const SubCategory = () => {
       modal.close();
     }
   };
+
   const handleCreateCategoryBtn = async (key: string) => {
     const formData = new FormData();
 
     formData.append("name_en", category.name_en);
     formData.append("name_ar", category.name_ar);
+
     if (key !== "edit") {
-      formData.append("parent_id", navigatorParamsIds[navigatorParamsIds.length -1]);
+      formData.append(
+        "parent_id",
+        navigatorParamsIds[navigatorParamsIds.length - 1]
+      );
     }
 
     if (key == "edit") {
@@ -140,7 +162,7 @@ const SubCategory = () => {
       }
       setIsCreateCategoryLoading(false);
       toast.success("Your Main Category has been Creating Successfully.");
-      setCategory({ name_ar: "", name_en: "", categoryImg: null });
+      // setCategory({ name_ar: "", name_en: "", categoryImg: null });
       setPreview("");
       if (imageRef.current instanceof HTMLInputElement) {
         imageRef.current.value = "";
@@ -163,14 +185,12 @@ const SubCategory = () => {
       modal.close();
     }
   };
+
   const [navigatorParamsIds, setNavigatorParamsIds] = useState<string[]>([]);
 
   const [newParamId, setNewParamId] = useState("");
   const [isCreateCategoryLoading, setIsCreateCategoryLoading] = useState(false);
   const navigate = useNavigate();
-  const [targetMainCategoryId, setTargetMainCategoryId] = useState("");
-  const [targetMainCategory, setTargetMainCategory] =
-    useState<TargetCategory>();
 
   const handleNavigateBack = () => {
     setNavigatorParamsIds((prev) => {
@@ -219,14 +239,17 @@ const SubCategory = () => {
     mainCategoryID: newParamId ?? "",
     refreshCategories: refreshCategories,
   });
+
   useEffect(() => {
+    console.log("hey , i'm here => ", targetMainCategoryId);
     if (targetMainCategoryId) {
       const targetCategory = subCategories.find(
         (subCategory) => subCategory.id == targetMainCategoryId
       );
       setTargetMainCategory(targetCategory);
+      if (targetCategory) setPreview(targetCategory?.image);
     }
-  }, [targetMainCategoryId]);
+  }, [targetMainCategoryId, subCategories]);
 
   useEffect(() => {
     if (targetMainCategory) {
@@ -261,10 +284,13 @@ const SubCategory = () => {
       setIsMainCategoryDeleted(false);
     }
   };
+
   return (
     <div className="px-4 sm:px-6 lg:px-8  pb-20">
       <ToastContainer />
-
+      {targetMainCategory && (
+        <SubCategoryEditComponent sub_cat={targetMainCategory} />
+      )}
       <dialog id={"Add_Sub_Category"} className="modal">
         <div className="modal-box">
           <div>
@@ -314,6 +340,7 @@ const SubCategory = () => {
           </div>
         </div>
       </dialog>
+
       <dialog id={"Edit_Sub_Category"} className="modal">
         <div className="modal-box ">
           <div className="">
@@ -333,11 +360,13 @@ const SubCategory = () => {
                   alt="imgPreview"
                 />
               )}
+            </div>
+            <div className="my-4 rounded-md ">
               {preview && (
                 <img
-                  className="rounded-md object-cover "
+                  className="rounded-md"
                   src={preview}
-                  alt="imgPreview"
+                  alt="Category Preview"
                 />
               )}
             </div>
@@ -405,24 +434,24 @@ const SubCategory = () => {
       </dialog>
       <HeadingOne marginBottom="mb-3" label={subCategoryHeading} />
 
-      <div className="flex items-center my-5  gap-4">
+      <div className="flex justify-end items-center my-5  gap-4">
         {subCategories?.length > 0 && !isSubCategoriesLoading && (
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 ">
             <button
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm
-             font-medium text-gray-700 bg-white hover:bg-gray-50
-             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={openAddSubCategory}
+               font-medium text-gray-700 bg-white hover:bg-gray-50
+               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={handleNavigateBack}
             >
-              Add Sub Category
+              <RiArrowGoBackFill />{" "}
             </button>
             <button
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm
-             font-medium text-gray-700 bg-white hover:bg-gray-50
-             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={handleNavigateBack}
+               font-medium text-gray-700 bg-white hover:bg-gray-50
+               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={openAddSubCategory}
             >
-              back
+              Add Sub Category
             </button>
           </div>
         )}
@@ -446,8 +475,8 @@ const SubCategory = () => {
               setTargetMainCategoryId(id);
             }}
             handleEditCategory={(id) => {
-              openEditCategoryModel();
               setTargetMainCategoryId(id);
+              openEditCategoryModel();
             }}
           />
         )}

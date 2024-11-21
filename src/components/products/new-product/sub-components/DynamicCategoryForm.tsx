@@ -25,7 +25,7 @@ const CategoryForm = ({
   removeForm: (index: number) => void;
   onLastIdChange: (index: number, lastId: number | null) => void;
 }) => {
-  const { control, handleSubmit, reset, watch } = useForm<FormValues>({
+  const { control, handleSubmit, watch } = useForm<FormValues>({
     defaultValues: {
       categories: [{ id: null }],
     },
@@ -57,6 +57,7 @@ const CategoryForm = ({
   const handleCategoryChange = async (categoryId: number, index: number) => {
     if (!categoryId) return;
 
+    console.log(index);
     try {
       setLoading(true);
       const response = await apiClient.get(`categories/sub/${categoryId}`);
@@ -202,8 +203,7 @@ const DynamicCategoryForm = () => {
       return updatedIds;
     });
   };
-  const [isSaveCategoriesBtnLoading, setIsSaveCategoriesBtnLoading] =
-    useState(false);
+  const [, setIsSaveCategoriesBtnLoading] = useState(false);
   const [productId, setProductId] = useState("");
 
   const navigate = useNavigate();
@@ -235,7 +235,7 @@ const DynamicCategoryForm = () => {
 
     apiClient
       .post(`product-categories/update/${productId}`, formData)
-      .then((response) => {
+      .then(() => {
         setIsSaveCategoriesBtnLoading(false);
         if (key == "edit") {
           showToast(
@@ -261,7 +261,7 @@ const DynamicCategoryForm = () => {
           );
         }
       })
-      .catch((error) => {
+      .catch(() => {
         showToast("This Category is not last child!", "error");
       });
   };

@@ -182,7 +182,6 @@ const OrdersDetails = () => {
                         <th>ID</th>
                         <th>SKU</th>
                         <th>Product Name</th>
-                        <th>Vendor</th>
                         <th>Brand</th>
                         <th>Quantity</th>
                         <th>Price</th>
@@ -194,22 +193,22 @@ const OrdersDetails = () => {
                       {targetOrder?.orderDetails?.map((order, idx) => (
                         <tr key={idx}>
                           <td>{order?.product_information?.id}</td>
-                          <td>{order?.sku}</td>
+                          <td>{order?.product_information?.seller_sku}</td>
                           <td className=" flex gap-2 items-center text-sm">
                             <img
                               src={order?.product_information?.thumbnail}
                               className="w-10 h-10 object-cover rounded-sm"
                             />
-                            <span>{order?.product_information?.name}</span>
+                            <span>{order?.product_information?.name_en}</span>
                           </td>
-                          <td>
-                            {order?.product_information?.vendor.contactName}
-                          </td>
+
                           <td>{order?.product_information?.brand?.name_en}</td>
                           <td>{order?.quantity}</td>
-                          <td>{order?.price}</td>
+                          <td>{order?.product_information?.price}</td>
                           <td>{order?.product_information?.discount}</td>
-                          <td>{order?.quantity * order?.price} </td>
+                          <td>
+                            {order?.product_information?.price_after_sale}{" "}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -224,22 +223,11 @@ const OrdersDetails = () => {
                   </div>
                   <div>
                     <h1 className="font-bold text-lg mb-2">Sub total Price</h1>
-                    {targetOrder?.orderDetails?.length > 0 && (
-                      <span>
-                        {targetOrder?.orderDetails[0]?.quantity *
-                          targetOrder?.orderDetails[0]?.price}{" "}
-                      </span>
-                    )}
+                    {targetOrder.totalsub}
                   </div>
                   <div>
                     <h1 className="font-bold text-lg mb-2">Total Price</h1>
-                    {targetOrder?.orderDetails?.length > 0 && (
-                      <span>
-                        {targetOrder?.orderDetails[0]?.quantity *
-                          targetOrder?.orderDetails[0]?.price +
-                          targetOrder?.shipping}
-                      </span>
-                    )}
+                    {targetOrder.total}
                   </div>
                 </div>
               </div>{" "}

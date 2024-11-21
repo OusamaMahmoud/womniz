@@ -213,7 +213,7 @@ const Sidebar = ({ isOpen }: { isOpen: (bool: boolean) => void }) => {
                       </NavLink>
                     )}
 
-                    {auth?.permissions.find((per) => per === "user-list") && (
+                    {auth?.permissions?.find((per) => per === "user-list") && (
                       <NavLink
                         to={`/accounts/requests`}
                         className={({ isActive }) =>

@@ -52,6 +52,10 @@ export interface TargetOrder {
       thumbnail: string;
       totalsub: number;
       vendor: Vendor;
+      seller_sku: string;
+      name_en: string;
+      price: string;
+      price_after_sale: string;
     };
   }[];
 }

@@ -18,21 +18,25 @@ const EditBrandService = ({
   const [preview, setPreview] = useState("");
   const [isCreateCategoryLoading, setIsCreateCategoryLoading] = useState(false);
 
-  const [targetBrand, setTargetBrand] = useState({
+  const [targetBrand, setTargetBrand] = useState<{
+    name_en: string;
+    name_ar: string;
+    brandImg: null | File;
+  }>({
     name_en: "",
     name_ar: "",
     brandImg: null,
   });
 
-  useEffect(() => {
-    if (targetBrand?.brandImg) {
-      const imgPreview = URL.createObjectURL(targetBrand.brandImg[0]);
-      setPreview(imgPreview);
+  // useEffect(() => {
+  //   if (targetBrand?.brandImg !== null) {
+  //     const imgPreview = URL.createObjectURL(targetBrand.brandImg[0]);
+  //     setPreview(imgPreview);
 
-      // Clean up the object URL after the component unmounts to prevent memory leaks
-      return () => URL.revokeObjectURL(imgPreview);
-    }
-  }, [targetBrand]);
+  //     // Clean up the object URL after the component unmounts to prevent memory leaks
+  //     return () => URL.revokeObjectURL(imgPreview);
+  //   }
+  // }, [targetBrand]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files, type } = e.currentTarget;
@@ -41,6 +45,12 @@ const EditBrandService = ({
       setTargetBrand((prev) => ({ ...prev, [name]: files }));
     } else {
       setTargetBrand((prev) => ({ ...prev, [name]: value }));
+    }
+    if (files) {
+      const file = files[0];
+      setTargetBrand((prev) => ({ ...prev, brandImg: file }));
+      const imgPreview = URL.createObjectURL(file);
+      setPreview(imgPreview);
     }
   };
 
@@ -63,7 +73,7 @@ const EditBrandService = ({
     formData.append("name_ar", targetBrand.name_ar);
     formData.append("_method", "PUT");
     if (targetBrand?.brandImg !== null) {
-      formData.append("icon", targetBrand?.brandImg[0]);
+      formData.append("icon", targetBrand?.brandImg);
     }
 
     // Skip validation check if key is "edit"

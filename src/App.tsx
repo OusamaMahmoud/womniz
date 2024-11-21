@@ -53,12 +53,12 @@ function App() {
 
   const { permissions } = usePermissions();
 
-  const ADMINS_PERMISSIONS = permissions[0]?.permissions.map((_) => _.name);
-  const ROLES_PERMISSIONS = permissions[1]?.permissions.map((_) => _.name);
-  const SCRATCH_PERMISSIONS = permissions[2]?.permissions.map((_) => _.name);
-  const SPIN_PERMISSIONS = permissions[3]?.permissions.map((_) => _.name);
-  const USERS_PERMISSIONS = permissions[4]?.permissions.map((_) => _.name);
-  const VENDORS_PERMISSIONS = permissions[5]?.permissions.map((_) => _.name);
+  const ADMINS_PERMISSIONS = permissions[0]?.permissions?.map((_) => _.name);
+  const ROLES_PERMISSIONS = permissions[1]?.permissions?.map((_) => _.name);
+  const SCRATCH_PERMISSIONS = permissions[2]?.permissions?.map((_) => _.name);
+  const SPIN_PERMISSIONS = permissions[3]?.permissions?.map((_) => _.name);
+  const USERS_PERMISSIONS = permissions[4]?.permissions?.map((_) => _.name);
+  const VENDORS_PERMISSIONS = permissions[5]?.permissions?.map((_) => _.name);
   const { lang } = useStateContext();
   // Change language dynamically when `lang` prop changes
   useEffect(() => {
@@ -69,6 +69,20 @@ function App() {
     document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
   }, [i18n, lang]);
 
+  if (permissions.length < 1)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex items-center justify-center h-screen bg-white">
+          <div className="loader-animation">
+            <img
+              src="/assets/logo.svg" // Replace with your logo path
+              alt="Loading..."
+              className="h-64 w-64 animate-bounce"
+            />
+          </div>
+        </div>
+      </div>
+    );
   return (
     <Routes>
       <Route path="/" element={<Layout />}>

@@ -10,6 +10,7 @@ import ProductColorsAndSizes from "./services/ProductsClorsAndSizes";
 import ProductDetailsCategories from "./services/ProductDetailsCategories";
 import ProductDetailsSpecification from "./services/ProductDetailsSpecification";
 import { ToastContainer } from "react-toastify";
+import ProductBasicInformation from "./services/ProductBasicInformation";
 
 export interface Size {
   discount: string;
@@ -37,7 +38,7 @@ export interface Brand {
   name_ar: string;
   icon: string;
 }
-interface Product {
+export interface Product {
   id: string;
   thumbnail: string;
   model_id: string;
@@ -46,9 +47,11 @@ interface Product {
   discount: string;
   images: ProductImage[];
   name_en: string;
+  name_ar: string;
   colors: Color[];
   specifications: Specification[];
   desc_en: string;
+  desc_ar: string;
   stock: string;
   seller_sku: string;
   brand: Brand;
@@ -88,88 +91,7 @@ const ProductDetailsUI = () => {
       <ToastContainer />
       <div className="flex flex-col lg:flex-row justify-between lg:gap-10 items-center lg:items-start">
         <div className="w-full xl:min-w-[600px] order-2 lg:order-none ">
-          <div className="border w-full  mt-4 shadow-md rounded-s-xl rounded-e-xl overflow-hidden  ">
-            <ProductDetailsHeading
-              actionKey="Edit"
-              label="Details"
-              handleEditBtn={() => console.log("Edit")}
-            />
-            <div className="flex flex-col gap-4 my-4 px-4 ">
-              <div className="flex items-center justify-between   ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Product Name:
-                </span>
-                <span>{product?.name_en}</span>
-              </div>
-
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Brand:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {product?.brand.name_en}
-                </div>
-              </div>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Model_id:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {product?.model_id}
-                </div>
-              </div>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Seller_sku:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {product?.seller_sku}
-                </div>
-              </div>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Stock:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {product?.stock} items
-                </div>
-              </div>
-              <p className="divider divider-vertical my-1"></p>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Price:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  ${product?.price}
-                </div>
-              </div>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Sale:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {product?.discount}%
-                </div>
-              </div>
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  price_after_sale:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  ${product?.price_after_sale}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between  ">
-                <span className="font-bold opacity-45 min-w-36  text-lg">
-                  Description:
-                </span>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {product?.desc_en}
-                </div>
-              </div>
-            </div>
-          </div>
+          {product && <ProductBasicInformation product={product} />}
 
           {product?.colors && (
             <ProductColorsAndSizes
@@ -185,9 +107,9 @@ const ProductDetailsUI = () => {
 
         {product && (
           <ProductDetailsThumbnail
-            handleEditBtn={() => console.log("thumbnail")}
             images={product.images}
             thumbnail={product.thumbnail}
+            productId={productId}
           />
         )}
       </div>
@@ -210,7 +132,6 @@ const ProductDetailsUI = () => {
               state: { productId: productId, key: "edit" },
             })
           }
-          productId={productId}
           specifications={product?.specifications}
         />
       )}
@@ -236,7 +157,7 @@ export const ProductDetailsHeading = ({
         className="flex items-center gap-2 cursor-pointer"
         onClick={handleEditBtn}
       >
-        <Edit3Icon className="" width={20} />
+        {actionKey && <Edit3Icon className="" width={20} />}
         <span className="font-medium text-sm link">{actionKey}</span>
       </div>
     </div>

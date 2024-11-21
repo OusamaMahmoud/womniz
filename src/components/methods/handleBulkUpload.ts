@@ -1,9 +1,9 @@
 import apiClient from "../../services/api-client";
-import { toast } from "react-toastify";
+import { showToast } from "../reuse-components/ShowToast";
 
 export const handleBulkUpload = async ({ bulkFile }: { bulkFile: File }) => {
   if (!bulkFile) {
-    alert("Please select a file first.");
+    showToast("Please select a file first.", "error");
     return;
   }
 
@@ -16,8 +16,8 @@ export const handleBulkUpload = async ({ bulkFile }: { bulkFile: File }) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    toast.success("File uploaded successfully");
+    showToast("File uploaded successfully", "success");
   } catch (error) {
-    toast.error("Failed to upload file");
+    showToast("Failed to upload file", "error");
   }
 };

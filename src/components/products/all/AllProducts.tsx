@@ -38,17 +38,6 @@ const AllProducts = () => {
   //   }
   // };
 
-  useEffect(() => {
-    if (file !== null) {
-      try {
-        handleBulkUpload({ bulkFile: file });
-        setFile(null);
-      } catch (error) {
-        setFile(null);
-      }
-    }
-  }, [file]);
-
   // Export products as excel sheet
   const { allProducts } = useAllProducts();
 
@@ -123,13 +112,22 @@ const AllProducts = () => {
       navigate(`/products/${selectedValue}`);
     }
   };
-  const [, setBulkUploadFile] = useState<File | null>(null);
-
+  const [bulkUploadFile, setBulkUploadFile] = useState<File | null>(null);
+  useEffect(() => {
+    if (bulkUploadFile !== null) {
+      try {
+        handleBulkUpload({ bulkFile: bulkUploadFile });
+        setFile(null);
+      } catch (error) {
+        setFile(null);
+      }
+    }
+  }, [file, bulkUploadFile]);
   // Bulk Upload!!
   const handleBulkUploadBtn = (file: File) => {
     setBulkUploadFile(file);
   };
-  
+
   return (
     <div className="flex flex-col ">
       <ToastContainer />
@@ -159,8 +157,9 @@ const AllProducts = () => {
               />
             </label>
           </div> */}
-
-          <BulkUpload onBulkUpload={handleBulkUploadBtn} />
+          <BulkUpload
+            onBulkUpload={handleBulkUploadBtn}
+          />
           <div className="flex items-center gap-8 justify-end mb-6">
             <button
               onClick={deleteProducts}

@@ -7,10 +7,8 @@ import { Specification, ProductDetailsHeading } from "../ProductDetailsUI";
 const ProductDetailsSpecification = ({
   specifications,
   handleEditBtn,
-  productId,
 }: {
   specifications: Specification[];
-  productId: string;
   handleEditBtn: () => void;
 }) => {
   const { setLoading } = useLoading();

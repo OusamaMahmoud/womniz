@@ -10,6 +10,8 @@ const BulkUpload = ({
     const file = e.target.files?.[0];
     if (file) {
       onBulkUpload(file);
+      // Reset the input value to allow re-selecting the same file
+      e.target.value = "";
     }
   };
   return (
