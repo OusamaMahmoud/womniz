@@ -1,4 +1,4 @@
-import { useEffect,  useState } from "react";
+import { useEffect, useState } from "react";
 import useBrands from "../../../hooks/useBrands";
 import { HeadingOne } from "../../reuse-components/HeadingOne";
 import MainBrandTableUi from "./brands-components/MainBrandTableUi";
@@ -19,7 +19,8 @@ interface TargetBrand {
 
 const MainBrands = () => {
   const [refreshCategories, setRefreshCategories] = useState(false);
-  const { brands, isBrandsLoading } = useBrands(refreshCategories);
+  const [searchKey, setSearchKey] = useState("");
+  const { brands, isBrandsLoading } = useBrands(refreshCategories, searchKey);
   const [targetBrandId, setTargetBrandId] = useState("");
   const [isDeletedBrandLoading, setIsDeletedBrandLoading] = useState(false);
   const [, setPreview] = useState("");
@@ -106,7 +107,7 @@ const MainBrands = () => {
       }
     }
   }, [targetBrandId]);
-  
+
   useEffect(() => {
     console.log(isBrandsLoading);
   }, []);
@@ -141,7 +142,14 @@ const MainBrands = () => {
       </dialog>
 
       <div className=" flex justify-between items-center">
-        <HeadingOne marginBottom="5" label="Brands" />
+        <div>
+          <HeadingOne marginBottom="0" label="Brands" />
+          <input
+            className="input input-bordered my-4"
+            onChange={(e) => setSearchKey(e.target.value)}
+            placeholder="search.."
+          />
+        </div>
         <div className="mb-4">
           <button
             onClick={() => toggleAddNewBrandModel("OPEN")}

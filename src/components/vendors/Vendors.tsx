@@ -44,7 +44,7 @@ const Vendors = () => {
     isFetching: trigerFetch,
     page: paginationPage,
   });
-  const { mainCategories } = useMainCategories(false);
+  const { mainCategories } = useMainCategories(false, "");
   const { allVendors, isAllVendorsError } = useAllVendors();
 
   const recordsPerPage = meta.per_page || 5;

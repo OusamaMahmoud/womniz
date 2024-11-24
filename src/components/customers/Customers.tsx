@@ -39,7 +39,7 @@ const Customers: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
-  const { mainCategories } = useMainCategories(false);
+  const { mainCategories } = useMainCategories(false ,'');
 
   const { customers, isLoading, meta, next, prev } = useCustomers({
     categories: selectedCategory,

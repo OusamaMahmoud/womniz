@@ -18,7 +18,7 @@ const ProductBasicInformation = ({ product }: { product: Product }) => {
     desc_en: product.desc_en,
     desc_ar: product.desc_ar,
   });
-  const { brands } = useBrands(false);
+  const { brands } = useBrands(false,'');
 
   const handleInputChange = (
     e: React.ChangeEvent<

@@ -200,7 +200,7 @@ const NewProduct = () => {
     },
   ];
 
-  const { brands } = useBrands(false);
+  const { brands } = useBrands(false, "");
 
   return (
     <Container horizontalPadding={"10"} verticalMargin={"10"}>

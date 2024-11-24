@@ -7,14 +7,14 @@ export interface MainBrand {
   icon: string;
 }
 
-const useBrands = (refreshCategories: boolean) => {
+const useBrands = (refreshCategories: boolean, search: string) => {
   const [brands, setBrands] = useState<MainBrand[]>([]);
   const [isBrandsLoading, setIsBrandsLoading] = useState(false);
 
   useEffect(() => {
     try {
       setIsBrandsLoading(true);
-      apiClient.get("/brands").then((res) => {
+      apiClient.get(`/brands?search=${search}`).then((res) => {
         console.log(res.data.data);
         setBrands(res.data.data);
       });
@@ -23,7 +23,7 @@ const useBrands = (refreshCategories: boolean) => {
       console.log("brands error =>", error);
       setIsBrandsLoading(false);
     }
-  }, [refreshCategories]);
+  }, [refreshCategories, search]);
 
   return {
     brands,

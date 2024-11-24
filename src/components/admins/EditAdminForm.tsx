@@ -4,15 +4,14 @@ import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { useParams } from "react-router-dom";
-import {  ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import {  z } from "zod";
+import { z } from "zod";
 import { Admin } from "../../services/admins-service";
 import apiClient from "../../services/api-client";
-import { customStyles } from "../CustomSelect";
-import Select from "react-select";
 import useCategories from "../../hooks/useCategories";
+import useRoles from "../../hooks/useRoles";
 
 const schema = z.object({
   name: z
@@ -32,7 +31,7 @@ const schema = z.object({
     .regex(/^\+?\d+$/),
   status: z.enum(["0", "1"]).default("0"),
   country_id: z.enum(["2", "1"]).default("2"),
-  role: z.string().min(3),
+  role: z.string().min(1),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -40,7 +39,7 @@ type OptionType = { label: string; value: number };
 
 const EditAdminForm = ({
   onModalOpen,
-  onSubmitEditForm
+  onSubmitEditForm,
 }: {
   onModalOpen: (state: boolean) => void;
   onSubmitEditForm: (state: boolean) => void;
@@ -61,6 +60,7 @@ const EditAdminForm = ({
       .get<{ data: Admin }>(`/admins/${params.id}`)
       .then((res) => {
         setTargetAdmin(res.data.data);
+        console.log(res.data.data);
         setPhotoPreview(res.data.data.image);
       })
       .catch((err) => setTaretAdminError(err.message));
@@ -158,7 +158,7 @@ const EditAdminForm = ({
         }));
         setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
       }
-      onSubmitEditForm(true)
+      onSubmitEditForm(true);
       setSubmitinLoading(false);
       onModalOpen(false);
     } catch (error: any) {
@@ -172,7 +172,7 @@ const EditAdminForm = ({
       }
     }
   };
-
+  const { roles } = useRoles();
   return (
     <div className="modal modal-open tracking-wide">
       <ToastContainer />
@@ -360,10 +360,17 @@ const EditAdminForm = ({
                 className="select select-bordered grow"
                 {...register("role")}
               >
-                <option className="bg-gray-400 text-white" value="" disabled>
+                <option
+                  className="bg-gray-400 text-white"
+                  value=""
+                  disabled
+                  selected
+                >
                   Select Admin Role
                 </option>
-                <option value={"Super Admin"}>Super Admin</option>
+                {roles.map((role) => (
+                  <option value={`${role.name}`}>{role.name}</option>
+                ))}
               </select>
               {errors.role && (
                 <RiErrorWarningLine color="red" className="w-6 h-6 ml-1" />
@@ -372,18 +379,6 @@ const EditAdminForm = ({
             {errors.role && (
               <p className="text-[red] text-xs mt-3 ">{errors.role.message}</p>
             )}
-          </div>
-          {/* Category Multi-Selector */}
-          <div className="form-control ">
-            <Select
-              isMulti
-              value={adminSelectedCategories}
-              onChange={(val) => {
-                setAdminSelectedCategories([...val]);
-              }}
-              options={options}
-              styles={customStyles}
-            />
           </div>
           <div className="modal-action flex justify-around items-center right-80 ">
             <button

@@ -18,8 +18,9 @@ interface Category {
 
 const MainCategories = () => {
   const [refreshCategories, setRefreshCategories] = useState(false); // State to trigger re-fetch
+  const [searchKey, setSearchKey] = useState("");
   const { mainCategories, isMainCategoriesLoading } =
-    useMainCategories(refreshCategories);
+    useMainCategories(refreshCategories ,searchKey);
   const [isCreateCategoryLoading, setIsCreateCategoryLoading] = useState(false);
   const [preview, setPreview] = useState("");
   const [targetMainCategoryId, setTargetMainCategoryId] = useState("");
@@ -198,7 +199,6 @@ const MainCategories = () => {
       setIsMainCategoryDeleted(false);
     }
   };
-
   return (
     <div className=" px-4 sm:px-6 lg:px-8 pb-20">
       <ToastContainer />
@@ -342,8 +342,15 @@ const MainCategories = () => {
           </div>
         </div>
       </dialog>
-      
-      <HeadingOne marginBottom="mb-3" label="Main Categories" />
+
+      <div>
+        <HeadingOne marginBottom="mb-3" label="Main Categories" />
+        <input
+          className="input input-bordered my-4"
+          onChange={(e) => setSearchKey(e.currentTarget.value)}
+          placeholder="search.."
+        />
+      </div>
 
       <div className="flex items-center mb-10 justify-end gap-4">
         <button

@@ -136,7 +136,7 @@ const AllProductsTable = ({
               </td>
 
               <td className="py-3 px-6 text-left xl:text-lg ">
-                {row?.vendor?.contactName}
+                {row?.vendor?.name}
               </td>
               <td className="py-3 px-6 text-left xl:text-lg ">
                 {row?.brand?.name_en}

@@ -28,6 +28,7 @@ const SubCategory = () => {
   const [subCategoryHeadingList, setSubCategoryHeadingList] = useState<
     string[]
   >([categoryHeading]);
+  const [searchKey, setSearchKey] = useState("");
 
   const [category, setCategory] = useState<Category>({
     categoryImg: null,
@@ -238,6 +239,7 @@ const SubCategory = () => {
   const { subCategories, isSubCategoriesLoading } = useSubCategories({
     mainCategoryID: newParamId ?? "",
     refreshCategories: refreshCategories,
+    search: searchKey,
   });
 
   useEffect(() => {
@@ -284,7 +286,6 @@ const SubCategory = () => {
       setIsMainCategoryDeleted(false);
     }
   };
-
   return (
     <div className="px-4 sm:px-6 lg:px-8  pb-20">
       <ToastContainer />
@@ -432,7 +433,15 @@ const SubCategory = () => {
           </div>
         </div>
       </dialog>
-      <HeadingOne marginBottom="mb-3" label={subCategoryHeading} />
+
+      <div>
+        <HeadingOne marginBottom="mb-3" label={subCategoryHeading} />
+        <input
+          className="input input-bordered my-3"
+          placeholder="search.."
+          onChange={(e) => setSearchKey(e.target.value)}
+        />
+      </div>
 
       <div className="flex justify-end items-center my-5  gap-4">
         {subCategories?.length > 0 && !isSubCategoriesLoading && (

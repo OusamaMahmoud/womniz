@@ -5,9 +5,11 @@ import { TargetCategory } from "./useMainCategories";
 const useSubCategories = ({
   mainCategoryID,
   refreshCategories,
+  search,
 }: {
   mainCategoryID: string;
   refreshCategories: boolean;
+  search: string;
 }) => {
   const [subCategories, setSubCategories] = useState<TargetCategory[]>([]);
   const [error, setError] = useState("");
@@ -18,7 +20,7 @@ const useSubCategories = ({
     console.log("this in Sub Categories Hook ", mainCategoryID);
     const controller = new AbortController();
     apiClient
-      .get(`/categories/sub/${mainCategoryID}`, {
+      .get(`/categories/sub/${mainCategoryID}?search=${search}`, {
         signal: controller.signal,
       })
       .then((res) => {
@@ -31,7 +33,7 @@ const useSubCategories = ({
         setIsSubCategoriesLoading(false);
       });
     return () => controller.abort();
-  }, [mainCategoryID, refreshCategories]);
+  }, [mainCategoryID, refreshCategories, search]);
 
   return {
     subCategories,

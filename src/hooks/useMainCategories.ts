@@ -12,7 +12,7 @@ export interface TargetCategory {
   hasProducts: boolean;
 }
 
-const useMainCategories = (refresh: boolean) => {
+const useMainCategories = (refresh: boolean, searchKey: string) => {
   const [mainCategories, setMainCategories] = useState<TargetCategory[]>([]);
   const [error, setError] = useState("");
   const [isMainCategoriesLoading, setIsMainCategoriesLoading] = useState(false);
@@ -21,7 +21,7 @@ const useMainCategories = (refresh: boolean) => {
     setIsMainCategoriesLoading(true);
     const controller = new AbortController();
     apiClient
-      .get("/categories/main", {
+      .get(`/categories/main?search=${searchKey}`, {
         signal: controller.signal,
       })
       .then((res) => {
@@ -34,7 +34,7 @@ const useMainCategories = (refresh: boolean) => {
         setIsMainCategoriesLoading(false);
       });
     return () => controller.abort();
-  }, [refresh]);
+  }, [refresh, searchKey]);
 
   return {
     mainCategories,
