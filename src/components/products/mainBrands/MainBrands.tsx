@@ -89,10 +89,10 @@ const MainBrands = () => {
       setRefreshCategories((prev) => !prev);
       setTargetBrandId("");
       console.log(res);
-    } catch (error) {
-      console.log("delete brand =>", error);
+    } catch (error: any) {
+      console.log("delete brand =>", error.response.data.data.error);
       setIsDeletedBrandLoading(false);
-      toast.error("Oops! Something went wrong!");
+      toast.error(error.response.data.data.error);
     }
   };
   useEffect(() => {

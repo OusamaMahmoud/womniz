@@ -22,7 +22,7 @@ const useVendors = ({
   status,
   search,
   isFetching,
-  page
+  page,
 }: AdminsFilter) => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
@@ -74,6 +74,13 @@ const useVendors = ({
 
   const buildUrl = () => {
     const baseUrl = `/vendors`;
+
+    // If search is provided, return only the search parameter
+    if (search) {
+      return `${baseUrl}?search=${encodeURIComponent(search)}`;
+    }
+
+    // Otherwise, build the URL with other parameters
     const params = new URLSearchParams();
 
     if (page) {
@@ -82,17 +89,8 @@ const useVendors = ({
     if (categories) {
       params.append(`category[0]`, categories);
     }
-
     if (status) {
-      if (status === "Active") {
-        params.append("status", "1");
-      } else {
-        params.append("status", "0");
-      }
-    }
-
-    if (search) {
-      params.append("search", search);
+      params.append("status", status === "Active" ? "1" : "0");
     }
 
     return `${baseUrl}?${params.toString()}`;

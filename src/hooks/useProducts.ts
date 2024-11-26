@@ -75,29 +75,31 @@ const useProducts = ({
 
   const buildUrl = () => {
     const baseUrl = `/products`;
+  
+    // If search is provided, return only the search parameter
+    if (search) {
+      return `${baseUrl}?search=${encodeURIComponent(search)}`;
+    }
+  
+    // Otherwise, build the URL with other parameters
     const params = new URLSearchParams();
-
+  
     if (category) {
-      params.append(`main_category_id`, category);
+      params.append("main_category_id", category);
     }
-
     if (brand) {
-      params.append(`brand_id`, brand);
+      params.append("brand_id", brand);
     }
-
     if (status) {
       params.append("status", status);
-    }
-
-    if (search) {
-      params.append("search", search);
     }
     if (page) {
       params.append("page", page);
     }
-
+  
     return `${baseUrl}?${params.toString()}`;
   };
+  
 
   return {
     products,

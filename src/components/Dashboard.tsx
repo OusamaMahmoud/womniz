@@ -1,3 +1,4 @@
+
 const Dashboard = () => {
   return (
     <>
@@ -14,6 +15,9 @@ const Dashboard = () => {
         <img src="/assets/dashboard/dashboard4.svg" alt="dashboard" />
         <img src="/assets/dashboard/dashboard3.svg" alt="dashboard" />
         <img src="/assets/dashboard/dashboard2.svg" alt="dashboard" />
+        {/* <div>
+          <AdminsUi />
+        </div> */}
       </div>
     </>
   );

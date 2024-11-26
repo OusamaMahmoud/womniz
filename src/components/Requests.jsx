@@ -8,6 +8,7 @@ import RequestDateCalender from "./RequestDateCalender";
 import { ToastContainer, toast } from "react-toastify";
 import { TableSkeleton } from "./reuse-components/TableSkeleton";
 import { useTranslation } from "react-i18next";
+import { HeadingOne } from "./reuse-components/HeadingOne";
 
 const Requests = () => {
   const [dateValue, setDateValue] = useState("");
@@ -33,16 +34,28 @@ const Requests = () => {
       setSortDesc(false);
     }
   };
+  const sortedData = requests
+  .slice() // Create a shallow copy to avoid mutating the original array
+  .sort((a, b) => {
+    // Prioritize non-"accepted" and non-"rejected" statuses
+    const aPriority = a.status === "accepted" || a.status === "rejected" ? 1 : 0;
+    const bPriority = b.status === "accepted" || b.status === "rejected" ? 1 : 0;
 
-  const sortedData = requests.sort((a, b) => {
+    // Sort based on priority first
+    if (aPriority !== bPriority) return aPriority - bPriority;
+
+    // Then apply additional sorting logic (e.g., sort by the current `sortBy` column)
     if (sortBy) {
-      const aValue = a[sortBy].toString().toLowerCase();
-      const bValue = b[sortBy].toString().toLowerCase();
+      const aValue = a[sortBy]?.toString().toLowerCase() || "";
+      const bValue = b[sortBy]?.toString().toLowerCase() || "";
+
       if (aValue < bValue) return sortDesc ? 1 : -1;
       if (aValue > bValue) return sortDesc ? -1 : 1;
     }
+
     return 0;
   });
+
 
   const handleRequestAccept = async (id) => {
     try {
@@ -90,7 +103,7 @@ const Requests = () => {
     }
   };
 
-const {t} =useTranslation()
+  const { t } = useTranslation();
 
   if (isLoading) return <TableSkeleton noOfElements={5} />;
   return (
@@ -108,14 +121,20 @@ const {t} =useTranslation()
                 onClick={handleRequestReject}
                 className="btn px-10 bg-[#577656] text-white"
               >
-                {isRejectedRequestLoading ? t('common:actions.submitting') : t('common:actions.submit')}
+                {isRejectedRequestLoading
+                  ? t("common:actions.submitting")
+                  : t("common:actions.submit")}
               </div>
-              <button className="btn px-10 mr-4">{t('common:actions.close')}</button>
+              <button className="btn px-10 mr-4">
+                {t("common:actions.close")}
+              </button>
             </form>
           </div>
         </div>
       </dialog>
+
       <ToastContainer />
+      <HeadingOne label="Restore Accounts" marginBottom="6"/>
       <div className="flex items-center gap-2 mb-4">
         <div className="form-control">
           <label className="input input-bordered  flex items-center gap-2 max-w-72">
@@ -133,7 +152,7 @@ const {t} =useTranslation()
             </svg>
             <input
               type="text"
-              placeholder={t('common:placeholders.search')}
+              placeholder={t("common:placeholders.search")}
               className="grow"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -151,27 +170,27 @@ const {t} =useTranslation()
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal ">
               <SortableHeader
-                label={t('requests:restoreAccounts.tableHeader.id')}
+                label={t("requests:restoreAccounts.tableHeader.id")}
                 onClick={() => handleSort("customerId")}
                 sorted={sortBy == "customerId" ? !sortDesc : null}
               />
               <SortableHeader
-                label={t('requests:restoreAccounts.tableHeader.name')}
+                label={t("requests:restoreAccounts.tableHeader.name")}
                 onClick={() => handleSort("name")}
                 sorted={sortBy == "name" ? !sortDesc : null}
               />
               <SortableHeader
-                label={t('requests:restoreAccounts.tableHeader.email')}
+                label={t("requests:restoreAccounts.tableHeader.email")}
                 onClick={() => handleSort("email")}
                 sorted={sortBy == "email" ? !sortDesc : null}
               />
               <SortableHeader
-                label={t('requests:restoreAccounts.tableHeader.date')}
+                label={t("requests:restoreAccounts.tableHeader.date")}
                 onClick={() => handleSort("date")}
                 sorted={sortBy == "date" ? !sortDesc : null}
               />
               <SortableHeader
-                label={t('requests:restoreAccounts.tableHeader.status')}
+                label={t("requests:restoreAccounts.tableHeader.status")}
                 onClick={() => handleSort("status")}
                 sorted={sortBy == "status" ? !sortDesc : null}
               />
@@ -192,17 +211,31 @@ const {t} =useTranslation()
                     <p
                       className={` ${
                         row.status === "accepted"
-                          ? "badge bg-green-400 mr-3 cursor-pointer"
-                          : "badge cursor-pointer"
+                          ? "badge bg-[#ECFDF3] text-[#037847] mr-3 cursor-pointer capitalize"
+                          : "badge bg-[#F2F4F7] cursor-pointer text-[#E20000] capitalize"
                       }`}
                     >
+                      {row.status === "accepted" && (
+                        <img
+                          src="/assets/restore-accounts/Dot-green.png"
+                          alt="restore-accounts"
+                          className="mr-2"
+                        />
+                      )}
+                      {row.status === "rejected" && (
+                        <img
+                          src="/assets/restore-accounts/Dot-red.png"
+                          alt="restore-accounts"
+                          className="mr-2"
+                        />
+                      )}
                       {row.status}
                     </p>
                   ) : (
                     <>
                       <p
                         onClick={() => handleRequestAccept(row.id)}
-                        className="badge bg-green-400 mr-3 cursor-pointer"
+                        className="border py-[2px] text-white font-bold px-4  rounded-md bg-green-400 mr-3 cursor-pointer"
                       >
                         {isRequestAcceptLoading ? "processing..." : "Accept"}
                       </p>
@@ -211,7 +244,7 @@ const {t} =useTranslation()
                           document.getElementById("my_modal_4").showModal();
                           setRowId(row.id);
                         }}
-                        className="badge cursor-pointer"
+                        className="border py-[2px] px-4 rounded-md font-bold cursor-pointer"
                       >
                         Reject
                       </p>

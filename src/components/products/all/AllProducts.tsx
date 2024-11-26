@@ -1,10 +1,8 @@
 import { MdDelete } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 import { FaFileExport } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import useProducts from "../../../hooks/useProducts";
-import useVendorCategories from "../../../hooks/useVendorCategories";
 import useAllProducts from "../../../hooks/useAllProducts";
 import Pagination from "../../Pagination";
 import AllProductsTable from "./AllProductsTable";
@@ -13,6 +11,8 @@ import NotFound from "../../error-page/NotFound";
 import { handleBulkUpload } from "../../methods/handleBulkUpload";
 import useDeleteProducts from "../../../hooks/useDeleteProducts";
 import BulkUpload from "./productsUI-sections/BulkUpload";
+import { HeadingOne } from "../../reuse-components/HeadingOne";
+import useBrands from "../../../hooks/useBrands";
 
 const AllProducts = () => {
   // Filters
@@ -27,7 +27,6 @@ const AllProducts = () => {
 
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [brand, setBrand] = useState<string>("");
   // const [isProductsDeleted, setProductsDeleted] = useState(false);
 
@@ -41,10 +40,6 @@ const AllProducts = () => {
   // Export products as excel sheet
   const { allProducts } = useAllProducts();
 
-  //CATEGORIES
-  const { vendorCategories } = useVendorCategories();
-
-  const clothesCategory = vendorCategories.find((i) => i.name === "Clothes");
 
   // Handle Pagination.
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -103,15 +98,7 @@ const AllProducts = () => {
   });
 
   // Inside your component
-  const navigate = useNavigate();
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = e.target.value;
-    setSelectedCategory(selectedValue);
-    if (selectedValue) {
-      navigate(`/products/${selectedValue}`);
-    }
-  };
   const [bulkUploadFile, setBulkUploadFile] = useState<File | null>(null);
   useEffect(() => {
     if (bulkUploadFile !== null) {
@@ -127,6 +114,7 @@ const AllProducts = () => {
   const handleBulkUploadBtn = (file: File) => {
     setBulkUploadFile(file);
   };
+  const { brands } = useBrands(false, "");
 
   return (
     <div className="flex flex-col ">
@@ -157,9 +145,10 @@ const AllProducts = () => {
               />
             </label>
           </div> */}
-          <BulkUpload
-            onBulkUpload={handleBulkUploadBtn}
-          />
+          <div className=" flex justify-between items-center">
+            <HeadingOne label="Products" marginBottom="2" />
+            <BulkUpload onBulkUpload={handleBulkUploadBtn} />
+          </div>
           <div className="flex items-center gap-8 justify-end mb-6">
             <button
               onClick={deleteProducts}
@@ -204,7 +193,7 @@ const AllProducts = () => {
                 />
               </svg>
             </label>
-            <select
+            {/* <select
               value={selectedCategory}
               className="select select-bordered"
               onChange={handleCategoryChange}
@@ -217,7 +206,7 @@ const AllProducts = () => {
                   {category.name}
                 </option>
               ))}
-            </select>
+            </select> */}
             <select
               value={brand}
               id="brand"
@@ -229,7 +218,7 @@ const AllProducts = () => {
               <option value="" selected>
                 Select Brand
               </option>
-              {clothesCategory?.brands.map((b, idx) => (
+              {brands.map((b, idx) => (
                 <option key={idx} value={b.id}>
                   {b.name_en}
                 </option>

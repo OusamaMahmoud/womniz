@@ -74,29 +74,28 @@ const useAdmins = ({
 
   const buildUrl = () => {
     const baseUrl = `/admins`;
+  
+    // If search is provided, return only the search parameter
+    if (search) {
+      return `${baseUrl}?search=${encodeURIComponent(search)}`;
+    }
+  
+    // Otherwise, build the URL with other parameters
     const params = new URLSearchParams();
-
+  
     if (page) {
       params.append("page", page);
     }
     if (categories) {
       params.append(`category[0]`, categories);
     }
-
     if (status) {
-      if (status === "Active") {
-        params.append("status", "1");
-      } else {
-        params.append("status", "0");
-      }
+      params.append("status", status === "Active" ? "1" : "0");
     }
-
-    if (search) {
-      params.append("search", search);
-    }
-
+  
     return `${baseUrl}?${params.toString()}`;
   };
+  
 
   return {
     admins,

@@ -21,7 +21,6 @@ const Layout = () => {
         </div>
         <div className="m-4">
           <Outlet />
-          <ToastContainer />
         </div>
       </div>
       {auth && (

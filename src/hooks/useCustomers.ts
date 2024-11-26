@@ -70,9 +70,16 @@ const useCustomers = ({
     // Clean up the debounced function on unmount
     return debouncedFetchCustomers.cancel;
   }, [debouncedFetchCustomers]);
-  
+
   const buildUrl = () => {
     const baseUrl = `/users`;
+
+    // If search is provided, return only the search parameter
+    if (search) {
+      return `${baseUrl}?search=${encodeURIComponent(search)}`;
+    }
+
+    // Otherwise, build the URL with other parameters
     const params = new URLSearchParams();
 
     if (page) {
@@ -81,17 +88,8 @@ const useCustomers = ({
     if (categories) {
       params.append(`category[0]`, categories);
     }
-
     if (status) {
-      if (status === "Active") {
-        params.append("status", "1");
-      } else {
-        params.append("status", "0");
-      }
-    }
-
-    if (search) {
-      params.append("search", search);
+      params.append("status", status === "Active" ? "1" : "0");
     }
 
     return `${baseUrl}?${params.toString()}`;

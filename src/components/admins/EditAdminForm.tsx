@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 import { z } from "zod";
 import { Admin } from "../../services/admins-service";
@@ -14,11 +12,7 @@ import useCategories from "../../hooks/useCategories";
 import useRoles from "../../hooks/useRoles";
 
 const schema = z.object({
-  name: z
-    .string()
-    .min(3)
-    .max(255)
-    .regex(/^[a-zA-Z\s]*$/),
+  name: z.string().min(1).max(255),
   email: z.string().email(),
   // password: z.string().min(8).max(50),
   password: z.union([z.string().length(0), z.string().min(8).max(50)]),
@@ -39,10 +33,10 @@ type OptionType = { label: string; value: number };
 
 const EditAdminForm = ({
   onModalOpen,
-  onSubmitEditForm,
+  handleUpdatedAdmin,
 }: {
   onModalOpen: (state: boolean) => void;
-  onSubmitEditForm: (state: boolean) => void;
+  handleUpdatedAdmin: () => void;
 }) => {
   const [targetAdmin, setTargetAdmin] = useState<Admin>({} as Admin);
   const params = useParams();
@@ -90,7 +84,7 @@ const EditAdminForm = ({
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     values: {
@@ -158,8 +152,8 @@ const EditAdminForm = ({
         }));
         setPhotoPreview(imageFile && URL.createObjectURL(imageFile));
       }
-      onSubmitEditForm(true);
       setSubmitinLoading(false);
+      if (handleUpdatedAdmin) handleUpdatedAdmin();
       onModalOpen(false);
     } catch (error: any) {
       if (!error?.response) {
@@ -175,10 +169,8 @@ const EditAdminForm = ({
   const { roles } = useRoles();
   return (
     <div className="modal modal-open tracking-wide">
-      <ToastContainer />
-
       <div className="modal-box max-w-3xl px-10">
-        <h3 className="font-bold text-lg text-left">Add Regular Admin</h3>
+        <h3 className="font-bold text-lg text-left">Update Regular Admin</h3>
         <div className="flex justify-center items-center my-8">
           {photoPreview && (
             <img
@@ -383,9 +375,7 @@ const EditAdminForm = ({
           <div className="modal-action flex justify-around items-center right-80 ">
             <button
               type="submit"
-              className={`btn px-20 bg-[#577656] text-white ${
-                !isValid && "opacity-50 cursor-not-allowed"
-              }`}
+              className={`btn px-20 bg-[#577656] text-white`}
             >
               {isSubmittinLoading ? (
                 <span className="loading loading-spinner"></span>

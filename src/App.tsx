@@ -77,7 +77,7 @@ function App() {
             <img
               src="/assets/logo.svg" // Replace with your logo path
               alt="Loading..."
-              className="h-64 w-64 animate-bounce"
+              className="h-64 w-64 animate-zoom"
             />
           </div>
         </div>

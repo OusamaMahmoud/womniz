@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 const RequestDateCalender = ({ onSelectedDate }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const { t } = useTranslation();
+
   const formatDate = (date) => {
     if (!date) return "";
     const year = date.getFullYear();
@@ -20,14 +21,25 @@ const RequestDateCalender = ({ onSelectedDate }) => {
     onSelectedDate(formattedDate);
   };
 
+  const handleClearDate = () => {
+    setSelectedDate(null);
+    onSelectedDate(null); // Notify parent component that the date is cleared
+  };
+
   return (
-    <div className="flex space-x-4 z-50">
+    <div className="flex space-x-4 z-50 items-center">
       <DatePicker
         selected={selectedDate}
         onChange={handleDateChange}
         placeholderText={t("common:placeholders.date")}
-        className="px-3 py-3  border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        className="px-3 py-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
       />
+      <button
+        onClick={handleClearDate}
+        className="px-4 btn "
+      >
+        Reset Date Filter
+      </button>
     </div>
   );
 };

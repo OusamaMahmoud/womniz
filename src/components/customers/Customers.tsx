@@ -3,7 +3,6 @@ import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import apiClient from "../../services/api-client";
-import useMainCategories from "../../hooks/useMainCategories";
 import Pagination from "../Pagination";
 import useCustomers from "../../hooks/useCustomers";
 import useAllCustomers from "../../hooks/useAllCustomers";
@@ -11,7 +10,6 @@ import CustomerResponsiveTable from "./CustomerResponsiveTable";
 import CustomerForm from "./components/CustomerForm";
 import { TableSkeleton } from "../reuse-components/TableSkeleton";
 import { StatusInput } from "../reuse-components/filteringInputs/StatusInput";
-import { SelectCategoryInput } from "../reuse-components/filteringInputs/SelectCategoryInput";
 import { SearchInput } from "../reuse-components/filteringInputs/SearchInput";
 import { ActionButton } from "../reuse-components/ActionButtons";
 import { useAuthGard } from "../reuse-hooks/AuthGard";
@@ -23,7 +21,7 @@ import { useTranslation } from "react-i18next";
 const Customers: React.FC = () => {
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, ] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -36,10 +34,8 @@ const Customers: React.FC = () => {
 
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
-
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [paginationPage, setPaginationPage] = useState<string>("1");
-  const { mainCategories } = useMainCategories(false ,'');
 
   const { customers, isLoading, meta, next, prev } = useCustomers({
     categories: selectedCategory,
@@ -52,11 +48,9 @@ const Customers: React.FC = () => {
   const recordsPerPage = meta.per_page || 5;
   const nPages = Math.ceil(customers.length / recordsPerPage);
 
-
   const openModal = () => {
     setIsModalOpen(true);
   };
-
 
   useEffect(() => {
     setIsDeleteEnabled(selectedCustomers.size > 0);
@@ -101,7 +95,7 @@ const Customers: React.FC = () => {
   };
 
   const { allacustomers, isAllCustomersError } = useAllCustomers();
-const {t} = useTranslation()
+  const { t } = useTranslation();
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -111,14 +105,14 @@ const {t} = useTranslation()
         {isAllCustomersError && (
           <p className="text-red-600 text-lg p-2">{isAllCustomersError}</p>
         )}
-        <HeadingOne label={t('customers:customers.header')}  marginBottom="2" />
+        <HeadingOne label={t("customers:customers.header")} marginBottom="2" />
         <div className="flex items-center flex-wrap gap-2">
           {useAuthGard({ key: "user-create" }) && (
             <ActionButton
               icon={<BiPlusCircle className="text-xl" />}
               className="btn bg-[#577656] text-[white] text-[10px] lg:text-lg"
               method={openModal}
-              label={t('customers:customers.customerButtons.add')}
+              label={t("customers:customers.customerButtons.add")}
             />
           )}
           {useAuthGard({ key: "user-delete" }) && (
@@ -128,7 +122,7 @@ const {t} = useTranslation()
               }`}
               icon={<BiTrash className="xl:text-lg text-[#E20000B2]" />}
               isDisabled={!isDeleteEnabled}
-              label={t('customers:customers.customerButtons.delete')}
+              label={t("customers:customers.customerButtons.delete")}
               method={handleDelete}
             />
           )}
@@ -141,7 +135,7 @@ const {t} = useTranslation()
                   label: "customers",
                 })
               }
-              label={t('customers:customers.customerButtons.export')}
+              label={t("customers:customers.customerButtons.export")}
               icon={<BiExport />}
             />
           )}
@@ -152,18 +146,18 @@ const {t} = useTranslation()
         <SearchInput
           onSearchText={(text) => setSearchValue(text)}
           searchText={searchValue}
-          placeHolder={t('customers:customersPlaceholders.search')}
+          placeHolder={t("customers:customersPlaceholders.search")}
         />
-        <SelectCategoryInput
+        {/* <SelectCategoryInput
           categories={mainCategories}
           onSelectCategory={(category) => setSelectedCategory(category)}
           selectedCategory={selectedCategory}
-          placeHolder={t('customers:customersPlaceholders.category')}
-        />
+          placeHolder={t("customers:customersPlaceholders.category")}
+        /> */}
         <StatusInput
           onSelectStatus={(status) => setSelectedStatus(status)}
           selectedStatus={selectedStatus}
-          placeHolder={t('customers:customersPlaceholders.status')}
+          placeHolder={t("customers:customersPlaceholders.status")}
         />
       </div>
       {/* Table */}
