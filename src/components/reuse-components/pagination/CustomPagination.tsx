@@ -20,7 +20,7 @@ export interface Meta {
 const CustomPagination = ({
   links,
   meta,
-  handleChange,
+  // handleChange,
   handleGetFirstPage,
   handleGetPrevPage,
   handleGetNextPage,
@@ -28,16 +28,17 @@ const CustomPagination = ({
 }: {
   links: Pagination;
   meta: Meta;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleGetFirstPage: () => void;
   handleGetPrevPage: () => void;
   handleGetNextPage: () => void;
   handleGetLastPage: () => void;
 }) => {
-
-  
   return (
-    <div className="mt-4 flex justify-center items-center p-5">
+    <div className="mt-4 flex justify-between items-center p-5">
+      <div>
+        <span>1-{meta.per_page}</span> of {meta.total} items
+      </div>
       <div className="flex items-center gap-8">
         <MdKeyboardDoubleArrowLeft
           className=" cursor-pointer text-3xl"
@@ -50,15 +51,15 @@ const CustomPagination = ({
           onClick={handleGetPrevPage}
         />
 
-        <input
+        {/* <input
           className="input input-bordered w-12 h-9"
           type="number"
           defaultValue={meta.current_page}
           min={1}
           max={meta.last_page}
           onChange={handleChange}
-        />
-
+        /> */}
+        <p className="border px-2 py-1 rounded">{meta.current_page}</p>
         <IoIosArrowForward
           className={`${
             links.next === null ? "cursor-not-allowed " : "cursor-pointer"
@@ -69,8 +70,8 @@ const CustomPagination = ({
           className="cursor-pointer text-3xl"
           onClick={handleGetLastPage}
         />
+        <p className="badge p-4 ml-2">{meta.last_page} Pages</p>
       </div>
-      <p className="badge p-4 ml-2">{meta.last_page} Pages</p>
     </div>
   );
 };

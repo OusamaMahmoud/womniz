@@ -39,7 +39,7 @@ const CustomerResponsiveTable = ({
 
   const { auth } = useAuth();
   const navigate = useNavigate();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="overflow-x-auto overflow-y-auto">
@@ -57,54 +57,54 @@ const CustomerResponsiveTable = ({
               </label>
             </th>
             <SortableHeader
-              label={t('customers:tableHeader.customerId')}
+              label={t("customers:tableHeader.customerId")}
               onClick={() => handleSort("id")}
               sorted={sortBy === "id" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.name')}
+              label={t("customers:tableHeader.name")}
               onClick={() => handleSort("name")}
               sorted={sortBy === "name" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.email')}
+              label={t("customers:tableHeader.email")}
               onClick={() => handleSort("email")}
               sorted={sortBy === "email" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.phone')}
+              label={t("customers:tableHeader.phone")}
               onClick={() => handleSort("phone")}
               sorted={sortBy === "phone" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.age')}
+              label={t("customers:tableHeader.age")}
               onClick={() => handleSort("age")}
               sorted={sortBy === "age" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.city')}
+              label={t("customers:tableHeader.city")}
               onClick={() => handleSort("city")}
               sorted={sortBy === "city" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.gender')}
+              label={t("customers:tableHeader.gender")}
               onClick={() => handleSort("gender")}
               sorted={sortBy === "gender" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.address')}
+              label={t("customers:tableHeader.address")}
               onClick={() => handleSort("address")}
               sorted={sortBy === "address" ? (sortDesc ? "desc" : "asc") : null}
             />
             <SortableHeader
-              label={t('customers:tableHeader.nofOrders')}
+              label={t("customers:tableHeader.nofOrders")}
               onClick={() => handleSort("numOfOrders")}
               sorted={
                 sortBy === "numOfOrders" ? (sortDesc ? "desc" : "asc") : null
               }
             />
             <SortableHeader
-              label={t('customers:tableHeader.status')}
+              label={t("customers:tableHeader.status")}
               onClick={() => handleSort("status")}
               sorted={sortBy === "status" ? (sortDesc ? "desc" : "asc") : null}
             />
@@ -145,7 +145,7 @@ const CustomerResponsiveTable = ({
                   row?.addresses?.length > 0 &&
                   row?.addresses?.map((add, index) => (
                     <p
-                      key={add?.label}
+                      key={add?.id}
                       className="text-center flex justify-center items-center pr-10"
                     >
                       {add?.label}

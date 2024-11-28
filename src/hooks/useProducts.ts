@@ -2,12 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Product } from "../services/clothes-service";
 import _ from "lodash";
-interface MetaObject {
-  current_page: number;
-  from: number;
-  per_page: number;
-  to: number;
-}
+import { Meta, Pagination } from "../components/reuse-components/pagination/CustomPagination";
 interface AdminsFilter {
   category?: string;
   status?: string;
@@ -21,14 +16,13 @@ const useProducts = ({
   status,
   search,
   brand,
-  page,
+  page
 }: AdminsFilter) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
-  const [next, setNext] = useState<string | null>("");
-  const [prev, setPrev] = useState<string | null>("");
+  const [meta, setMeta] = useState<Meta>({} as Meta);
+  const [links, setLinks] = useState<Pagination>({} as Pagination);
 
   const fetchProducts = useCallback(() => {
     setLoading(true);
@@ -37,8 +31,8 @@ const useProducts = ({
     const request = apiClient.get<{
       data: {
         data: Product[];
-        meta: MetaObject;
-        links: { next: string | null; prev: string | null };
+        meta: Meta;
+        links:Pagination
       };
     }>(buildUrl(), {
       signal: controller.signal,
@@ -49,8 +43,7 @@ const useProducts = ({
         console.log(res.data.data.data);
         setLoading(false);
         setMeta(res.data.data.meta);
-        setNext(res.data.data.links.next);
-        setPrev(res.data.data.links.prev);
+        setLinks(res.data.data.links);
       })
       .catch((err) => {
         if (err instanceof CanceledError) return;
@@ -59,7 +52,7 @@ const useProducts = ({
       });
 
     return () => controller.abort();
-  }, [category, status, search, brand, page]);
+  }, [category, status, search, brand ,page]);
 
   // Debounce the fetchAdmins function
   const debouncedFetchProducts = useCallback(
@@ -75,6 +68,8 @@ const useProducts = ({
 
   const buildUrl = () => {
     const baseUrl = `/products`;
+  
+  
   
     // If search is provided, return only the search parameter
     if (search) {
@@ -96,21 +91,21 @@ const useProducts = ({
     if (page) {
       params.append("page", page);
     }
-  
+
     return `${baseUrl}?${params.toString()}`;
   };
   
 
   return {
     products,
-    error,
-    isLoading,
     setProducts,
+    isLoading,
+    error,
     setError,
     meta,
     setMeta,
-    next,
-    prev,
+    links,
+    setLinks
   };
 };
 

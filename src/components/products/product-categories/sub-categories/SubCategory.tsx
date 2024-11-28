@@ -433,38 +433,36 @@ const SubCategory = () => {
           </div>
         </div>
       </dialog>
-
-      <div>
-        <HeadingOne marginBottom="mb-3" label={subCategoryHeading} />
-        <input
-          className="input input-bordered my-3"
-          placeholder="search.."
-          onChange={(e) => setSearchKey(e.target.value)}
-        />
-      </div>
-
-      <div className="flex justify-end items-center my-5  gap-4">
-        {subCategories?.length > 0 && !isSubCategoriesLoading && (
-          <div className="flex gap-4 ">
-            <button
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm
-               font-medium text-gray-700 bg-white hover:bg-gray-50
-               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={handleNavigateBack}
-            >
-              <RiArrowGoBackFill />{" "}
-            </button>
-            <button
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm
-               font-medium text-gray-700 bg-white hover:bg-gray-50
-               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={openAddSubCategory}
-            >
-              Add Sub Category
-            </button>
+      {subCategories?.length > 0 && !isSubCategoriesLoading && (
+        <div className="flex justify-between items-center my-8  gap-4">
+          <div>
+            <div className="flex gap-2 items-center">
+              <button
+                className="px-4 py-2  border-gray-300 rounded-md shadow-sm text-sm
+                 font-medium text-gray-700 bg-white hover:bg-gray-50
+                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={handleNavigateBack}
+              >
+               <img src="/assets/products/leftArrow.png" alt="left-arrow" />
+              </button>
+              <HeadingOne marginBottom="mb-3" label={subCategoryHeading} />
+            </div>
+            <input
+              className="input input-bordered mt-5"
+              placeholder="search.."
+              onChange={(e) => setSearchKey(e.target.value)}
+            />
           </div>
-        )}
-      </div>
+          <button
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm
+               font-medium text-gray-700 bg-white hover:bg-gray-50
+               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            onClick={openAddSubCategory}
+          >
+            <img src="/assets/products/addIcon.png" alt="add-icon" /> Add Sub Category
+          </button>
+        </div>
+      )}
       <div className="flex flex-col">
         {isSubCategoriesLoading ? (
           <TableSkeleton noOfElements={6} />

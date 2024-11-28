@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BiEdit, BiTrash } from "react-icons/bi";
-import { RxCross2 } from "react-icons/rx";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -31,47 +30,6 @@ type FormData = z.infer<typeof schema>;
 
 const CustomerProfile = () => {
   const { auth } = useAuth();
-  const generateRandomCode = () => {
-    return Math.random().toString(36).substr(2, 8).toUpperCase();
-  };
-
-  const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
-  const [expDate, setExpDate] = useState("");
-  const [discount, setDiscount] = useState("5%");
-  const [code, setCode] = useState(generateRandomCode());
-
-  const openDiscountModal = () => {
-    setCode(generateRandomCode());
-    setIsDiscountModalOpen(true);
-  };
-
-  const closeDiscountModal = () => {
-    setIsDiscountModalOpen(false);
-  };
-
-  const copyCodeToClipboard = () => {
-    navigator.clipboard.writeText(code);
-    toast.success("Code copied to clipboard!");
-  };
-
-  const handleConfirmDiscountDeletion = () => {
-    (
-      document.getElementById("deletion-discount-modal") as HTMLDialogElement
-    ).showModal();
-  };
-
-  const handleDeleteDiscountButton = () => {
-    (
-      document.getElementById("deletion-discount-modal") as HTMLDialogElement
-    ).close();
-  };
-
-  const handleAddingVoucherToCustomer = () => {
-    //Add Voucher to the API.
-  };
-
-  const [orders, setOrdersOpen] = useState<boolean>(true);
-  const [rewards, setRewardsOpen] = useState<boolean>(false);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [photoPreview, setPhotoPreview] = useState<string | null | undefined>(
@@ -111,6 +69,7 @@ const CustomerProfile = () => {
     apiClient
       .get<{ data: Customer }>(`/users/${params.id}`)
       .then((res) => {
+        console.log(res.data.data);
         setTargetCustomer(res.data.data);
         if (targetCustomer) setPhotoPreview(res.data.data.image);
       })
@@ -131,7 +90,9 @@ const CustomerProfile = () => {
       apiClient.get(`/users/${targetCustomer.id}/switchstatus`, {
         params: { status: newStatus },
       });
-    } catch (err: any) {}
+    } catch (err: any) {
+      console.log(err);
+    }
   };
 
   const handleEditButton = () => {
@@ -143,6 +104,7 @@ const CustomerProfile = () => {
       document.getElementById("deletion-modal") as HTMLDialogElement
     ).showModal();
   };
+
   const handleDeleteCustomerButton = () => {
     const data = new FormData();
     if (params && params.id) {
@@ -164,11 +126,6 @@ const CustomerProfile = () => {
           document.getElementById("deletion-modal") as HTMLDialogElement
         ).close();
       });
-  };
-
-  const [, setIsProductsComponentExist] = useState(false);
-  const handleAddingOrderToCustomer = () => {
-    setIsProductsComponentExist(true);
   };
 
   const {
@@ -331,7 +288,7 @@ const CustomerProfile = () => {
                     </p>
                   )}
                 </div>
-                <div className="form-control">
+                {/* <div className="form-control">
                   <label className="label">
                     <span className="label-text">Email</span>
                   </label>
@@ -357,7 +314,7 @@ const CustomerProfile = () => {
                       {errors.email.message}
                     </p>
                   )}
-                </div>
+                </div> */}
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Gender</span>
@@ -387,7 +344,7 @@ const CustomerProfile = () => {
                     </p>
                   )}
                 </div>
-                <div className="form-control">
+                {/* <div className="form-control">
                   <label className="label">
                     <span className="label-text">Password</span>
                   </label>
@@ -412,7 +369,7 @@ const CustomerProfile = () => {
                       {errors.password.message}
                     </p>
                   )}
-                </div>
+                </div> */}
                 <label
                   className={`absolute top-[160px] z-100 right-[325px] flex items-center   gap-3 rounded-md   bg-gray-50 cursor-pointer`}
                 >
@@ -482,37 +439,8 @@ const CustomerProfile = () => {
           </div>
         </div>
       </dialog>
-      <dialog
-        id="deletion-discount-modal"
-        className="modal modal-bottom sm:modal-middle"
-      >
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Are you sure?</h3>
-          <p className="py-4">Do you really want to delete this Voucher?</p>
-          <div className="modal-action">
-            <button
-              className="btn"
-              onClick={() =>
-                (
-                  document.getElementById(
-                    "deletion-discount-modal"
-                  ) as HTMLDialogElement
-                ).close()
-              }
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-error"
-              onClick={handleDeleteDiscountButton}
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
-      </dialog>
       <div className="container mx-auto px-5">
-        <div className="flex justify-between items-center shadow-xl p-8">
+        <div className="flex flex-col md:flex-row  justify-between items-center shadow-xl rounded-md p-3 md:p-8">
           <div className="flex gap-3 items-start">
             <div className="w-20 h-20">
               <img
@@ -541,7 +469,7 @@ const CustomerProfile = () => {
               </select>
             )}
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-6 md:mt-0">
             {auth?.permissions.find((per) => per === "user-delete") && (
               <button
                 onClick={handleCustomerConfirmationDelete}
@@ -561,351 +489,74 @@ const CustomerProfile = () => {
             )}
           </div>
         </div>
-        <div className="flex justify-between items-start gap-10 mt-20">
-          <div className="min-w-[800px]">
-            <div className="mt-20 p-10  rounded-lg shadow-xl">
+        <div className="flex flex-col md:flex-row  items-start gap-4 mt-20">
+          <div className="md:w-[600px] w-[350px]">
+            <div className=" p-5  rounded-lg shadow-xl">
               <h1 className="font-bold text-2xl mt-2">Personal Information</h1>
               <div className="flex justify-between max-w-xs mt-5">
                 <div className="flex flex-col gap-1">
-                  <span className="font-bold">Name</span>
+                  <span className="font-bold text-lg opacity-50">Name</span>
                   <span>{targetCustomer.name}</span>
                 </div>
                 <div className="flex flex-col gap-1 mt-5">
-                  <span className="font-bold">Date of Birth</span>
+                  <span className="font-bold text-lg opacity-50">
+                    Date of Birth
+                  </span>
                   <span className="text-[gray]">
                     {targetCustomer.birthdate}
                   </span>
                 </div>
               </div>
               <div className="flex flex-col gap-1 mt-5">
-                <span className="font-bold">Email</span>
-                <span className="text-[gray]">{targetCustomer.birthdate}</span>
+                <span className="font-bold text-lg opacity-50">Email</span>
+                <span className="text-[gray]">{targetCustomer.email}</span>
               </div>
               <div className="flex flex-col gap-1 mt-5">
-                <span className="font-bold">Phone Number</span>
+                <span className="font-bold text-lg opacity-50">
+                  Phone Number
+                </span>
                 <span className="text-[gray]">{targetCustomer.phone}</span>
               </div>
               <div className="flex flex-col gap-1 mt-5">
-                <span className="font-bold">Bio</span>
+                <span className="font-bold text-lg opacity-50">Bio</span>
                 <span className="text-[gray]">Customer</span>
               </div>
             </div>
-            <div className="mt-20 p-10  rounded-lg shadow-xl">
-              <h1 className="font-bold text-2xl mt-2">Address</h1>
-              <div>
-                <div className="flex justify-between items-center mt-6">
-                  <div>
-                    <h1 className="font-bold text-xl my-2">Address</h1>
-                    <p className="text-[#00000099] text-lg ">
-                      Behind Al Nakheel Center, Aziziyah Dist.
-                    </p>
-                  </div>
-                  <div>
-                    <MdDelete className="text-3xl text-red-800" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center mt-6">
-                  <div>
-                    <h1 className="font-bold text-xl my-2">Address</h1>
-                    <p className="text-[#00000099] text-lg ">
-                      Behind Al Nakheel Center, Aziziyah Dist.
-                    </p>
-                  </div>
-                  <div>
-                    <MdDelete className="text-3xl text-red-800" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center mt-6">
-                  <div>
-                    <h1 className="font-bold text-xl my-2">Address</h1>
-                    <p className="text-[#00000099] text-lg ">
-                      Behind Al Nakheel Center, Aziziyah Dist.
-                    </p>
-                  </div>
-                  <div>
-                    <MdDelete className="text-3xl text-red-800" />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-          <div className="bg-white shadow-xl p-5 py-20 flex flex-col items-center rounded-xl">
-            <div className="flex justify-around gap-12">
-              <button
-                onClick={() => {
-                  setOrdersOpen(true);
-                  setRewardsOpen(false);
-                }}
-                className="btn  text-[#577656] hover:bg-[#BED3C4] hover:text-white text-xl px-20"
-              >
-                Orders
-              </button>
-              <button
-                onClick={() => {
-                  setOrdersOpen(false);
-                  setRewardsOpen(true);
-                }}
-                className="btn  text-[#577656] hover:bg-[#BED3C4] hover:text-white text-xl px-20"
-              >
-                Active Rewards
-              </button>
-            </div>
-            {orders && (
-              <div className="flex flex-col ">
-                <div className="mt-10 p-10  rounded-lg shadow-xl min-w-[400px] self-center">
-                  <p className="text-2xl font-bold mb-3">Total Orders</p>
-                  <div className="flex justify-between items-center">
-                    <p className="text-3xl font-bold">850</p>
-                    <p>
-                      <img src="/assets/customer/car.svg" />
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mt-8">
-                    <button className="btn bg-transparent text-2xl hover:bg-[#f8fefa] hover:text-black  px-20">
-                      Recent Order
-                    </button>
-                    <Link
-                      to="/see-all-customers-orders/50"
-                      className="btn bg-transparent hover:bg-[#f8fefa] hover:text-black  px-20"
-                    >
-                      See All
-                    </Link>
-                  </div>
-                  <div className="flex flex-col gap-20">
-                    <div className="flex flex-col gap-10 mt-10">
-                      <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                        <div className="rounded-xl w-20 h-20">
-                          <img
-                            src="/assets/customer/car.svg"
-                            className="object-cover w-[100%]"
-                          />
-                        </div>
-                        <div className="flex justify-between  items-center gap-20">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-lg">
-                              Lorem ipsum dolor sit amet consectetur
-                            </p>
-                            <p className="text-[#1B1B1B80]">1 second ago</p>
-                          </div>
-                          <div className="flex flex-col  items-center gap-4">
-                            <span className="text-2xl">x</span>
-                            <span className="text-green-600">$100</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                        <div className="rounded-xl w-20 h-20">
-                          <img
-                            src="/assets/customer/car.svg"
-                            className="object-cover w-[100%]"
-                          />
-                        </div>
-                        <div className="flex justify-between  items-center gap-20">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-lg">
-                              Lorem ipsum dolor sit amet consectetur
-                            </p>
-                            <p className="text-[#1B1B1B80]">1 second ago</p>
-                          </div>
-                          <div className="flex flex-col  items-center gap-4">
-                            <span className="text-2xl">x</span>
-                            <span className="text-green-600">$100</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                        <div className="rounded-xl w-20 h-20">
-                          <img
-                            src="/assets/customer/car.svg"
-                            className="object-cover w-[100%]"
-                          />
-                        </div>
-                        <div className="flex justify-between  items-center gap-20">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-lg">
-                              Lorem ipsum dolor sit amet consectetur
-                            </p>
-                            <p className="text-[#1B1B1B80]">1 second ago</p>
-                          </div>
-                          <div className="flex flex-col  items-center gap-4">
-                            <span className="text-2xl">x</span>
-                            <span className="text-green-600">$100</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                        <div className="rounded-xl w-20 h-20">
-                          <img
-                            src="/assets/customer/car.svg"
-                            className="object-cover w-[100%]"
-                          />
-                        </div>
-                        <div className="flex justify-between  items-center gap-20">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-lg">
-                              Lorem ipsum dolor sit amet consectetur
-                            </p>
-                            <p className="text-[#1B1B1B80]">1 second ago</p>
-                          </div>
-                          <div className="flex flex-col  items-center gap-4">
-                            <span className="text-2xl">x</span>
-                            <span className="text-green-600">$100</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={handleAddingOrderToCustomer}
-                      className="btn btn-outline hover:bg-[#BED3C4] self-center px-10"
-                    >
-                      <img src="/assets/customer/add.svg" />
-                      Add{" "}
-                    </button>
-                  </div>
-                </div>
+          {targetCustomer?.addresses?.map((item) => (
+            <div
+              key={item.id}
+              className=" p-5  rounded-lg shadow-xl w-[350px] md:w-[600px] "
+            >
+              <h1 className="font-bold text-2xl mt-2">Customer Address</h1>
+              <div className="flex gap-3 items-center flex-wrap mt-2">
+                <p className="font-bold text-lg opacity-50">Place:</p>
+                <p>{item.label}</p>
               </div>
-            )}
-            {rewards && (
-              <div className="mt-10 flex flex-col gap-20">
-                <div className="flex flex-col gap-10">
-                  <div className="flex flex-col pt-1 pb-4 px-4 border rounded-lg shadow-md">
-                    <span
-                      onClick={handleConfirmDiscountDeletion}
-                      className="self-end mb-5 text-xl cursor-pointer"
-                    >
-                      <RxCross2 />
-                    </span>
-                    <div className="relative flex gap-16 bg-[#F5DED4] px-10 py-6 rounded-lg ">
-                      <div className="absolute  w-8 h-8 -top-3 right-[63%] rounded-full bg-white"></div>
-                      <div className="absolute  w-8 h-8 -bottom-3 right-[63%] rounded-full bg-white"></div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-black text-2xl font-extrabold">
-                          20%
-                        </span>
-                        <span className="text-black text-2xl font-extrabold">
-                          Discount
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-black text-2xl font-extrabold">
-                          Voucher from wheel
-                        </span>
-                        <span className="text-black text-sm font-extralight">
-                          Enjoy discount and get code : 234Mk
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={openDiscountModal}
-                  className="btn self-center px-20"
-                >
-                  <img src="/assets/customer/add.svg" />
-                  add
-                </button>
+              <div className="flex gap-3 items-center flex-wrap mt-3">
+                <p className="font-bold text-lg opacity-50">Apartment Floor:</p>
+                <p>{item.apt_floor}</p>
               </div>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center justify-center">
-          {isDiscountModalOpen && (
-            <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto">
-              <div
-                className="fixed inset-0 bg-black opacity-30"
-                onClick={closeDiscountModal}
-              ></div>
-
-              <div className="relative bg-white rounded-lg shadow-lg w-full max-w-xl mx-auto p-6">
-                <h2 className="text-lg font-bold">Add Discount</h2>
-                <div className="flex flex-col pt-1 pb-4 px-4 border rounded-lg shadow-md my-8">
-                  <span
-                    className="self-end mb-5 text-xl cursor-pointer"
-                    onClick={closeDiscountModal}
-                  >
-                    x
-                  </span>
-                  <div className="relative flex gap-16 bg-[#F5DED4] px-10 py-6 rounded-lg">
-                    <div className="absolute w-8 h-8 -top-3 right-[63%] rounded-full bg-white"></div>
-                    <div className="absolute w-8 h-8 -bottom-3 right-[63%] rounded-full bg-white"></div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-black text-2xl font-extrabold">
-                        {discount}
-                      </span>
-                      <span className="text-black text-2xl font-extrabold">
-                        Discount
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-black text-2xl font-extrabold">
-                        Voucher from wheel
-                      </span>
-                      <span className="text-black text-sm font-extralight">
-                        Enjoy discount and get code : {code}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <label className="label">Expiration Date</label>
-                  <input
-                    type="date"
-                    className="input input-bordered w-full"
-                    value={expDate}
-                    onChange={(e) => setExpDate(e.target.value)}
-                  />
-                </div>
-
-                <div className="mt-4">
-                  <label className="label">Discount Percentage</label>
-                  <select
-                    className="select select-bordered w-full"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                  >
-                    <option value="5%">5%</option>
-                    <option value="20%">20%</option>
-                    <option value="60%">60%</option>
-                  </select>
-                </div>
-
-                <div className="mt-4">
-                  <label className="label">Code</label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      className="input input-bordered w-full"
-                      value={code}
-                      readOnly
-                    />
-                    <button
-                      className="btn btn-outline"
-                      onClick={copyCodeToClipboard}
-                    >
-                      Copy
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-around space-x-2">
-                  <button className="btn px-10" onClick={closeDiscountModal}>
-                    Cancel
-                  </button>
-                  <button
-                    className="btn bg-[#577656] text-white px-20"
-                    onClick={handleAddingVoucherToCustomer}
-                  >
-                    Save
-                  </button>
-                </div>
+              <div className="flex gap-3 items-center flex-wrap mt-3">
+                <p className="font-bold text-lg opacity-50">Map Address:</p>
+                <p>{item.map_address}</p>
+              </div>
+              <div className="flex gap-3 items-center flex-wrap mt-3">
+                <p className="font-bold text-lg opacity-50">Street Address:</p>
+                <p>{item.street_address}</p>
+              </div>
+              <div className="flex gap-3 items-center flex-wrap mt-3">
+                <p className="font-bold text-lg opacity-50">latitude:</p>
+                <p>{item.lat}</p>
+              </div>
+              <div className="flex gap-3 items-center flex-wrap mt-3">
+                <p className="font-bold text-lg opacity-50">longitude: </p>
+                <p>{item.long}</p>
               </div>
             </div>
-          )}
-
-          <ToastContainer />
+          ))}
         </div>
+        <ToastContainer />
       </div>
     </>
   );

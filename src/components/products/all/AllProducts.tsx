@@ -13,6 +13,7 @@ import useDeleteProducts from "../../../hooks/useDeleteProducts";
 import BulkUpload from "./productsUI-sections/BulkUpload";
 import { HeadingOne } from "../../reuse-components/HeadingOne";
 import useBrands from "../../../hooks/useBrands";
+import CustomPagination from "../../reuse-components/pagination/CustomPagination";
 
 const AllProducts = () => {
   // Filters
@@ -28,42 +29,28 @@ const AllProducts = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
   const [brand, setBrand] = useState<string>("");
-  // const [isProductsDeleted, setProductsDeleted] = useState(false);
-
-  // Bulk Upload!!
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (event.target.files && event.target.files[0]) {
-  //     setFile(event.target.files[0]);
-  //   }
-  // };
-
-  // Export products as excel sheet
-  const { allProducts } = useAllProducts();
-
-
-  // Handle Pagination.
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [paginationPage, setPaginationPage] = useState<string>("1");
-
+  const [currentPage, setCurrentPage] = useState("1");
   const {
     products,
     setProducts,
     meta,
-    next,
-    prev,
     isLoading,
     error: productServerError,
+    setMeta,
+    links,
+    setLinks,
   } = useProducts({
-    page: paginationPage,
+    page: currentPage,
     brand,
     search: searchFilters,
     status: statusFilter,
   });
 
-  // Handle Pagination.
-  const recordsPerPage = meta.per_page || 5;
-  const nPages = Math.ceil(products.length / recordsPerPage);
+  useEffect(() => {
+    setCurrentPage("1");
+  }, [brand, statusFilter]);
 
+  // Handle Pagination.
   const handleCheckAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
@@ -115,7 +102,10 @@ const AllProducts = () => {
     setBulkUploadFile(file);
   };
   const { brands } = useBrands(false, "");
-
+  function getPageNumber(url: string) {
+    const urlObj = new URL(url); // Parse the URL
+    return urlObj.searchParams.get("page"); // Get the value of the 'page' query parameter
+  }
   return (
     <div className="flex flex-col ">
       <ToastContainer />
@@ -129,22 +119,6 @@ const AllProducts = () => {
 
       {!productServerError && (
         <>
-          {" "}
-          {/* <div className="flex items-center gap-8 justify-end mb-8">
-            <label
-              htmlFor="excel"
-              className="flex gap-2 items-center text-white bg-[#577656] hover:text-black btn xl:px-12 xl:text-lg"
-            >
-              <BiUpload /> Bulk Upload
-              <input
-                id="excel"
-                type="file"
-                accept=".xlsx, .xls"
-                onChange={handleFileChange}
-                hidden
-              />
-            </label>
-          </div> */}
           <div className=" flex justify-between items-center">
             <HeadingOne label="Products" marginBottom="2" />
             <BulkUpload onBulkUpload={handleBulkUploadBtn} />
@@ -162,7 +136,7 @@ const AllProducts = () => {
             </button>
             <button
               onClick={() =>
-                exportToExcel({ products: allProducts, label: "All_Products" })
+                exportToExcel({ products: products, label: "All_Products" })
               }
               className="flex gap-2 items-center btn btn-outline xl:px-10 xl:text-lg"
             >
@@ -193,20 +167,6 @@ const AllProducts = () => {
                 />
               </svg>
             </label>
-            {/* <select
-              value={selectedCategory}
-              className="select select-bordered"
-              onChange={handleCategoryChange}
-            >
-              <option value="" disabled>
-                Select App Sub Category
-              </option>
-              {vendorCategories?.map((category, idx) => (
-                <option key={idx} value={category.name}>
-                  {category.name}
-                </option>
-              ))}
-            </select> */}
             <select
               value={brand}
               id="brand"
@@ -262,14 +222,25 @@ const AllProducts = () => {
 
       {!productServerError && (
         <div className="mt-8">
-          <Pagination
-            onPage={(pg: string) => setPaginationPage(pg)}
-            itemsPerPage={recordsPerPage}
-            nPages={nPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            next={next}
-            prev={prev}
+          <CustomPagination
+            links={links}
+            meta={meta}
+            handleGetFirstPage={() => {
+              const result = getPageNumber(links.first);
+              if (result) setCurrentPage(result);
+            }}
+            handleGetLastPage={() => {
+              const result = getPageNumber(links.last);
+              if (result) setCurrentPage(result);
+            }}
+            handleGetNextPage={() => {
+              const result = getPageNumber(links.next);
+              if (result) setCurrentPage(result);
+            }}
+            handleGetPrevPage={() => {
+              const result = getPageNumber(links.prev);
+              if (result) setCurrentPage(result);
+            }}
           />
         </div>
       )}

@@ -474,12 +474,12 @@ const VendorProfile = () => {
                 </div>
 
                 <div className="flex flex-col  w-[100%]">
-                  <DynamicForm
+                  {/* <DynamicForm
                     onSelectedCategories={(
                       selectedCate: { category: string; id: number }[]
                     ) => setDynamicCategories(selectedCate)}
                     initailCategories={targetAdmin.categories}
-                  />
+                  /> */}
                 </div>
 
                 <div className="form-control">
@@ -845,6 +845,7 @@ const VendorProfile = () => {
             )}
           </div>
         </div>
+
         <div className="flex justify-between items-start gap-10 mt-20">
           <div className="min-w-[800px]">
             <div className="mt-20 p-10  rounded-lg shadow-xl">
@@ -879,48 +880,6 @@ const VendorProfile = () => {
                 </div>
               </div>
             </div>
-            <div className="p-8 mt-8 rounded shadow-xl">
-              <div className="mb-8 flex justify-between items-center">
-                <h1 className="font-bold text-xl">Brands</h1>
-                <Link
-                  to={"/accounts/vendors/brands"}
-                  className="text-green-300 flex gap-2 items-center"
-                >
-                  View Details <GoLink />
-                </Link>
-              </div>
-              <div className="flex items-center gap-4 overflow-hidden max-w-2xl">
-                {Array(20)
-                  .fill(null)
-                  .map((_) => (
-                    <img
-                      src="/assets/vendor/zara.svg"
-                      className="object-cover"
-                    />
-                  ))}
-              </div>
-            </div>
-            <div className="p-8 mt-8 rounded shadow-xl">
-              <div className="mb-8 flex justify-between items-center">
-                <h1 className="font-bold text-xl">Products</h1>
-                <Link
-                  to={"/brands"}
-                  className="text-green-300 flex gap-2 items-center"
-                >
-                  View Details <GoLink />
-                </Link>
-              </div>
-              <div className="flex items-center gap-8 overflow-hidden max-w-2xl">
-                {Array(20)
-                  .fill(null)
-                  .map((_) => (
-                    <img
-                      src="/assets/vendor/hoodie.svg"
-                      className="object-cover"
-                    />
-                  ))}
-              </div>
-            </div>
             <div className="mt-20 p-10  rounded-lg shadow-xl">
               <div>
                 <h1 className="font-bold text-2xl my-2">HQ Address</h1>
@@ -932,112 +891,7 @@ const VendorProfile = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white shadow-xl p-5 py-20 flex flex-col items-center rounded-xl">
-            <div className="mb-6 flex flex-col items-center gap-4">
-              <div className="flex justify-between items-center gap-20">
-                <h1 className="text-2xl font-bold">Financial Report</h1>
-                <Link to={"/financial-reports"} className="text-green-300">
-                  View Report
-                </Link>
-              </div>
-              <div>
-                <img src="/assets/vendor/report.svg" />
-              </div>
-              <div className="flex items-center justify-center gap-4">
-                <span>Clothes</span>
-                <span>Jewelry</span>
-              </div>
-            </div>
-            <h1 className="text-2xl font-bold ">Top Selling</h1>
-            <div className="flex justify-around ">
-              <div className="flex flex-col ">
-                <div className="flex flex-col gap-20">
-                  <div className="flex flex-col gap-10 mt-10">
-                    <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                      <div className="rounded-xl w-20 h-20">
-                        <img
-                          src="/assets/customer/car.svg"
-                          className="object-cover w-[100%]"
-                        />
-                      </div>
-                      <div className="flex justify-between  items-center gap-20">
-                        <div className="flex flex-col gap-1">
-                          <p className="text-lg">
-                            Lorem ipsum dolor sit amet consectetur
-                          </p>
-                          <p className="text-[#1B1B1B80]">1 second ago</p>
-                        </div>
-                        <div className="flex flex-col  items-center gap-4">
-                          <span className="text-2xl">x</span>
-                          <span className="text-green-600">$100</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                      <div className="rounded-xl w-20 h-20">
-                        <img
-                          src="/assets/customer/car.svg"
-                          className="object-cover w-[100%]"
-                        />
-                      </div>
-                      <div className="flex justify-between  items-center gap-20">
-                        <div className="flex flex-col gap-1">
-                          <p className="text-lg">
-                            Lorem ipsum dolor sit amet consectetur
-                          </p>
-                          <p className="text-[#1B1B1B80]">1 second ago</p>
-                        </div>
-                        <div className="flex flex-col  items-center gap-4">
-                          <span className="text-2xl">x</span>
-                          <span className="text-green-600">$100</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                      <div className="rounded-xl w-20 h-20">
-                        <img
-                          src="/assets/customer/car.svg"
-                          className="object-cover w-[100%]"
-                        />
-                      </div>
-                      <div className="flex justify-between  items-center gap-20">
-                        <div className="flex flex-col gap-1">
-                          <p className="text-lg">
-                            Lorem ipsum dolor sit amet consectetur
-                          </p>
-                          <p className="text-[#1B1B1B80]">1 second ago</p>
-                        </div>
-                        <div className="flex flex-col  items-center gap-4">
-                          <span className="text-2xl">x</span>
-                          <span className="text-green-600">$100</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-8 items-center border p-6 rounded-lg shadow-lg">
-                      <div className="rounded-xl w-20 h-20">
-                        <img
-                          src="/assets/customer/car.svg"
-                          className="object-cover w-[100%]"
-                        />
-                      </div>
-                      <div className="flex justify-between  items-center gap-20">
-                        <div className="flex flex-col gap-1">
-                          <p className="text-lg">
-                            Lorem ipsum dolor sit amet consectetur
-                          </p>
-                          <p className="text-[#1B1B1B80]">1 second ago</p>
-                        </div>
-                        <div className="flex flex-col  items-center gap-4">
-                          <span className="text-2xl">x</span>
-                          <span className="text-green-600">$100</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </>

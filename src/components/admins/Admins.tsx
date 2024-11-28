@@ -16,6 +16,7 @@ import { useAuthGard } from "../reuse-hooks/AuthGard";
 import { ActionButton } from "../reuse-components/ActionButtons";
 import { HeadingOne } from "../reuse-components/HeadingOne";
 import { useTranslation } from "react-i18next";
+import CustomPagination from "../reuse-components/pagination/CustomPagination";
 
 const Admins: React.FC = () => {
   // Handle Filters
@@ -29,8 +30,7 @@ const Admins: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [paginationPage, setPaginationPage] = useState<string>("1");
+  const [currentPage, setCurrentPage] = useState<string>("1");
   const [refreshAdminsList, setRefreshAdminsList] = useState(false);
 
   // const { mainCategories } = useMainCategories(refreshAdminsList);
@@ -38,21 +38,23 @@ const Admins: React.FC = () => {
   const {
     admins,
     meta,
-    next,
-    prev,
     isLoading,
+    links,
+    setLinks,
+    setMeta,
     error: fetchAdminsError,
   } = useAdmins({
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
     isFetching: refreshAdminsList,
-    page: paginationPage,
+    page: currentPage,
   });
 
-  const recordsPerPage = meta.per_page || 5;
-  const nPages = Math.ceil(admins.length / recordsPerPage);
-
+  function getPageNumber(url: string) {
+    const urlObj = new URL(url); // Parse the URL
+    return urlObj.searchParams.get("page"); // Get the value of the 'page' query parameter
+  }
   // Handle React Hook Form
 
   const handleRefreshAdminsList = () => {
@@ -110,6 +112,9 @@ const Admins: React.FC = () => {
 
   const { t } = useTranslation();
 
+  useEffect(() => {
+    setCurrentPage("1");
+  }, [selectedStatus]);
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -180,15 +185,28 @@ const Admins: React.FC = () => {
             handleCheckboxChange={handleCheckboxChange}
             selectedObjects={selectedAdmins}
           />
-          <Pagination
-            onPage={(pg: string) => setPaginationPage(pg)}
-            itemsPerPage={recordsPerPage}
-            nPages={nPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            next={next}
-            prev={prev}
-          />
+          <div className="mt-8">
+            <CustomPagination
+              links={links}
+              meta={meta}
+              handleGetFirstPage={() => {
+                const result = getPageNumber(links.first);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetLastPage={() => {
+                const result = getPageNumber(links.last);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetNextPage={() => {
+                const result = getPageNumber(links.next);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetPrevPage={() => {
+                const result = getPageNumber(links.prev);
+                if (result) setCurrentPage(result);
+              }}
+            />
+          </div>
         </>
       )}
 

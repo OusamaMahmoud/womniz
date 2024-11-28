@@ -16,12 +16,13 @@ import { useAuthGard } from "../reuse-hooks/AuthGard";
 import { HeadingOne } from "../reuse-components/HeadingOne";
 import { exportToExcel } from "../methods/exportToExcel";
 import { useTranslation } from "react-i18next";
+import CustomPagination from "../reuse-components/pagination/CustomPagination";
 // ZOD SCHEMA
 
 const Customers: React.FC = () => {
   // Handle Filters
   const [searchValue, setSearchValue] = useState<string>("");
-  const [selectedCategory, ] = useState<string>("");
+  const [selectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -34,19 +35,24 @@ const Customers: React.FC = () => {
 
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [paginationPage, setPaginationPage] = useState<string>("1");
+  const [currentPage, setCurrentPage] = useState<string>("");
 
-  const { customers, isLoading, meta, next, prev } = useCustomers({
+  const { customers, isLoading, meta, links } = useCustomers({
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
     isFetching: trigerFetch,
-    page: paginationPage,
+    page: currentPage,
   });
 
-  const recordsPerPage = meta.per_page || 5;
-  const nPages = Math.ceil(customers.length / recordsPerPage);
+  useEffect(() => {
+    setCurrentPage("1");
+  }, [selectedStatus]);
+
+  function getPageNumber(url: string) {
+    const urlObj = new URL(url); // Parse the URL
+    return urlObj.searchParams.get("page"); // Get the value of the 'page' query parameter
+  }
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -131,7 +137,7 @@ const Customers: React.FC = () => {
               className="btn btn-outline"
               method={() =>
                 exportToExcel({
-                  products: allacustomers,
+                  products: customers,
                   label: "customers",
                 })
               }
@@ -172,15 +178,28 @@ const Customers: React.FC = () => {
             handleCheckboxChange={handleCheckboxChange}
             selectedObjects={selectedCustomers}
           />
-          <Pagination
-            onPage={(pg: string) => setPaginationPage(pg)}
-            itemsPerPage={recordsPerPage}
-            nPages={nPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            next={next}
-            prev={prev}
-          />
+          <div className="mt-8">
+            <CustomPagination
+              links={links}
+              meta={meta}
+              handleGetFirstPage={() => {
+                const result = getPageNumber(links.first);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetLastPage={() => {
+                const result = getPageNumber(links.last);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetNextPage={() => {
+                const result = getPageNumber(links.next);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetPrevPage={() => {
+                const result = getPageNumber(links.prev);
+                if (result) setCurrentPage(result);
+              }}
+            />
+          </div>
         </>
       )}
 

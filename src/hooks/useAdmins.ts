@@ -1,14 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import _ from 'lodash';
+import _ from "lodash";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Admin } from "../services/admins-service";
+import {
+  Pagination,
+  Meta,
+} from "../components/reuse-components/pagination/CustomPagination";
 
-interface MetaObject {
-  current_page: number;
-  from: number;
-  per_page: number;
-  to: number;
-}
 interface AdminsFilter {
   categories: string;
   status: string;
@@ -25,10 +23,11 @@ const useAdmins = ({
   page,
 }: AdminsFilter) => {
   const [admins, setAdmins] = useState<Admin[]>([]);
-  const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
+  const [meta, setMeta] = useState<Meta>({} as Meta);
   const [next, setNext] = useState<string | null>("");
   const [prev, setPrev] = useState<string | null>("");
   const [error, setError] = useState("");
+  const [links, setLinks] = useState<Pagination>({} as Pagination);
   const [isLoading, setLoading] = useState(false);
 
   const fetchAdmins = useCallback(() => {
@@ -37,8 +36,8 @@ const useAdmins = ({
     const request = apiClient.get<{
       data: {
         data: Admin[];
-        meta: MetaObject;
-        links: { next: string | null; prev: string | null };
+        meta: Meta;
+        links: Pagination;
       };
     }>(buildUrl(), {
       signal: controller.signal,
@@ -47,8 +46,7 @@ const useAdmins = ({
       .then((res) => {
         setMeta(res.data.data.meta);
         setAdmins(res.data.data.data);
-        setNext(res.data.data.links.next);
-        setPrev(res.data.data.links.prev);
+        setLinks(res.data.data.links);
         setLoading(false);
       })
       .catch((err) => {
@@ -74,15 +72,15 @@ const useAdmins = ({
 
   const buildUrl = () => {
     const baseUrl = `/admins`;
-  
+
     // If search is provided, return only the search parameter
     if (search) {
       return `${baseUrl}?search=${encodeURIComponent(search)}`;
     }
-  
+
     // Otherwise, build the URL with other parameters
     const params = new URLSearchParams();
-  
+
     if (page) {
       params.append("page", page);
     }
@@ -92,10 +90,9 @@ const useAdmins = ({
     if (status) {
       params.append("status", status === "Active" ? "1" : "0");
     }
-  
+
     return `${baseUrl}?${params.toString()}`;
   };
-  
 
   return {
     admins,
@@ -105,8 +102,8 @@ const useAdmins = ({
     setError,
     meta,
     setMeta,
-    next,
-    prev,
+    links,
+    setLinks,
   };
 };
 

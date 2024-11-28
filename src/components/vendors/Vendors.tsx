@@ -18,6 +18,7 @@ import { useAuthGard } from "../reuse-hooks/AuthGard";
 import VendorForm from "./components/VendorForm";
 import { exportToExcel } from "../methods/exportToExcel";
 import { useTranslation } from "react-i18next";
+import CustomPagination from "../reuse-components/pagination/CustomPagination";
 
 const Vendors = () => {
   // Handle Filters
@@ -33,22 +34,23 @@ const Vendors = () => {
   const [isDeleteEnabled, setIsDeleteEnabled] = useState<boolean>(false);
   const [trigerFetch, setTrigerFetch] = useState<boolean>(false);
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [paginationPage, setPaginationPage] = useState<string>("1");
+  const [currentPage, setCurrentPage] = useState<string>("1");
 
   // Custom Hooks
-  const { vendors, meta, next, prev, isLoading } = useVendors({
+  const { vendors, meta, links, isLoading } = useVendors({
     categories: selectedCategory,
     status: selectedStatus,
     search: searchValue,
     isFetching: trigerFetch,
-    page: paginationPage,
+    page: currentPage,
   });
+
+  useEffect(() => {
+    setCurrentPage("1");
+  }, [selectedStatus]);
+
   const { mainCategories } = useMainCategories(false, "");
   const { allVendors, isAllVendorsError } = useAllVendors();
-
-  const recordsPerPage = meta.per_page || 5;
-  const nPages = Math.ceil(vendors.length / recordsPerPage);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -96,6 +98,10 @@ const Vendors = () => {
     }
   };
   const { t } = useTranslation();
+  function getPageNumber(url: string) {
+    const urlObj = new URL(url); // Parse the URL
+    return urlObj.searchParams.get("page"); // Get the value of the 'page' query parameter
+  }
   return (
     <div className="overflow-x-scroll p-5">
       <ToastContainer />
@@ -132,7 +138,7 @@ const Vendors = () => {
               className={`btn btn-outline`}
               icon={<BiExport />}
               method={() =>
-                exportToExcel({ products: allVendors, label: "vendors" })
+                exportToExcel({ products: vendors, label: "vendors" })
               }
               label={t("vendors:vendors.vendorsButtons.export")}
             />
@@ -170,15 +176,28 @@ const Vendors = () => {
             handleCheckboxChange={handleCheckboxChange}
             selectedObjects={selectedVendors}
           />
-          <Pagination
-            onPage={(pg: string) => setPaginationPage(pg)}
-            itemsPerPage={recordsPerPage}
-            nPages={nPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            next={next}
-            prev={prev}
-          />
+          <div className="mt-8">
+            <CustomPagination
+              links={links}
+              meta={meta}
+              handleGetFirstPage={() => {
+                const result = getPageNumber(links.first);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetLastPage={() => {
+                const result = getPageNumber(links.last);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetNextPage={() => {
+                const result = getPageNumber(links.next);
+                if (result) setCurrentPage(result);
+              }}
+              handleGetPrevPage={() => {
+                const result = getPageNumber(links.prev);
+                if (result) setCurrentPage(result);
+              }}
+            />
+          </div>
         </>
       )}
 

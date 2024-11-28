@@ -2,13 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import _ from "lodash";
 import { Vendor } from "../services/vendors-service";
+import {
+  Pagination,
+  Meta,
+} from "../components/reuse-components/pagination/CustomPagination";
 
-interface MetaObject {
-  current_page: number;
-  from: number;
-  per_page: number;
-  to: number;
-}
 interface AdminsFilter {
   categories?: string;
   status?: string;
@@ -25,9 +23,9 @@ const useVendors = ({
   page,
 }: AdminsFilter) => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
-  const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
-  const [next, setNext] = useState<string | null>("");
-  const [prev, setPrev] = useState<string | null>("");
+  const [meta, setMeta] = useState<Meta>({} as Meta);
+  const [links, setLinks] = useState<Pagination>({} as Pagination);
+
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
@@ -37,8 +35,8 @@ const useVendors = ({
     const request = apiClient.get<{
       data: {
         data: Vendor[];
-        meta: MetaObject;
-        links: { next: string | null; prev: string | null };
+        meta: Meta;
+        links: Pagination;
       };
     }>(buildUrl(), {
       signal: controller.signal,
@@ -47,8 +45,7 @@ const useVendors = ({
       .then((res) => {
         setMeta(res.data.data.meta);
         setVendors(res.data.data.data);
-        setNext(res.data.data.links.next);
-        setPrev(res.data.data.links.prev);
+        setLinks(res.data.data.links);
         setLoading(false);
       })
       .catch((err) => {
@@ -104,8 +101,7 @@ const useVendors = ({
     setError,
     meta,
     setMeta,
-    next,
-    prev,
+    links,
   };
 };
 

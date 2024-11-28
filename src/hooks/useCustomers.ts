@@ -2,13 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import apiClient, { CanceledError } from "../services/api-client";
 import { Customer } from "../services/customer-service";
 import _ from "lodash";
+import {
+  Meta,
+  Pagination,
+} from "../components/reuse-components/pagination/CustomPagination";
 
-interface MetaObject {
-  current_page: number;
-  from: number;
-  per_page: number;
-  to: number;
-}
 interface CustomersFilter {
   categories: string;
   status: string;
@@ -25,19 +23,19 @@ const useCustomers = ({
   page,
 }: CustomersFilter) => {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [meta, setMeta] = useState<MetaObject>({} as MetaObject);
-  const [next, setNext] = useState<string | null>("");
-  const [prev, setPrev] = useState<string | null>("");
+  const [meta, setMeta] = useState<Meta>({} as Meta);
+  const [links, setLinks] = useState<Pagination>({} as Pagination);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
+
   const fetchCustomers = useCallback(() => {
     setLoading(true);
     const controller = new AbortController();
     const request = apiClient.get<{
       data: {
         data: Customer[];
-        meta: MetaObject;
-        links: { next: string | null; prev: string | null };
+        meta: Meta;
+        links: Pagination;
       };
     }>(buildUrl(), {
       signal: controller.signal,
@@ -45,9 +43,8 @@ const useCustomers = ({
     request
       .then((res) => {
         setMeta(res.data.data.meta);
+        setLinks(res.data.data.links);
         setCustomers(res.data.data.data);
-        setNext(res.data.data.links.next);
-        setPrev(res.data.data.links.prev);
         setLoading(false);
       })
       .catch((err) => {
@@ -103,8 +100,7 @@ const useCustomers = ({
     setError,
     meta,
     setMeta,
-    next,
-    prev,
+    links,
   };
 };
 
