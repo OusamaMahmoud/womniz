@@ -4,7 +4,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAdmins from "../../hooks/useAdmins";
 import apiClient from "../../services/api-client";
-import Pagination from "../Pagination";
 import useAllAdmins from "../../hooks/useAllAdmins";
 import AdminsResponsiveTable from "./AdminsResponsiveTable";
 import { exportToExcel } from "../methods/exportToExcel";
@@ -40,8 +39,6 @@ const Admins: React.FC = () => {
     meta,
     isLoading,
     links,
-    setLinks,
-    setMeta,
     error: fetchAdminsError,
   } = useAdmins({
     categories: selectedCategory,

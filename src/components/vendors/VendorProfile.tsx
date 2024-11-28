@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BiEdit, BiTrash } from "react-icons/bi";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../services/api-client";
 import { Vendor } from "../../services/vendors-service";
 import { toast, ToastContainer } from "react-toastify";
@@ -11,9 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { FaEdit } from "react-icons/fa";
-import { GoLink } from "react-icons/go";
 import { useAuth } from "../../contexts/AuthProvider";
-import DynamicForm from "./DynamicForm";
 import Dropzone from "./DropZone";
 const schema = z.object({
   name: z

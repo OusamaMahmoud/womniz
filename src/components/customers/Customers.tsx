@@ -3,7 +3,6 @@ import { BiExport, BiPlusCircle, BiTrash } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import apiClient from "../../services/api-client";
-import Pagination from "../Pagination";
 import useCustomers from "../../hooks/useCustomers";
 import useAllCustomers from "../../hooks/useAllCustomers";
 import CustomerResponsiveTable from "./CustomerResponsiveTable";
@@ -100,7 +99,7 @@ const Customers: React.FC = () => {
     }
   };
 
-  const { allacustomers, isAllCustomersError } = useAllCustomers();
+  const {  isAllCustomersError } = useAllCustomers();
   const { t } = useTranslation();
   return (
     <div className="overflow-x-scroll p-5">

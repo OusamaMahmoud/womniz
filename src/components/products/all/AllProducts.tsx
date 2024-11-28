@@ -3,8 +3,6 @@ import { FaFileExport } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import useProducts from "../../../hooks/useProducts";
-import useAllProducts from "../../../hooks/useAllProducts";
-import Pagination from "../../Pagination";
 import AllProductsTable from "./AllProductsTable";
 import { exportToExcel } from "../../methods/exportToExcel";
 import NotFound from "../../error-page/NotFound";
@@ -36,9 +34,7 @@ const AllProducts = () => {
     meta,
     isLoading,
     error: productServerError,
-    setMeta,
     links,
-    setLinks,
   } = useProducts({
     page: currentPage,
     brand,

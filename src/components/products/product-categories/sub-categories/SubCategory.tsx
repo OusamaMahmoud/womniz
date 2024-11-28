@@ -11,7 +11,6 @@ import CantPassModel from "./components/CantPassModel";
 import { TargetCategory } from "../../../../hooks/useMainCategories";
 import { IoWarning } from "react-icons/io5";
 import SubCategoryEditComponent from "./components/SubCategoryEditComponent";
-import { RiArrowGoBackFill } from "react-icons/ri";
 
 interface Category {
   categoryImg: FileList | null;

@@ -4,7 +4,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import apiClient from "../../services/api-client";
 import useMainCategories from "../../hooks/useMainCategories";
-import Pagination from "../Pagination";
 import useVendors from "../../hooks/useVendors";
 import useAllVendors from "../../hooks/useAllVendors";
 import VendorsResponsiveTable from "./VendorsResponsiveTable";
@@ -50,7 +49,7 @@ const Vendors = () => {
   }, [selectedStatus]);
 
   const { mainCategories } = useMainCategories(false, "");
-  const { allVendors, isAllVendorsError } = useAllVendors();
+  const { isAllVendorsError } = useAllVendors();
 
   const openModal = () => {
     setIsModalOpen(true);

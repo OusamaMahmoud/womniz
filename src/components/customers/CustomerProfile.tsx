@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
 import { Customer } from "../../services/customer-service";
 import { useAuth } from "../../contexts/AuthProvider";
 
