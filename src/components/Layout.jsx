@@ -9,6 +9,7 @@ import LoadingModal from "../modals/LoadingModal";
 const Layout = () => {
   const { auth } = useAuth();
   const [isOpen, setIsOpen] = useState();
+
   return (
     <div className="flex relative">
       <div

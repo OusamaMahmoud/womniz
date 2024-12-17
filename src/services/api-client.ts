@@ -31,6 +31,7 @@ apiClient.interceptors.response.use(
         isRedirecting = true;
         localStorage.removeItem("womnizAuth");
         localStorage.removeItem("womnizAuthToken");
+        console.log("yes!");
         window.location.href = "/login";
       }
     }
