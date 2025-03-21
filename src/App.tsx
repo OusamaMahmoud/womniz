@@ -1,9 +1,6 @@
 import {
   Route,
   Routes,
-  useLocation,
-  useNavigate,
-  useParams,
 } from "react-router-dom";
 import "./App.css";
 import Login from "./components/Login";
@@ -32,12 +29,10 @@ import SpecificStatusOrder from "./components/orders/SpecificStatusOrder";
 import OrdersComponent from "./components/orders/OrdersComponent";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import AdminProfile from "./components/admins/AdminProfile";
 import MainBrands from "./components/products/mainBrands/MainBrands";
 import NewProduct from "./components/products/new-product/NewProduct";
-import i18n from "../src/i18n/i18n";
-import { useStateContext } from "./contexts/ContextProvider";
 import Salons from "./components/salons/pages/Salons";
 import AddNewSalonForm from "./components/salons/pages/AddNewSalonForm";
 import SalonDetails from "./components/salons/pages/SalonDetails";
@@ -65,9 +60,7 @@ function App() {
   const SPIN_PERMISSIONS = permissions[3]?.permissions?.map((_) => _.name);
   const USERS_PERMISSIONS = permissions[4]?.permissions?.map((_) => _.name);
   const VENDORS_PERMISSIONS = permissions[5]?.permissions?.map((_) => _.name);
-  const { lang } = useStateContext();
 
-  const { pathname } = useLocation();
   // useEffect(() => {
   //   if (pathname === "/login") {
   //     permissions.splice(0, permissions.length, {} as any);
