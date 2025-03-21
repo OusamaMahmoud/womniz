@@ -74,7 +74,7 @@ function App() {
   //   }
   // }, [pathname, permissions]);
 
-  if (isLoading && permissions.length < 1) {
+  if (isLoading && permissions && permissions?.length < 1) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
         <div className="loader-animation">
