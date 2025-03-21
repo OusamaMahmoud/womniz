@@ -1,4 +1,10 @@
-import { Route, Routes } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import "./App.css";
 import Login from "./components/Login";
 import CustomerProfile from "./components/customers/CustomerProfile";
@@ -26,7 +32,7 @@ import SpecificStatusOrder from "./components/orders/SpecificStatusOrder";
 import OrdersComponent from "./components/orders/OrdersComponent";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AdminProfile from "./components/admins/AdminProfile";
 import MainBrands from "./components/products/mainBrands/MainBrands";
 import NewProduct from "./components/products/new-product/NewProduct";
@@ -51,7 +57,7 @@ function App() {
       once: true, // Whether animation should happen only once
     });
   }, []);
-  const { permissions } = usePermissions();
+  const { permissions ,isLoading } = usePermissions();
 
   const ADMINS_PERMISSIONS = permissions[0]?.permissions?.map((_) => _.name);
   const ROLES_PERMISSIONS = permissions[1]?.permissions?.map((_) => _.name);
@@ -61,44 +67,27 @@ function App() {
   const VENDORS_PERMISSIONS = permissions[5]?.permissions?.map((_) => _.name);
   const { lang } = useStateContext();
 
+  const { pathname } = useLocation();
+  // useEffect(() => {
+  //   if (pathname === "/login") {
+  //     permissions.splice(0, permissions.length, {} as any);
+  //   }
+  // }, [pathname, permissions]);
 
-  // Change language dynamically when `lang` prop changes
-  useEffect(() => {
-    const lang = localStorage.getItem("womnizLang") ?? "en";
-    if (lang) {
-      i18n.changeLanguage(lang);
-    }
-    document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
-  }, [i18n, lang]);
-
-  // if (!auth)
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <div className="flex items-center justify-center h-screen bg-white">
-  //         <div className="loader-animation">
-  //           <img
-  //             src="/assets/logo.svg" // Replace with your logo path
-  //             alt="Loading..."
-  //             className="h-64 w-64 animate-zoom"
-  //           />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  if (permissions.length < 1)
+  if (isLoading && permissions.length < 1) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="flex items-center justify-center h-screen bg-white">
-          <div className="loader-animation">
-            <img
-              src="/assets/logo.svg" // Replace with your logo path
-              alt="Loading..."
-              className="h-64 w-64 animate-zoom"
-            />
-          </div>
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="loader-animation">
+          <img
+            src="/assets/logo.svg"
+            alt="Loading..."
+            className="h-64 w-64 animate-zoom"
+          />
         </div>
       </div>
     );
+  }
+  
   return (
     <Routes>
       <Route path="/" element={<Layout />}>

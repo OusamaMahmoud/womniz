@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
@@ -9,7 +9,9 @@ import LoadingModal from "../modals/LoadingModal";
 const Layout = () => {
   const { auth } = useAuth();
   const [isOpen, setIsOpen] = useState();
-
+  const handleOpenSidebar = useCallback((isSideBarOpen) => {
+    setIsOpen(isSideBarOpen);
+  }, []);
   return (
     <div className="flex relative">
       <div
@@ -26,7 +28,7 @@ const Layout = () => {
       </div>
       {auth && (
         <div className="fixed bg-white z-[1000]  ">
-          <Sidebar isOpen={(isSideBarOpen) => setIsOpen(isSideBarOpen)} />
+          <Sidebar onSidebarToggle={handleOpenSidebar} />
         </div>
       )}
       <LoadingModal />

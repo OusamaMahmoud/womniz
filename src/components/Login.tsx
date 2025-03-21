@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { EyeOff } from "lucide-react";
-
+import logo from "/public/assets/login/loginImage.svg";
 const schema = z.object({
   email: z.string().email({ message: "Email is required and must be valid!" }),
   password: z
@@ -65,14 +65,16 @@ const Login = () => {
   };
 
   const [isPasswordEyeOpen, setIsPasswordEyeOpen] = useState(false);
-
+ 
   return (
     <div className="container mx-auto ">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex items-center gap-20">
-          <div className="h-[700px]">
+        <div className="flex justify-center items-center gap-20">
+          <div
+            className="h-[700px]"
+          >
             <img
-              src="/assets/login/loginImage.svg"
+              src={logo}
               alt="loginImage"
               className="object-contain w-full h-full"
             />
@@ -130,7 +132,6 @@ const Login = () => {
             <div className="mt-10 flex justify-center items-center ">
               <button
                 type="submit"
-                
                 className={`max-w-[350px] bg-[#577656] text-xl py-3 rounded-lg grow text-white`}
               >
                 {isLoading ? (
